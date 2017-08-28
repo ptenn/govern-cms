@@ -1,0 +1,73 @@
+﻿@model GovernCMS.ViewModels.CreateUser
+@{
+    ViewBag.Title = "New User Registration";
+}
+       
+@if (TempData["successMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["successMessage"]
+    </div>
+
+}
+@if (TempData["errorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["errorMessage"]
+    </div>
+}        
+
+<div class="row">
+    <div class="col-md-9">        
+        <div class="card">
+            <div class="card-header">
+                <h1>Register New Account</h1>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()            
+                    <div class="form-group row">
+                        <label class="col-md-3 form-control-label" for="EmailAddr">Email Address</label>
+                        <div class="col-md-9">
+                            @Html.EditorFor(model => model.EmailAddr, new {htmlAttributes = new {@class = "form-control", autofocus = true}})
+                            <span class="help-block">Your email will never be sold, disclosed, or distributed</span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-md-3 control-label" for="Passwd" >Password</label>
+                        <div class="col-md-9">
+                            @Html.PasswordFor(model => model.Passwd, new {@class = "form-control"})
+                            @Html.ValidationMessageFor(model => model.Passwd, "", new {@class = "text-danger"})
+                            <span class="help-block">At least 8 characters, must include 1 Uppercase, 1 Lowercase, 1 number</span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-md-3 control-label" for="ConfirmPasswd">Confirm Password</label>
+                        <div class="col-md-9">
+                            @Html.PasswordFor(model => model.ConfirmPasswd, new {@class = "form-control"})
+                            @Html.ValidationMessageFor(model => model.ConfirmPasswd, "", new {@class = "text-danger"})
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="DisplayName" class="col-md-3 control-label">Display Name</label>
+                        <div class="col-md-9">
+                            @Html.EditorFor(model => model.DisplayName, new {htmlAttributes = new {@class = "form-control"}})
+                            @Html.ValidationMessageFor(model => model.DisplayName, "", new {@class = "text-danger"})
+                            <span class="help-block">This will be publically displayed beside all your reviews. We recommend First Name/Last Initial, but there are no requirements.</span>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <button type="submit" class="btn btn-sm btn-primary"><span class="fa fa-dot-circle-o"></span> Create</button>&nbsp;&nbsp;&nbsp;
+                        <button type="reset" class="btn btn-sm btn-danger"><span class="fa fa-ban"></span> Reset</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#EmailAddr").focus();
+    });        
+</script>

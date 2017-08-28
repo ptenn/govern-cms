@@ -99,7 +99,7 @@ namespace GovernCMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(Login login)
+        public ActionResult Login(GovernCMS.ViewModels.Login login)
         {
             // First, find the Real User based on the email address
             string cleanEmailAddr = StringUtils.CleanEmailAddr(login.EmailAddr);
@@ -228,11 +228,6 @@ namespace GovernCMS.Controllers
             {
                 throw new AuthenticationException("You must be logged in to create an Agenda.");
             }
-            if (!currentUser.OrganizationId.HasValue)
-            {
-                throw new OrganizationException("You must belong to an Organization to create an Agenda. Please provide Organization Information.");
-            }
-
             IList<User> users;
             if (string.IsNullOrEmpty(term))
             {
@@ -241,13 +236,13 @@ namespace GovernCMS.Controllers
             if (term.Contains(' '))
             {
                 string[] sTokens = term.Split(' ');
-                users = db.Users.Where(u => u.OrganizationId == currentUser.OrganizationId.Value && 
+                users = db.Users.Where(u => u.OrganizationId == currentUser.OrganizationId && 
                                         u.FirstName.ToLower().StartsWith(sTokens[0].ToLower()) || 
                                         u.LastName.ToLower().StartsWith(sTokens[1].ToLower())).ToList();
             }
             else
             {
-                users = db.Users.Where(u => u.OrganizationId == currentUser.OrganizationId.Value && 
+                users = db.Users.Where(u => u.OrganizationId == currentUser.OrganizationId && 
                                             u.FirstName.ToLower().StartsWith(term.ToLower()) ||
                                             u.LastName.ToLower().StartsWith(term.ToLower())).ToList();
             }
@@ -265,7 +260,7 @@ namespace GovernCMS.Controllers
         }
 
         #region Helper Methods
-        private void RecordLoginAttempt(IUser user, HttpRequestBase request)
+        private void RecordLoginAttempt(User user, HttpRequestBase request)
         {
             // Grab the Request ServerVariables and store them for this LoginAttempt
             StringBuilder requestInfo = new StringBuilder();
