@@ -10,7 +10,7 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Content_Artifact" ManuallyRouted="false" />
         <EntityTypeShape EntityType="GovernCMS.Models.Group" Width="1.5" PointX="0.5" PointY="5.25" />
         <EntityTypeShape EntityType="GovernCMS.Models.Organization" Width="1.5" PointX="4.125" PointY="5.75" />
-        <EntityTypeShape EntityType="GovernCMS.Models.User" Width="1.5" PointX="7.125" PointY="1.875" />
+        <EntityTypeShape EntityType="GovernCMS.Models.User" Width="1.5" PointX="7.25" PointY="1.5" />
         <AssociationConnector Association="GovernCMS.Models.FK_Group_Organization" />
         <AssociationConnector Association="GovernCMS.Models.FK_User_Group" />
         <AssociationConnector Association="GovernCMS.Models.FK_User_Organization" />
@@ -19,6 +19,8 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Content_User" />
         <EntityTypeShape EntityType="GovernCMS.Models.LoginAttempt" Width="1.5" PointX="7.375" PointY="6.75" />
         <AssociationConnector Association="GovernCMS.Models.FK_LoginAttempt_User" />
+        <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Organization" />
+        <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Owner" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -19,6 +19,7 @@ namespace GovernCMS.Models
         {
             this.Groups = new HashSet<Group>();
             this.Users = new HashSet<User>();
+            this.Artifacts = new HashSet<Artifact>();
         }
     
         public int OrganizationId { get; set; }
@@ -32,5 +33,7 @@ namespace GovernCMS.Models
         public virtual ICollection<Group> Groups { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<User> Users { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Artifact> Artifacts { get; set; }
     }
 }

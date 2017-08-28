@@ -14,6 +14,7 @@
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="Description" Type="text" />
           <Property Name="OwnerId" Type="int" Nullable="false" />
+          <Property Name="OrganizationId" Type="int" Nullable="false" />
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="UpdateDate" Type="datetime2" Precision="7" />
         </EntityType>
@@ -95,6 +96,30 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="UpdateDate" Type="datetime2" Precision="7" />
         </EntityType>
+        <Association Name="FK_Artifact_Organization">
+          <End Role="Organization" Type="Self.Organization" Multiplicity="1" />
+          <End Role="Artifact" Type="Self.Artifact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="Artifact">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Artifact_Owner">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Artifact" Type="Self.Artifact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Artifact">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ArtifactGroupEditor_Artifact">
           <End Role="Artifact" Type="Self.Artifact" Multiplicity="1" />
           <End Role="ArtifactGroupEditor" Type="Self.ArtifactGroupEditor" Multiplicity="*" />
@@ -234,6 +259,14 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
     [ArtifactUserEditor].[UserId] AS [UserId]
     FROM [cms].[ArtifactUserEditor] AS [ArtifactUserEditor]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_Artifact_Organization" Association="Self.FK_Artifact_Organization">
+            <End Role="Organization" EntitySet="Organization" />
+            <End Role="Artifact" EntitySet="Artifact" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Artifact_Owner" Association="Self.FK_Artifact_Owner">
+            <End Role="User" EntitySet="User" />
+            <End Role="Artifact" EntitySet="Artifact" />
+          </AssociationSet>
           <AssociationSet Name="FK_ArtifactGroupEditor_Artifact" Association="Self.FK_ArtifactGroupEditor_Artifact">
             <End Role="Artifact" EntitySet="Artifact" />
             <End Role="ArtifactGroupEditor" EntitySet="ArtifactGroupEditor" />
@@ -293,6 +326,9 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <NavigationProperty Name="Users" Relationship="GovernCMS.Models.ArtifactUserEditor" FromRole="Artifact" ToRole="User" />
           <Property Name="UpdateDate" Type="DateTime" Precision="7" />
           <Property Name="Version" Type="Int32" Nullable="false" ConcurrencyMode="Fixed" />
+          <Property Name="OrganizationId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Organization" Relationship="GovernCMS.Models.FK_Artifact_Organization" FromRole="Artifact" ToRole="Organization" />
+          <NavigationProperty Name="User" Relationship="GovernCMS.Models.FK_Artifact_Owner" FromRole="Artifact" ToRole="User" />
         </EntityType>
         <EntityType Name="Content">
           <Key>
@@ -360,6 +396,14 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
             <End Role="User" EntitySet="Users" />
             <End Role="LoginAttempt" EntitySet="LoginAttempts" />
           </AssociationSet>
+          <AssociationSet Name="FK_Artifact_Organization" Association="GovernCMS.Models.FK_Artifact_Organization">
+            <End Role="Organization" EntitySet="Organizations" />
+            <End Role="Artifact" EntitySet="Artifacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Artifact_Owner" Association="GovernCMS.Models.FK_Artifact_Owner">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Artifact" EntitySet="Artifacts" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Group">
           <Key>
@@ -385,6 +429,7 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="Slug" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Groups" Relationship="GovernCMS.Models.FK_Group_Organization" FromRole="Organization" ToRole="Group" />
           <NavigationProperty Name="Users" Relationship="GovernCMS.Models.FK_User_Organization" FromRole="Organization" ToRole="User" />
+          <NavigationProperty Name="Artifacts" Relationship="GovernCMS.Models.FK_Artifact_Organization" FromRole="Organization" ToRole="Artifact" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -485,6 +530,30 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Artifact_Organization">
+          <End Type="GovernCMS.Models.Organization" Role="Organization" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Artifact" Role="Artifact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="Artifact">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Artifact_Owner">
+          <End Type="GovernCMS.Models.User" Role="User" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Artifact" Role="Artifact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Artifact">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -494,6 +563,7 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <EntitySetMapping Name="Artifacts">
             <EntityTypeMapping TypeName="GovernCMS.Models.Artifact">
               <MappingFragment StoreEntitySet="Artifact">
+                <ScalarProperty Name="OrganizationId" ColumnName="OrganizationId" />
                 <ScalarProperty Name="Version" ColumnName="Version" />
                 <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
                 <ScalarProperty Name="ArtifactId" ColumnName="ArtifactId" />

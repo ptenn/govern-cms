@@ -29,6 +29,7 @@ namespace GovernCMS.Models
         public int OwnerId { get; set; }
         public Nullable<System.DateTime> UpdateDate { get; set; }
         public int Version { get; set; }
+        public int OrganizationId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Content> Contents { get; set; }
@@ -36,5 +37,7 @@ namespace GovernCMS.Models
         public virtual ICollection<Group> Groups { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<User> Users { get; set; }
+        public virtual Organization Organization { get; set; }
+        public virtual User User { get; set; }
     }
 }
