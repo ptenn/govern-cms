@@ -1,42 +1,590 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@using GovernCMS.Utils
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <meta name="description" content="Government Content Management System (CMS) Software" />
+    <meta property="og:title" content="Government Content Management System" />
+    <meta property="og:description" content="Government Content Management System (CMS) Software" />
+    <title>@ViewBag.Title - Government Content Management System</title>
+
+    @* Tether.io *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css">
+
+    @* Bootstrap core CDN *@
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+
+    @* Font Awesome CDN *@
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    @* jQuery UI CDN *@
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+    @* jQuery jvectormap CDN *@
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jvectormap/1.2.2/jquery-jvectormap.css" rel="stylesheet">    
+    
+    @* Custom styles for this template *@
+    <link href="/Content/css/style.min.css" rel="stylesheet" id="main-style">
+    <link href="/Content/css/govern-cms.css" rel="stylesheet">
+
+    @* jQuery core.  MUST be at the top, in case of $(document).ready(...) calls midway through page. *@
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+
+<body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
+    <header class="app-header navbar">
+        <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">☰</button>
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler sidebar-minimizer d-md-down-none h-100 b-r-1 px-3" type="button">☰</button>
+        <ul class="nav navbar-nav d-md-down-none b-r-1 h-100">
+            <form class="form-inline px-4">
+                <span class="fa fa-search"></span>
+                <input class="form-control" type="text" placeholder="Search...">
+            </form>
+        </ul>
+        <ul class="nav navbar-nav ml-auto">
+            <span style="padding-right: 10px">Not Logged In</span>
+        </ul>
+    </header>
+
+    <div class="app-body">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-title text-center">
+                        <span>Users</span>
+                    </li>
+                    @if (Session[Constants.CURRENT_USER] == null)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href='@Url.Action("Create", "User")'><span class="fa fa-address-card-o fa-span"></span><span class="hidden-sm text"> Register</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Login", "User")"><span class="fa fa-user-o fa-span"></span><span class="hidden-sm text"> Login</span></a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Logout", "User")"><span class="fa fa-sign-out fa-span"></span><span class="hidden-sm text"> Logout</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href='@Url.Action("Edit", "User")'><span class="fa fa-address-card-o fa-span"></span><span class="hidden-sm text"> Edit User</span></a>
+                        </li>
+                    }
+
+                    <li class="divider"></li>
+                    <li class="nav-title text-center">
+                        <span>UI Elements</span>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-puzzle"></i> Components</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="components-buttons.html"><i class="icon-puzzle"></i> Buttons</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="components-social-buttons.html"><i class="icon-puzzle"></i> Social Buttons</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="components-cards.html"><i class="icon-puzzle"></i> Cards</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="components-modals.html"><i class="icon-puzzle"></i> Modals</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="components-switches.html"><i class="icon-puzzle"></i> Switches</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="components-tables.html"><i class="icon-puzzle"></i> Tables</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="components-tabs.html"><i class="icon-puzzle"></i> Tabs</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-note"></i> Forms</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="forms-basic-forms.html"><i class="icon-note"></i> Basic Forms</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="forms-advanced-forms.html"><i class="icon-note"></i> Advanced Forms</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="forms-validation.html"><i class="icon-note"></i> Validation</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-star"></i> Icons</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="icons-font-awesome.html"><i class="icon-star"></i> Font Awesome</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-star"></i> Simple Line Icons</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-energy"></i> Plugins</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="plugins-calendar.html"><i class="icon-calendar"></i> Calendar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="plugins-draggable-cards.html"><i class="icon-cursor-move"></i> Draggable Cards</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="plugins-loading-buttons.html"><i class="icon-cursor"></i> Loading Buttons</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="plugins-notifications.html"><i class="icon-info"></i> Notifications</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="plugins-sliders.html"><i class="icon-equalizer"></i> Sliders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="plugins-spinners.html"><i class="fa fa-spinner"></i> Spinners</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="plugins-tables.html"><i class="icon-list"></i> Tables</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="widgets.html"><i class="icon-calculator"></i> Widgets <span class="badge badge-info">NEW</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="charts.html"><i class="icon-pie-chart"></i> Charts</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li class="nav-title text-center">
+                        <span>Extras</span>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-star"></i> Pages</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="pages-login.html" target="_top"><i class="icon-star"></i> Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="pages-register.html" target="_top"><i class="icon-star"></i> Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="pages-404.html" target="_top"><i class="icon-star"></i> Error 404</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="pages-500.html" target="_top"><i class="icon-star"></i> Error 500</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-layers"></i> UI Kits</a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item nav-dropdown">
+                                <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-speech"></i> Invoicing</a>
+                                <ul class="nav-dropdown-items">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="UIkits-invoicing-invoice.html"><i class="icon-speech"></i> Invoice</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item nav-dropdown">
+                                <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-speech"></i> Email</a>
+                                <ul class="nav-dropdown-items">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="UIkits-email-inbox.html"><i class="icon-speech"></i> Inbox</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="UIkits-email-message.html"><i class="icon-speech"></i> Message</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="UIkits-email-compose.html"><i class="icon-speech"></i> Compose</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="divider m-2"></li>
+                    <li class="nav-title">
+                        Labels
+                    </li>
+                    <li class="nav-item hidden-cn">
+                        <a class="nav-label" href="#"><i class="fa fa-circle text-danger"></i> Label danger</a>
+                    </li>
+                    <li class="nav-item hidden-cn">
+                        <a class="nav-label" href="#"><i class="fa fa-circle text-info"></i> Label info</a>
+                    </li>
+                    <li class="nav-item hidden-cn">
+                        <a class="nav-label" href="#"><i class="fa fa-circle text-warning"></i> Label warning</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li class="nav-title">
+                        System Utilization
+                    </li>
+                    <li class="nav-item px-3 hidden-cn">
+                        <div class="text-uppercase mb-1">
+                            <small><b>CPU Usage</b>
+                            </small>
+                        </div>
+                        <div class="progress progress-xs">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">348 Processes. 1/4 Cores.</small>
+                    </li>
+                    <li class="nav-item px-3 hidden-cn">
+                        <div class="text-uppercase mb-1">
+                            <small><b>Memory Usage</b>
+                            </small>
+                        </div>
+                        <div class="progress progress-xs">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">11444GB/16384MB</small>
+                    </li>
+                    <li class="nav-item px-3 hidden-cn">
+                        <div class="text-uppercase mb-1">
+                            <small><b>SSD 1 Usage</b>
+                            </small>
+                        </div>
+                        <div class="progress progress-xs">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">243GB/256GB</small>
+                    </li>
+
                 </ul>
+            </nav>
+        </div>
+        <!-- Main content -->
+        <main class="main">
+            @RenderBody()
+        </main>
+
+    <aside class="aside-menu">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#timeline" role="tab"><i class="icon-list"></i></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#messages" role="tab"><i class="icon-speech"></i></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#settings" role="tab"><i class="icon-settings"></i></a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+    <div class="tab-pane active" id="timeline" role="tabpanel">
+        <div class="callout m-0 py-2 text-muted text-center bg-light text-uppercase">
+            <small><b>Today</b>
+            </small>
+        </div>
+        <hr class="transparent mx-3 my-0">
+        <div class="callout callout-warning m-0 py-3">
+            <div class="avatar float-right">
+                <img src="img/avatars/7.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+            </div>
+            <div>Meeting with
+                <strong>Lucas</strong>
+            </div>
+            <small class="text-muted mr-3"><i class="icon-calendar"></i>&nbsp; 1 - 3pm</small>
+            <small class="text-muted"><i class="icon-location-pin"></i>&nbsp; Palo Alto, CA</small>
+        </div>
+        <hr class="mx-3 my-0">
+        <div class="callout callout-info m-0 py-3">
+            <div class="avatar float-right">
+                <img src="img/avatars/4.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+            </div>
+            <div>Skype with
+                <strong>Megan</strong>
+            </div>
+            <small class="text-muted mr-3"><i class="icon-calendar"></i>&nbsp; 4 - 5pm</small>
+            <small class="text-muted"><i class="icon-social-skype"></i>&nbsp; On-line</small>
+        </div>
+        <hr class="transparent mx-3 my-0">
+        <div class="callout m-0 py-2 text-muted text-center bg-light text-uppercase">
+            <small><b>Tomorrow</b>
+            </small>
+        </div>
+        <hr class="transparent mx-3 my-0">
+        <div class="callout callout-danger m-0 py-3">
+            <div>New UI Project -
+                <strong>deadline</strong>
+            </div>
+            <small class="text-muted mr-3"><i class="icon-calendar"></i>&nbsp; 10 - 11pm</small>
+            <small class="text-muted"><i class="icon-home"></i>&nbsp; creativeLabs HQ</small>
+            <div class="avatars-stack mt-2">
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/2.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/3.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/4.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/5.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
             </div>
         </div>
+        <hr class="mx-3 my-0">
+        <div class="callout callout-success m-0 py-3">
+            <div>
+                <strong>#10 Startups.Garden</strong>Meetup</div>
+            <small class="text-muted mr-3"><i class="icon-calendar"></i>&nbsp; 1 - 3pm</small>
+            <small class="text-muted"><i class="icon-location-pin"></i>&nbsp; Palo Alto, CA</small>
+        </div>
+        <hr class="mx-3 my-0">
+        <div class="callout callout-primary m-0 py-3">
+            <div>
+                <strong>Team meeting</strong>
+            </div>
+            <small class="text-muted mr-3"><i class="icon-calendar"></i>&nbsp; 4 - 6pm</small>
+            <small class="text-muted"><i class="icon-home"></i>&nbsp; creativeLabs HQ</small>
+            <div class="avatars-stack mt-2">
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/2.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/3.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/4.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/5.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/7.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+                <div class="avatar avatar-xs">
+                    <img src="img/avatars/8.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                </div>
+            </div>
+        </div>
+        <hr class="mx-3 my-0">
     </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
+    <div class="tab-pane p-3" id="messages" role="tabpanel">
+        <div class="message">
+            <div class="py-3 pb-5 mr-3 float-left">
+                <div class="avatar">
+                    <img src="img/avatars/7.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                    <span class="avatar-status badge-success"></span>
+                </div>
+            </div>
+            <div>
+                <small class="text-muted">Lukasz Holeczek</small>
+                <small class="text-muted float-right mt-1">1:52 PM</small>
+            </div>
+            <div class="text-truncate font-weight-bold">Lorem ipsum dolor sit amet</div>
+            <small class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt...</small>
+        </div>
+        <hr>
+        <div class="message">
+            <div class="py-3 pb-5 mr-3 float-left">
+                <div class="avatar">
+                    <img src="img/avatars/7.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                    <span class="avatar-status badge-success"></span>
+                </div>
+            </div>
+            <div>
+                <small class="text-muted">Lukasz Holeczek</small>
+                <small class="text-muted float-right mt-1">1:52 PM</small>
+            </div>
+            <div class="text-truncate font-weight-bold">Lorem ipsum dolor sit amet</div>
+            <small class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt...</small>
+        </div>
+        <hr>
+        <div class="message">
+            <div class="py-3 pb-5 mr-3 float-left">
+                <div class="avatar">
+                    <img src="img/avatars/7.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                    <span class="avatar-status badge-success"></span>
+                </div>
+            </div>
+            <div>
+                <small class="text-muted">Lukasz Holeczek</small>
+                <small class="text-muted float-right mt-1">1:52 PM</small>
+            </div>
+            <div class="text-truncate font-weight-bold">Lorem ipsum dolor sit amet</div>
+            <small class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt...</small>
+        </div>
+        <hr>
+        <div class="message">
+            <div class="py-3 pb-5 mr-3 float-left">
+                <div class="avatar">
+                    <img src="img/avatars/7.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                    <span class="avatar-status badge-success"></span>
+                </div>
+            </div>
+            <div>
+                <small class="text-muted">Lukasz Holeczek</small>
+                <small class="text-muted float-right mt-1">1:52 PM</small>
+            </div>
+            <div class="text-truncate font-weight-bold">Lorem ipsum dolor sit amet</div>
+            <small class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt...</small>
+        </div>
+        <hr>
+        <div class="message">
+            <div class="py-3 pb-5 mr-3 float-left">
+                <div class="avatar">
+                    <img src="img/avatars/7.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                    <span class="avatar-status badge-success"></span>
+                </div>
+            </div>
+            <div>
+                <small class="text-muted">Lukasz Holeczek</small>
+                <small class="text-muted float-right mt-1">1:52 PM</small>
+            </div>
+            <div class="text-truncate font-weight-bold">Lorem ipsum dolor sit amet</div>
+            <small class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt...</small>
+        </div>
     </div>
+    <div class="tab-pane p-3" id="settings" role="tabpanel">
+        <h6>Settings</h6>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+        <div class="aside-options">
+            <div class="clearfix mt-4">
+                <small><b>Option 1</b>
+                </small>
+                <label class="switch switch-text switch-pill switch-success switch-sm float-right">
+                    <input type="checkbox" class="switch-input" checked="">
+                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                    <span class="switch-handle"></span>
+                </label>
+            </div>
+            <div>
+                <small class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</small>
+            </div>
+        </div>
+
+        <div class="aside-options">
+            <div class="clearfix mt-3">
+                <small><b>Option 2</b>
+                </small>
+                <label class="switch switch-text switch-pill switch-success switch-sm float-right">
+                    <input type="checkbox" class="switch-input">
+                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                    <span class="switch-handle"></span>
+                </label>
+            </div>
+            <div>
+                <small class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</small>
+            </div>
+        </div>
+
+        <div class="aside-options">
+            <div class="clearfix mt-3">
+                <small><b>Option 3</b>
+                </small>
+                <label class="switch switch-text switch-pill switch-success switch-sm float-right">
+                    <input type="checkbox" class="switch-input">
+                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                    <span class="switch-handle"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="aside-options">
+            <div class="clearfix mt-3">
+                <small><b>Option 4</b>
+                </small>
+                <label class="switch switch-text switch-pill switch-success switch-sm float-right">
+                    <input type="checkbox" class="switch-input" checked="">
+                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                    <span class="switch-handle"></span>
+                </label>
+            </div>
+        </div>
+
+        <hr>
+        <h6>System Utilization</h6>
+
+        <div class="text-uppercase mb-1 mt-4">
+            <small><b>CPU Usage</b>
+            </small>
+        </div>
+        <div class="progress progress-xs">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted">348 Processes. 1/4 Cores.</small>
+
+        <div class="text-uppercase mb-1 mt-2">
+            <small><b>Memory Usage</b>
+            </small>
+        </div>
+        <div class="progress progress-xs">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted">11444GB/16384MB</small>
+
+        <div class="text-uppercase mb-1 mt-2">
+            <small><b>SSD 1 Usage</b>
+            </small>
+        </div>
+        <div class="progress progress-xs">
+            <div class="progress-bar bg-danger" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted">243GB/256GB</small>
+
+        <div class="text-uppercase mb-1 mt-2">
+            <small><b>SSD 2 Usage</b>
+            </small>
+        </div>
+        <div class="progress progress-xs">
+            <div class="progress-bar bg-success" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted">25GB/256GB</small>
+    </div>
+    </div>
+    </aside>
+</div>
+
+<footer class="app-footer">
+    <a href="https://genesisui.com">Clever</a> © 2017 creativeLabs.
+    <span class="float-right">Powered by <a href="https://genesisui.com">GenesisUI</a>
+    </span>
+</footer>
+
+<!-- Bootstrap and necessary plugins -->
+@* jQuery *@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js"></script>
+<script src="/Scripts/jquery.mmenu.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+
+@* Bootstrap 4 *@
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+<script src="/Scripts/pace.min.js"></script>
+
+<!-- Plugins and scripts required by all views -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+
+
+<!-- GenesisUI main scripts -->
+<script src="/Scripts/app.js"></script>
+
 </body>
+
 </html>

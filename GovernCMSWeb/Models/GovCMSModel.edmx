@@ -1,0 +1,609 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="GovernCMS.Models.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Artifact">
+          <Key>
+            <PropertyRef Name="ArtifactId" />
+          </Key>
+          <Property Name="ArtifactId" Type="int" Nullable="false" />
+          <Property Name="Version" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Description" Type="text" />
+          <Property Name="OwnerId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'munidb.cms.ArtifactGroupEditor' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ArtifactGroupEditor">
+          <Key>
+            <PropertyRef Name="ArtifactId" />
+            <PropertyRef Name="GroupId" />
+          </Key>
+          <Property Name="ArtifactId" Type="int" Nullable="false" />
+          <Property Name="GroupId" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ArtifactUserEditor">
+          <Key>
+            <PropertyRef Name="ArtifactId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="ArtifactId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Content">
+          <Key>
+            <PropertyRef Name="ContentId" />
+          </Key>
+          <Property Name="ContentId" Type="int" Nullable="false" />
+          <Property Name="Version" Type="int" Nullable="false" />
+          <Property Name="ContentHtml" Type="ntext" />
+          <Property Name="ContentUrl" Type="varchar" MaxLength="255" />
+          <Property Name="ArtifactId" Type="int" Nullable="false" />
+          <Property Name="CreatorId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="Group">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="GroupName" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="OrganizationId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LoginAttempt">
+          <Key>
+            <PropertyRef Name="LoginAttemptId" />
+          </Key>
+          <Property Name="LoginAttemptId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="ServerVariables" Type="text" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Organization">
+          <Key>
+            <PropertyRef Name="OrganizationId" />
+          </Key>
+          <Property Name="OrganizationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" />
+          <Property Name="Url" Type="varchar" MaxLength="255" />
+          <Property Name="EmailHost" Type="varchar" MaxLength="255" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Slug" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmailAddr" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Passwd" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Salt" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="GroupId" Type="int" Nullable="false" />
+          <Property Name="OrganizationId" Type="int" Nullable="false" />
+          <Property Name="Admin" Type="bit" Nullable="false" />
+          <Property Name="Type" Type="varchar" MaxLength="25" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" />
+        </EntityType>
+        <Association Name="FK_ArtifactGroupEditor_Artifact">
+          <End Role="Artifact" Type="Self.Artifact" Multiplicity="1" />
+          <End Role="ArtifactGroupEditor" Type="Self.ArtifactGroupEditor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Artifact">
+              <PropertyRef Name="ArtifactId" />
+            </Principal>
+            <Dependent Role="ArtifactGroupEditor">
+              <PropertyRef Name="ArtifactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ArtifactGroupEditor_Group">
+          <End Role="Group" Type="Self.Group" Multiplicity="1" />
+          <End Role="ArtifactGroupEditor" Type="Self.ArtifactGroupEditor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ArtifactGroupEditor">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ArtifactUserEditor_Artifact">
+          <End Role="Artifact" Type="Self.Artifact" Multiplicity="1" />
+          <End Role="ArtifactUserEditor" Type="Self.ArtifactUserEditor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Artifact">
+              <PropertyRef Name="ArtifactId" />
+            </Principal>
+            <Dependent Role="ArtifactUserEditor">
+              <PropertyRef Name="ArtifactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ArtifactUserEditor_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="ArtifactUserEditor" Type="Self.ArtifactUserEditor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="ArtifactUserEditor">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Content_Artifact">
+          <End Role="Artifact" Type="Self.Artifact" Multiplicity="1" />
+          <End Role="Content" Type="Self.Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Artifact">
+              <PropertyRef Name="ArtifactId" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="ArtifactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Content_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Content" Type="Self.Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="CreatorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Group_Organization">
+          <End Role="Organization" Type="Self.Organization" Multiplicity="1" />
+          <End Role="Group" Type="Self.Group" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="Group">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LoginAttempt_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="LoginAttempt" Type="Self.LoginAttempt" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="LoginAttempt">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Group">
+          <End Role="Group" Type="Self.Group" Multiplicity="1" />
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Organization">
+          <End Role="Organization" Type="Self.Organization" Multiplicity="1" />
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="GovernCMSModelsStoreContainer">
+          <EntitySet Name="Artifact" EntityType="Self.Artifact" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="Content" EntityType="Self.Content" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="Group" EntityType="Self.Group" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="LoginAttempt" EntityType="Self.LoginAttempt" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="Organization" EntityType="Self.Organization" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="ArtifactGroupEditor" EntityType="Self.ArtifactGroupEditor" store:Type="Tables" store:Schema="cms">
+            <DefiningQuery>SELECT 
+    [ArtifactGroupEditor].[ArtifactId] AS [ArtifactId], 
+    [ArtifactGroupEditor].[GroupId] AS [GroupId]
+    FROM [cms].[ArtifactGroupEditor] AS [ArtifactGroupEditor]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ArtifactUserEditor" EntityType="Self.ArtifactUserEditor" store:Type="Tables" store:Schema="cms">
+            <DefiningQuery>SELECT 
+    [ArtifactUserEditor].[ArtifactId] AS [ArtifactId], 
+    [ArtifactUserEditor].[UserId] AS [UserId]
+    FROM [cms].[ArtifactUserEditor] AS [ArtifactUserEditor]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_ArtifactGroupEditor_Artifact" Association="Self.FK_ArtifactGroupEditor_Artifact">
+            <End Role="Artifact" EntitySet="Artifact" />
+            <End Role="ArtifactGroupEditor" EntitySet="ArtifactGroupEditor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ArtifactGroupEditor_Group" Association="Self.FK_ArtifactGroupEditor_Group">
+            <End Role="Group" EntitySet="Group" />
+            <End Role="ArtifactGroupEditor" EntitySet="ArtifactGroupEditor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ArtifactUserEditor_Artifact" Association="Self.FK_ArtifactUserEditor_Artifact">
+            <End Role="Artifact" EntitySet="Artifact" />
+            <End Role="ArtifactUserEditor" EntitySet="ArtifactUserEditor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ArtifactUserEditor_User" Association="Self.FK_ArtifactUserEditor_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="ArtifactUserEditor" EntitySet="ArtifactUserEditor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Content_Artifact" Association="Self.FK_Content_Artifact">
+            <End Role="Artifact" EntitySet="Artifact" />
+            <End Role="Content" EntitySet="Content" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Content_User" Association="Self.FK_Content_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Content" EntitySet="Content" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Group_Organization" Association="Self.FK_Group_Organization">
+            <End Role="Organization" EntitySet="Organization" />
+            <End Role="Group" EntitySet="Group" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LoginAttempt_User" Association="Self.FK_LoginAttempt_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="LoginAttempt" EntitySet="LoginAttempt" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Group" Association="Self.FK_User_Group">
+            <End Role="Group" EntitySet="Group" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Organization" Association="Self.FK_User_Organization">
+            <End Role="Organization" EntitySet="Organization" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="GovernCMS.Models" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Artifact">
+          <Key>
+            <PropertyRef Name="ArtifactId" />
+          </Key>
+          <Property Name="ArtifactId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="500" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Precision="7" Nullable="false" />
+          <Property Name="OwnerId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Contents" Relationship="Self.FK_Content_Artifact" FromRole="Artifact" ToRole="Content" />
+          <NavigationProperty Name="Groups" Relationship="GovernCMS.Models.ArtifactGroupEditor" FromRole="Artifact" ToRole="Group" />
+          <NavigationProperty Name="Users" Relationship="GovernCMS.Models.ArtifactUserEditor" FromRole="Artifact" ToRole="User" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="7" />
+          <Property Name="Version" Type="Int32" Nullable="false" ConcurrencyMode="Fixed" />
+        </EntityType>
+        <EntityType Name="Content">
+          <Key>
+            <PropertyRef Name="ContentId" />
+          </Key>
+          <Property Name="ContentId" Type="Int32" Nullable="false" />
+          <Property Name="Version" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="7" />
+          <Property Name="ContentHtml" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ContentUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ArtifactId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Artifact" Relationship="Self.FK_Content_Artifact" FromRole="Content" ToRole="Artifact" />
+          <Property Name="CreatorId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="GovernCMS.Models.FK_Content_User" FromRole="Content" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Content_Artifact">
+          <End Role="Artifact" Type="Self.Artifact" Multiplicity="1" />
+          <End Role="Content" Type="Self.Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Artifact">
+              <PropertyRef Name="ArtifactId" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="ArtifactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="GovernCmsContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Artifacts" EntityType="Self.Artifact" />
+          <EntitySet Name="Contents" EntityType="Self.Content" />
+          <AssociationSet Name="FK_Content_Artifact" Association="Self.FK_Content_Artifact">
+            <End Role="Artifact" EntitySet="Artifacts" />
+            <End Role="Content" EntitySet="Contents" />
+          </AssociationSet>
+          <EntitySet Name="Groups" EntityType="GovernCMS.Models.Group" />
+          <EntitySet Name="Organizations" EntityType="GovernCMS.Models.Organization" />
+          <EntitySet Name="Users" EntityType="GovernCMS.Models.User" />
+          <AssociationSet Name="FK_Group_Organization" Association="GovernCMS.Models.FK_Group_Organization">
+            <End Role="Organization" EntitySet="Organizations" />
+            <End Role="Group" EntitySet="Groups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Group" Association="GovernCMS.Models.FK_User_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Organization" Association="GovernCMS.Models.FK_User_Organization">
+            <End Role="Organization" EntitySet="Organizations" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="ArtifactGroupEditor" Association="GovernCMS.Models.ArtifactGroupEditor">
+            <End Role="Artifact" EntitySet="Artifacts" />
+            <End Role="Group" EntitySet="Groups" />
+          </AssociationSet>
+          <AssociationSet Name="ArtifactUserEditor" Association="GovernCMS.Models.ArtifactUserEditor">
+            <End Role="Artifact" EntitySet="Artifacts" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Content_User" Association="GovernCMS.Models.FK_Content_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Content" EntitySet="Contents" />
+          </AssociationSet>
+          <EntitySet Name="LoginAttempts" EntityType="GovernCMS.Models.LoginAttempt" />
+          <AssociationSet Name="FK_LoginAttempt_User" Association="GovernCMS.Models.FK_LoginAttempt_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="LoginAttempt" EntitySet="LoginAttempts" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Group">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="OrganizationId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Organization" Relationship="GovernCMS.Models.FK_Group_Organization" FromRole="Group" ToRole="Organization" />
+          <NavigationProperty Name="Users" Relationship="GovernCMS.Models.FK_User_Group" FromRole="Group" ToRole="User" />
+          <NavigationProperty Name="Artifacts" Relationship="GovernCMS.Models.ArtifactGroupEditor" FromRole="Group" ToRole="Artifact" />
+        </EntityType>
+        <EntityType Name="Organization">
+          <Key>
+            <PropertyRef Name="OrganizationId" />
+          </Key>
+          <Property Name="OrganizationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Url" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="EmailHost" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Slug" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Groups" Relationship="GovernCMS.Models.FK_Group_Organization" FromRole="Organization" ToRole="Group" />
+          <NavigationProperty Name="Users" Relationship="GovernCMS.Models.FK_User_Organization" FromRole="Organization" ToRole="User" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmailAddr" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Passwd" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Salt" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="GroupId" Type="Int32" Nullable="false" />
+          <Property Name="OrganizationId" Type="Int32" Nullable="false" />
+          <Property Name="Admin" Type="Boolean" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Group" Relationship="GovernCMS.Models.FK_User_Group" FromRole="User" ToRole="Group" />
+          <NavigationProperty Name="Organization" Relationship="GovernCMS.Models.FK_User_Organization" FromRole="User" ToRole="Organization" />
+          <NavigationProperty Name="Artifacts" Relationship="GovernCMS.Models.ArtifactUserEditor" FromRole="User" ToRole="Artifact" />
+          <NavigationProperty Name="Contents" Relationship="GovernCMS.Models.FK_Content_User" FromRole="User" ToRole="Content" />
+          <NavigationProperty Name="LoginAttempts" Relationship="GovernCMS.Models.FK_LoginAttempt_User" FromRole="User" ToRole="LoginAttempt" />
+        </EntityType>
+        <Association Name="FK_Group_Organization">
+          <End Type="GovernCMS.Models.Organization" Role="Organization" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Group" Role="Group" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="Group">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Group">
+          <End Type="GovernCMS.Models.Group" Role="Group" Multiplicity="1" />
+          <End Type="GovernCMS.Models.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Organization">
+          <End Type="GovernCMS.Models.Organization" Role="Organization" Multiplicity="1" />
+          <End Type="GovernCMS.Models.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ArtifactGroupEditor">
+          <End Type="GovernCMS.Models.Artifact" Role="Artifact" Multiplicity="*" />
+          <End Type="GovernCMS.Models.Group" Role="Group" Multiplicity="*" />
+        </Association>
+        <Association Name="ArtifactUserEditor">
+          <End Type="GovernCMS.Models.Artifact" Role="Artifact" Multiplicity="*" />
+          <End Type="GovernCMS.Models.User" Role="User" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_Content_User">
+          <End Type="GovernCMS.Models.User" Role="User" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Content" Role="Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="CreatorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="LoginAttempt">
+          <Key>
+            <PropertyRef Name="LoginAttemptId" />
+          </Key>
+          <Property Name="LoginAttemptId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="ServerVariables" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="User" Relationship="GovernCMS.Models.FK_LoginAttempt_User" FromRole="LoginAttempt" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_LoginAttempt_User">
+          <End Type="GovernCMS.Models.User" Role="User" Multiplicity="1" />
+          <End Type="GovernCMS.Models.LoginAttempt" Role="LoginAttempt" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="LoginAttempt">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="GovernCMSModelsStoreContainer" CdmEntityContainer="GovernCmsContext">
+          <EntitySetMapping Name="Artifacts">
+            <EntityTypeMapping TypeName="GovernCMS.Models.Artifact">
+              <MappingFragment StoreEntitySet="Artifact">
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ArtifactId" ColumnName="ArtifactId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Contents">
+            <EntityTypeMapping TypeName="GovernCMS.Models.Content">
+              <MappingFragment StoreEntitySet="Content">
+                <ScalarProperty Name="CreatorId" ColumnName="CreatorId" />
+                <ScalarProperty Name="ContentId" ColumnName="ContentId" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ContentHtml" ColumnName="ContentHtml" />
+                <ScalarProperty Name="ContentUrl" ColumnName="ContentUrl" />
+                <ScalarProperty Name="ArtifactId" ColumnName="ArtifactId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Groups">
+            <EntityTypeMapping TypeName="GovernCMS.Models.Group">
+              <MappingFragment StoreEntitySet="Group">
+                <ScalarProperty Name="OrganizationId" ColumnName="OrganizationId" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Organizations">
+            <EntityTypeMapping TypeName="GovernCMS.Models.Organization">
+              <MappingFragment StoreEntitySet="Organization">
+                <ScalarProperty Name="Slug" ColumnName="Slug" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="EmailHost" ColumnName="EmailHost" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="OrganizationId" ColumnName="OrganizationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="GovernCMS.Models.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Admin" ColumnName="Admin" />
+                <ScalarProperty Name="OrganizationId" ColumnName="OrganizationId" />
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Salt" ColumnName="Salt" />
+                <ScalarProperty Name="Passwd" ColumnName="Passwd" />
+                <ScalarProperty Name="EmailAddr" ColumnName="EmailAddr" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="ArtifactGroupEditor" TypeName="GovernCMS.Models.ArtifactGroupEditor" StoreEntitySet="ArtifactGroupEditor">
+            <EndProperty Name="Group">
+              <ScalarProperty Name="Id" ColumnName="GroupId" />
+            </EndProperty>
+            <EndProperty Name="Artifact">
+              <ScalarProperty Name="ArtifactId" ColumnName="ArtifactId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="ArtifactUserEditor" TypeName="GovernCMS.Models.ArtifactUserEditor" StoreEntitySet="ArtifactUserEditor">
+            <EndProperty Name="User">
+              <ScalarProperty Name="UserId" ColumnName="UserId" />
+            </EndProperty>
+            <EndProperty Name="Artifact">
+              <ScalarProperty Name="ArtifactId" ColumnName="ArtifactId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="LoginAttempts">
+            <EntityTypeMapping TypeName="GovernCMS.Models.LoginAttempt">
+              <MappingFragment StoreEntitySet="LoginAttempt">
+                <ScalarProperty Name="ServerVariables" ColumnName="ServerVariables" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="LoginAttemptId" ColumnName="LoginAttemptId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

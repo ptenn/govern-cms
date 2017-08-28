@@ -11,7 +11,7 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GovernCMSWeb</RootNamespace>
+    <RootNamespace>GovernCMS</RootNamespace>
     <AssemblyName>GovernCMSWeb</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
@@ -52,10 +52,15 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -105,22 +110,95 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ErrorHandlingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Artifact.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Content.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GovCMSModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GovCMSModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GovCMSModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GovCMSModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GovCMSModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Group.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LoginAttempt.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Organization.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ArtifactService.cs" />
+    <Compile Include="Services\IArtifactService.cs" />
+    <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\PasswordUtils.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="ViewModels\CreateUser.cs" />
+    <Compile Include="ViewModels\Login.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\css\font-awesome.css" />
+    <Content Include="Content\css\font-awesome.min.css" />
+    <Content Include="Content\css\glyphicons-filetypes.css" />
+    <Content Include="Content\css\glyphicons-social.css" />
+    <Content Include="Content\css\glyphicons.css" />
+    <Content Include="Content\css\govern-cms.css" />
+    <Content Include="Content\css\simple-line-icons.css" />
+    <Content Include="Content\css\style.css" />
+    <Content Include="Content\css\style.min.css" />
+    <Content Include="Content\images\azure_resources.png" />
+    <Content Include="Content\images\municipal_agenda_edmx.png" />
+    <Content Include="Content\images\municipal_agenda_logo.png" />
+    <Content Include="Content\images\municipal_agenda_logo_invert_sm.png" />
+    <Content Include="Content\images\municipal_agenda_logo_sm.png" />
+    <Content Include="Content\images\municipal_agenda_vp_candy_zheng.jpg" />
+    <Content Include="Content\images\municipal_agenda_vp_candy_zheng_exec_profile.jpg" />
+    <Content Include="Content\images\select.png" />
+    <Content Include="Content\images\spacer.gif" />
+    <Content Include="Content\images\ui-anim_basic_16x16.gif" />
+    <Content Include="Content\images\wcag_2_0_dynomapper.png" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Models\GovCMSModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>GovCMSModel.edmx</DependentUpon>
+      <LastGenOutput>GovCMSModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\GovCMSModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>GovCMSModel.edmx</DependentUpon>
+      <LastGenOutput>GovCMSModel.cs</LastGenOutput>
+    </Content>
+    <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\jquery.mmenu.min.js" />
+    <Content Include="Scripts\pace.min.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -138,10 +216,26 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="Models\GovCMSModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>GovCMSModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\GovCMSModel.edmx.diagram">
+      <DependentUpon>GovCMSModel.edmx</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\css\font-awesome.css.map" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
