@@ -32,8 +32,7 @@ namespace GovernCMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(
-            [Bind(Include = "EmailAddr, Passwd, ConfirmPasswd, FirstName,LastName")] CreateUser createUser)
+        public ActionResult Create(CreateUser createUser)
         {
             if (ModelState.IsValid)
             {
@@ -74,12 +73,49 @@ namespace GovernCMS.Controllers
                 // Set User as Company Admin
                 user.Type = Constants.USER_TYPE_ADMINISTRATOR;
 
+                // Existing Organization
+                if (createUser.OrganizationId.HasValue)
+                {
+                    user.OrganizationId = createUser.OrganizationId.Value;
+                }
+                // Potentially new
+                else
+                { 
+                    // Try to lookup Organization by Slug
+                    string slug = StringUtils.CreateSlug(createUser.OrganizationName);
+                    Organization organization = db.Organizations.FirstOrDefault(o => o.Slug.Equals(slug));
+
+                    // existing organization found by Slug
+                    if (organization != null)
+                    {
+                        user.OrganizationId = organization.OrganizationId;
+                    }
+                    // Completely new Organization
+                    else
+                    {
+                        organization = new Organization();
+                        organization.Name = createUser.OrganizationName;
+                        organization.Slug = slug;
+                        organization.CreateDate = DateTime.Now.Date;
+
+                        // Attempt to get Email Host
+                        string domain = EmailUtils.GetDomainFromEmailAddr(user.EmailAddr);
+                        if (!string.IsNullOrEmpty(domain) && !EmailUtils.IsEmailHostCommonProvider(domain))
+                        {
+                            organization.EmailHost = domain.Trim().ToLower();
+                        }
+                        user.Organization = organization;
+                        db.Organizations.Add(organization);
+                    }
+                }
+                
                 db.Users.Add(user);
                 db.SaveChanges();
 
                 // Put User in the session
                 Session[Constants.CURRENT_USER] = user;
 
+                // Record Login Attempt
                 RecordLoginAttempt(user, Request);
 
                 logger.Debug("Created User " + user.UserId);
@@ -130,11 +166,9 @@ namespace GovernCMS.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            else
-            {
-                ModelState.AddModelError("ErrorMessage", "Email Address or Password was invalid");
-                return View();
-            }
+
+            ModelState.AddModelError("ErrorMessage", "Email Address or Password was invalid");
+            return View();
         }
 
         public ActionResult Logout()
@@ -143,8 +177,6 @@ namespace GovernCMS.Controllers
             Session.RemoveAll();
             return RedirectToAction("Index", "Home");
         }
-
-
 
         protected override void Dispose(bool disposing)
         {
@@ -293,7 +325,7 @@ namespace GovernCMS.Controllers
                 searchResult.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
             }
 
-            return Json(organization);
+            return Json(searchResult);
         }
 
         #region Helper Methods

@@ -20,6 +20,7 @@ namespace GovernCMS.Models
             this.Artifacts = new HashSet<Artifact>();
             this.Contents = new HashSet<Content>();
             this.LoginAttempts = new HashSet<LoginAttempt>();
+            this.Groups = new HashSet<Group>();
         }
     
         public int UserId { get; set; }
@@ -28,14 +29,12 @@ namespace GovernCMS.Models
         public int Salt { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int GroupId { get; set; }
         public int OrganizationId { get; set; }
         public bool Admin { get; set; }
         public string Type { get; set; }
         public System.DateTime CreateDate { get; set; }
         public Nullable<System.DateTime> UpdateDate { get; set; }
     
-        public virtual Group Group { get; set; }
         public virtual Organization Organization { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Artifact> Artifacts { get; set; }
@@ -43,5 +42,7 @@ namespace GovernCMS.Models
         public virtual ICollection<Content> Contents { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LoginAttempt> LoginAttempts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Group> Groups { get; set; }
     }
 }

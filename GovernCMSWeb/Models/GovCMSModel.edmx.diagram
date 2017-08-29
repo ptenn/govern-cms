@@ -21,6 +21,7 @@
         <AssociationConnector Association="GovernCMS.Models.FK_LoginAttempt_User" />
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Organization" />
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Owner" />
+        <AssociationConnector Association="GovernCMS.Models.UserGroup" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

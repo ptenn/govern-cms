@@ -24,7 +24,6 @@ namespace GovernCMS.Models
     
         public int OrganizationId { get; set; }
         public string Name { get; set; }
-        public string Url { get; set; }
         public string EmailHost { get; set; }
         public System.DateTime CreateDate { get; set; }
         public string Slug { get; set; }
