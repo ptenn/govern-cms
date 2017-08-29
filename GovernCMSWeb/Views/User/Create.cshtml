@@ -102,7 +102,7 @@
                 emailAddr: emailAddr
             },
             function (data) {
-                if (data != null) {
+                if (data != null && data.Match == true) {
                     $("#organizationRow").show();
                     $('#OrganizationId').val(data.OrgId);
                     $("#OrganizationName").val(data.OrgName);                    
