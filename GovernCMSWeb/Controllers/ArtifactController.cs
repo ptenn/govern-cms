@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using GovernCMS.Models;
 using GovernCMS.Utils;
+using GovernCMS.ViewModels;
 using log4net;
 
 namespace GovernCMS.Controllers
@@ -18,8 +19,10 @@ namespace GovernCMS.Controllers
             UserCheck();
             User currentUser = (User)Session[Constants.CURRENT_USER];
 
-//            IList<Artifact> artifacts = db.Artifacts.Where(a => a.)
-            return View();
+            IList<Artifact> artifacts = db.Artifacts.Where(a => a.OrganizationId == currentUser.OrganizationId).ToList();
+            ArtifactList artifactList = new ArtifactList();
+            artifactList.Artifacts = artifacts;
+            return View(artifactList);
         }
 
         public ActionResult Add()
@@ -27,5 +30,14 @@ namespace GovernCMS.Controllers
             throw new System.NotImplementedException();
         }
 
+        public ActionResult Manage(int artifactid)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ActionResult Delete(int artifactid)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

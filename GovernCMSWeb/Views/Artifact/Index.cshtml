@@ -1,4 +1,4 @@
-﻿@model GovernCMS.Models.Artifact
+﻿@model GovernCMS.ViewModels.ArtifactList
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 
@@ -43,14 +43,24 @@
                         </thead>
                         <tbody>
 
-                            @foreach (var company in Model.Companies)
+                            @foreach (var artifact in Model.Artifacts)
                             {
-                                <tr id="@company.CompanyId">
-                                    <td><a href="@Url.Action("Index", "Nexus", new {company = company.Slug})">@company.CompanyName</a></td>
-                                    <td><a href="@company.Url">Company Website</a></td>
-                                    <td><input type="number" class="rating" readonly="readonly" min="0" max="5" step="0.5" size="lg" value="@company.Stars"></td>
+                                <tr id="@artifact.ArtifactId">
+                                    <td>@artifact.Name</td>
+                                    <td>@artifact.Description</td>
+                                    <td>Version #@artifact.Version</td>
+                                    <td>@artifact.CreateDate.ToString("MM/dd/yyyy")</td>
                                     <td>
-                                        <a class="btn btn-sm btn-success" href="@Url.Action("Review", "Company", new {companyId = company.CompanyId})" role="button">Review</a><span style="margin-left: 30px; margin-right: 30px"></span>
+                                        @if (artifact.UpdateDate.HasValue)
+                                        {
+                                            artifact.UpdateDate.Value.ToString("MM/dd/yyyy");
+                                        }
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-success" href="@Url.Action("Manage", "Artifact", new {artifactId = artifact.ArtifactId})" role="button">Manage</a>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", "Artifact", new {artifactId = artifact.ArtifactId})" role="button">Delete</a><span style="margin-left: 30px; margin-right: 30px"></span>
+
                                     </td>
                                 </tr>
                             }

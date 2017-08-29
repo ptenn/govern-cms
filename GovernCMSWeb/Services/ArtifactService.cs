@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using GovernCMS.Models;
 
 namespace GovernCMS.Services
@@ -71,7 +69,7 @@ namespace GovernCMS.Services
 
         public Artifact AddContentToArtifact(Artifact artifact, string contentUrl, string contentHtml)
         {
-            DateTime currentDateTime = DateTime.Now;
+            DateTime currentDateTime = DateTime.Now.Date;
 
             Content content = new Content();
             content.Artifact = artifact;

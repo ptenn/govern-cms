@@ -12,7 +12,6 @@ using GovernCMS.Models;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
 using log4net;
-using Login = System.Web.UI.WebControls.Login;
 
 namespace GovernCMS.Controllers
 {
@@ -84,8 +83,9 @@ namespace GovernCMS.Controllers
                 RecordLoginAttempt(user, Request);
 
                 logger.Debug("Created User " + user.UserId);
+                TempData["successMessage"] = $"User {user.FirstName} {user.LastName} successfully created";
 
-                return RedirectToAction("ManageOrganization", "Organization");
+                return RedirectToAction("Index", "Home");
             }
 
             return View(createUser);
@@ -99,7 +99,7 @@ namespace GovernCMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(GovernCMS.ViewModels.Login login)
+        public ActionResult Login(Login login)
         {
             // First, find the Real User based on the email address
             string cleanEmailAddr = StringUtils.CleanEmailAddr(login.EmailAddr);
@@ -126,7 +126,9 @@ namespace GovernCMS.Controllers
                 // Record Login Attempt
                 RecordLoginAttempt(user, Request);
 
-                return RedirectToAction("Index", "Dashboard");
+                TempData["successMessage"] = $"User {user.FirstName} {user.LastName} successfully logged in";
+
+                return RedirectToAction("Index", "Home");
             }
             else
             {
@@ -257,6 +259,41 @@ namespace GovernCMS.Controllers
                 autoCompleteUsers.Add(autoCompleteUser);
             }
             return Json(autoCompleteUsers);
+        }
+
+        [HttpPost]
+        public JsonResult FindOrganizationByEmail(string emailAddr)
+        {
+            OrgSearchResult searchResult = new OrgSearchResult();
+            Organization organization = null;
+
+            // Guard block
+            if (string.IsNullOrEmpty(emailAddr))
+            {
+                searchResult.Match = false;
+                searchResult.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
+                return Json(searchResult);
+            }
+            
+            string domain = EmailUtils.GetDomainFromEmailAddr(emailAddr).Trim().ToLower();
+            if (!string.IsNullOrEmpty(domain) && !EmailUtils.IsEmailHostCommonProvider(domain))
+            {
+                organization = db.Organizations.FirstOrDefault(o => o.EmailHost.Equals(domain));
+                if (organization != null)
+                {
+                    searchResult.Match = true;
+                    searchResult.OrgId = organization.OrganizationId;
+                    searchResult.OrgName = organization.Name;
+                }
+            }
+
+            if (organization == null)
+            {
+                searchResult.Match = false;
+                searchResult.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
+            }
+
+            return Json(organization);
         }
 
         #region Helper Methods

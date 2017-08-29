@@ -3,6 +3,7 @@
     ViewBag.Title = "New User Registration";
 }
        
+<link rel="stylesheet" href="/Content/css/editable-select.css">
 @if (TempData["successMessage"] != null)
 {
     <div class="alert alert-success">
@@ -26,11 +27,12 @@
             <div class="card-body">
                 @using (Html.BeginForm())
                 {
+                    @Html.HiddenFor(model => model.OrganizationId)
                     @Html.AntiForgeryToken()            
                     <div class="form-group row">
                         <label class="col-md-3 form-control-label" for="EmailAddr">Email Address</label>
                         <div class="col-md-9">
-                            @Html.EditorFor(model => model.EmailAddr, new {htmlAttributes = new {@class = "form-control", autofocus = true}})
+                            @Html.EditorFor(model => model.EmailAddr, new {htmlAttributes = new {@class = "form-control", autofocus = true, onchange="emailAddrChangeHandler(this.value)"}})
                             <span class="help-block">Your email will never be sold, disclosed, or distributed</span>
                         </div>
                     </div>
@@ -50,13 +52,26 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="DisplayName" class="col-md-3 control-label">Display Name</label>
+                        <label for="FirstName" class="col-md-3 control-label">First Name</label>
                         <div class="col-md-9">
-                            @Html.EditorFor(model => model.DisplayName, new {htmlAttributes = new {@class = "form-control"}})
-                            @Html.ValidationMessageFor(model => model.DisplayName, "", new {@class = "text-danger"})
-                            <span class="help-block">This will be publically displayed beside all your reviews. We recommend First Name/Last Initial, but there are no requirements.</span>
+                            @Html.EditorFor(model => model.FirstName, new {htmlAttributes = new {@class = "form-control"}})
+                            @Html.ValidationMessageFor(model => model.FirstName, "", new {@class = "text-danger"})
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label for="LastName" class="col-md-3 control-label">Last Name</label>
+                        <div class="col-md-9">
+                            @Html.EditorFor(model => model.LastName, new {htmlAttributes = new {@class = "form-control"}})
+                            @Html.ValidationMessageFor(model => model.LastName, "", new {@class = "text-danger"})
+                        </div>
+                    </div>
+                    <div id="organizationRow" class="form-group row" style="display:none">
+                        <label for="OrganizationName" class="col-md-3 control-label">Organization / Company</label>
+                        <div class="col-md-9">
+                            @Html.EditorFor(model => model.OrganizationName, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
                     <div class="panel-footer">
                         <button type="submit" class="btn btn-sm btn-primary"><span class="fa fa-dot-circle-o"></span> Create</button>&nbsp;&nbsp;&nbsp;
                         <button type="reset" class="btn btn-sm btn-danger"><span class="fa fa-ban"></span> Reset</button>
@@ -66,8 +81,42 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" src="/Scripts/editable-select.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $("#EmailAddr").focus();
     });        
+
+    function emailAddrChangeHandler(emailAddr) {
+        $.post("/User/FindOrganizationByEmail",
+            {
+                emailAddr: emailAddr
+            },
+            function (data) {
+                if (data != null) {
+                    $("#organizationRow").show();
+                    $('#OrganizationId').val(data.OrgId);
+                    $("#OrganizationName").val(data.OrgName);                    
+                    $('#OrganizationName').prop("readonly", true);
+                    $('#OrganizationName').removeProp("selectBoxOptions");
+                }
+                else {
+                    $("#organizationRow").show();
+                    $('#OrganizationId').val("");
+                    $("#OrganizationName").val("");                    
+                    $('#OrganizationName').prop("readonly", false);
+                    
+                    var optionsAsString = "";
+                    var delimiter = "";
+                    for (var i = 0; i < data.AllOrgNames; i++) {
+                        optionsAsString += delimiter;
+                        optionsAsString += data.AllOrgNames[i];
+                        delimiter = ";";
+                    }
+                    $('#OrganizationName').prop("selectBoxOptions", optionsAsString);
+                    
+                }
+
+            }, "json");        
+    }
 </script>

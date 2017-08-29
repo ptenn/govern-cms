@@ -156,12 +156,16 @@
     <Compile Include="Services\ArtifactService.cs" />
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\EmailUtils.cs" />
     <Compile Include="Utils\PasswordUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="ViewModels\ArtifactList.cs" />
     <Compile Include="ViewModels\CreateUser.cs" />
     <Compile Include="ViewModels\Login.cs" />
+    <Compile Include="ViewModels\OrgSearchResult.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\css\editable-select.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\glyphicons-filetypes.css" />
@@ -172,16 +176,14 @@
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style.min.css" />
     <Content Include="Content\images\azure_resources.png" />
-    <Content Include="Content\images\municipal_agenda_edmx.png" />
     <Content Include="Content\images\municipal_agenda_logo.png" />
     <Content Include="Content\images\municipal_agenda_logo_invert_sm.png" />
     <Content Include="Content\images\municipal_agenda_logo_sm.png" />
-    <Content Include="Content\images\municipal_agenda_vp_candy_zheng.jpg" />
-    <Content Include="Content\images\municipal_agenda_vp_candy_zheng_exec_profile.jpg" />
-    <Content Include="Content\images\select.png" />
+    <Content Include="Content\images\select_arrow.gif" />
+    <Content Include="Content\images\select_arrow_down.gif" />
+    <Content Include="Content\images\select_arrow_over.gif" />
     <Content Include="Content\images\spacer.gif" />
     <Content Include="Content\images\ui-anim_basic_16x16.gif" />
-    <Content Include="Content\images\wcag_2_0_dynomapper.png" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="ApplicationInsights.config">
@@ -198,6 +200,7 @@
       <LastGenOutput>GovCMSModel.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\editable-select.js" />
     <Content Include="Scripts\jquery.mmenu.min.js" />
     <Content Include="Scripts\pace.min.js" />
     <Content Include="Web.config" />
@@ -266,7 +269,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51913</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51913/</IISUrl>
+          <IISUrl>http://localhost:3393</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
