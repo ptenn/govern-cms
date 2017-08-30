@@ -243,6 +243,10 @@ namespace GovernCMS.Controllers
 
                 db.Users.AddOrUpdate(user);
                 db.SaveChanges();
+
+                // Put Updated User in the session
+                Session[Constants.CURRENT_USER] = user;
+
                 TempData["successMessage"] = "User Successfully Updated";
             }
             else

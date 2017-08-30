@@ -162,6 +162,7 @@
     <Compile Include="ViewModels\ArtifactList.cs" />
     <Compile Include="ViewModels\CreateUser.cs" />
     <Compile Include="ViewModels\Login.cs" />
+    <Compile Include="ViewModels\ManageArtifact.cs" />
     <Compile Include="ViewModels\OrgSearchResult.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -250,6 +251,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Artifact\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Artifact\ManageArtifact.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -46,7 +46,7 @@
             </form>
         </ul>
         <ul class="nav navbar-nav ml-auto">
-            <span style="padding-right: 10px">
+            <span style="padding-right: 10px; z-index: 1000">
                 @if (Session[Constants.CURRENT_USER] == null)
                 {
                     @Html.Raw("Not Logged In");

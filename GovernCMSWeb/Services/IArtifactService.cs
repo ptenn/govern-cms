@@ -46,8 +46,9 @@ namespace GovernCMS.Services
         /// Find an Artifact by Unique ID
         /// </summary>
         /// <param name="id">Unique ID of the Artifact</param>
+        /// <param name="includeContent">True if Content should be eager fetched, false otherwise</param>
         /// <returns>The Artifact by Unique ID, null if not found</returns>
-        Artifact FindArtifactById(int id);
+        Artifact FindArtifactById(int id, bool includeContent);
         
         /// <summary>
         /// Update an Artifact to persistent store

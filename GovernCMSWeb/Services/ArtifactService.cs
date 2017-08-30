@@ -54,9 +54,13 @@ namespace GovernCMS.Services
             return artifacts;
         }
 
-        public Artifact FindArtifactById(int id)
+        public Artifact FindArtifactById(int id, bool includeContent)
         {
-            return db.Artifacts.Find(id);
+            if (includeContent)
+            {
+                return db.Artifacts.Where(a => a.ArtifactId == id).Include(a => a.Contents).Include(a => a.User).FirstOrDefault();
+            }
+            return db.Artifacts.Where(a => a.ArtifactId == id).Include(a => a.User).FirstOrDefault();
         }
 
         public Artifact UpdateArtifact(Artifact artifact)
@@ -70,6 +74,7 @@ namespace GovernCMS.Services
         public Artifact AddContentToArtifact(Artifact artifact, string contentUrl, string contentHtml)
         {
             DateTime currentDateTime = DateTime.Now.Date;
+            int version = artifact.Version + 1;
 
             Content content = new Content();
             content.Artifact = artifact;
@@ -77,11 +82,17 @@ namespace GovernCMS.Services
             content.ContentHtml = contentHtml;
             content.CreateDate = currentDateTime;
             content.UpdateDate = currentDateTime;
-            content.Version = 1;
+            content.Version = version;
+            artifact.Version = version;
 
             db.Contents.Add(content);
-            db.SaveChanges();
+
             artifact.Contents.Add(content);
+            db.Artifacts.Attach(artifact);
+            db.Entry(artifact).State = EntityState.Modified;
+
+            db.SaveChanges();
+            
 
             return artifact;
         }

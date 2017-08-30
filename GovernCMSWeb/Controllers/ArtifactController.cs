@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using GovernCMS.Models;
+using GovernCMS.Services;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
 using log4net;
@@ -14,6 +15,8 @@ namespace GovernCMS.Controllers
 
         private GovernCmsContext db = new GovernCmsContext();
 
+        private IArtifactService artifactService = new ArtifactService();
+        
         public ActionResult Index()
         {
             UserCheck();
@@ -25,9 +28,21 @@ namespace GovernCMS.Controllers
             return View(artifactList);
         }
 
-        public ActionResult Add()
+        [HttpGet]
+        public ActionResult ManageArtifact(int? artifactId)
         {
-            throw new System.NotImplementedException();
+            ManageArtifact manageArtifact = new ManageArtifact();
+            if (artifactId.HasValue)
+            {
+                Artifact artifact = artifactService.FindArtifactById(artifactId.Value, true);
+                manageArtifact.ArtifactId = artifact.ArtifactId;
+                manageArtifact.Name = artifact.Name;
+                manageArtifact.Description = artifact.Description;
+                manageArtifact.Version = artifact.Version;
+                manageArtifact.OrganizationId = artifact.OrganizationId;
+                manageArtifact.OwnerId = artifact.OwnerId;
+            }
+            return View();
         }
 
         public ActionResult Manage(int artifactid)
