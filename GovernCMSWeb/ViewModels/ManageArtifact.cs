@@ -22,6 +22,12 @@ namespace GovernCMS.ViewModels
 
         public IList<Content> ContentItems { get; set; }
 
+        public string ContentHtml { get; set; }
+
+        public string ContentUrl { get; set; }
+
+        public string ContentOrigFileName { get; set; }
+
         public bool HasContent()
         {
             return ContentItems != null && ContentItems.Count > 0;
