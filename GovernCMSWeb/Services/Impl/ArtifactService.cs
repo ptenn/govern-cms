@@ -2,33 +2,34 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Web;
+using GovernCMS.Azure;
 using GovernCMS.Models;
+using Microsoft.WindowsAzure.Storage.Blob;
 
-namespace GovernCMS.Services
+namespace GovernCMS.Services.Impl
 {
     public class ArtifactService : IArtifactService
     {
         private GovernCmsContext db = new GovernCmsContext();
 
-        public Artifact CreateArtifactFromUrl(string artifactName, string description, string url, User creator)
+        private static CloudBlobContainer cmsContentBlobContainer;
+
+        public ArtifactService()
         {
-            Artifact artifact = CreateArtifact(artifactName, description, url, null, creator);
+            
+        }
 
-            db.Artifacts.Add(artifact);            
-            db.Contents.Add(artifact.Contents.First());
-            db.SaveChanges();
-
+        public Artifact CreateArtifactFromUrl(string artifactName, string description, HttpPostedFileBase contentFile, User creator)
+        {
+            // Store File and get URL
+            Artifact artifact = CreateArtifact(artifactName, description, contentFile, null, creator);
             return artifact;
         }
 
         public Artifact CreateArtifactFromContent(string artifactName, string description, string content, User creator)
         {
             Artifact artifact = CreateArtifact(artifactName, description, null, content, creator);
-
-            db.Artifacts.Add(artifact);
-            db.Contents.Add(artifact.Contents.First());
-            db.SaveChanges();
-
             return artifact;
         }
 
@@ -97,7 +98,7 @@ namespace GovernCMS.Services
             return artifact;
         }
 
-        private Artifact CreateArtifact(string artifactName, string description, string url, string contentHtml,
+        private Artifact CreateArtifact(string artifactName, string description, HttpPostedFileBase contentFile, string contentHtml,
             User creator)
         {
             DateTime currentDateTime = DateTime.Now;
@@ -105,22 +106,55 @@ namespace GovernCMS.Services
             artifact.Name = artifactName;
             artifact.Description = description;
             artifact.CreateDate = currentDateTime;
-
             artifact.OwnerId = creator.UserId;
+            artifact.Version = 0;
 
             Content content = new Content();
-            content.Artifact = artifact;
-            content.ContentUrl = url;
-            content.ContentHtml = contentHtml;
-            content.CreateDate = currentDateTime;
-            content.UpdateDate = currentDateTime;
-            content.Version = 0;
 
-            if (artifact.Contents == null)
-            {
-                artifact.Contents = new List<Content>();
+            if (contentFile == null && !string.IsNullOrEmpty(contentHtml))
+            { 
+                content.Artifact = artifact;
+                content.ContentHtml = contentHtml;
+                content.CreateDate = currentDateTime;
+                content.UpdateDate = currentDateTime;
+                content.Version = 0;
             }
+            else
+            {
+                content = CreateContent(contentFile, artifact, creator);
+            }
+
+            artifact.Contents = new List<Content>();
+            artifact.Contents.Add(content);
+
+            db.Artifacts.Add(artifact);
+            db.Contents.Add(artifact.Contents.First());
+            db.SaveChanges();
             return artifact;
+        }
+
+        private Content CreateContent(HttpPostedFileBase contentFile, Artifact artifact, User creator)
+        {
+            CloudBlockBlob contentBlob;
+            Content content = new Content();
+
+            if (contentFile != null && contentFile.ContentLength != 0)
+            {
+                contentBlob = BlobUtils.UploadAndSaveBlob(cmsContentBlobContainer, contentFile);
+
+                content.Artifact = artifact;
+                content.ArtifactId = artifact.ArtifactId;
+                content.ContentUrl = contentBlob.Uri.ToString();
+                content.CreatorId = creator.UserId;
+                content.CreateDate = DateTime.Now.Date;
+                if (artifact.Version > 0)
+                {
+                    artifact.Version++;
+                }
+                content.Version = artifact.Version;
+            }
+
+            return content;
         }
     }
 }

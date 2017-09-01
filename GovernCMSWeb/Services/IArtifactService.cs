@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web;
 using GovernCMS.Models;
 
 namespace GovernCMS.Services
@@ -9,14 +10,14 @@ namespace GovernCMS.Services
     interface IArtifactService
     {
         /// <summary>
-        /// Create an Artifact Entity from a Content URL (such as a Word Doc or PDF)
+        /// Create an Artifact Entity from a Content File (such as a Word Doc or PDF)
         /// </summary>
         /// <param name="artifactName">The Artifact Name</param>
         /// <param name="description">The Artifact Description</param>
-        /// <param name="url">The Content URL for the first Content Version of the Artifact</param>
+        /// <param name="contentFile">The Content URL for the first Content Version of the Artifact</param>
         /// <param name="creator">The User who is creating the Artifact</param>
         /// <returns>Newly-created Artifact.  By default, it will be accessible to the User and the User's Group.</returns>
-        Artifact CreateArtifactFromUrl(string artifactName, string description, string url, User creator);
+        Artifact CreateArtifactFromUrl(string artifactName, string description, HttpPostedFileBase contentFile, User creator);
 
         /// <summary>
         /// Create an Artifact Entity from Content (such as a Webpage)

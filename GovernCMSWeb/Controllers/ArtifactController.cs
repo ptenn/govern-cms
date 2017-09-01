@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using GovernCMS.Azure;
 using GovernCMS.Models;
 using GovernCMS.Services;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
 using log4net;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace GovernCMS.Controllers
 {
@@ -64,57 +67,40 @@ namespace GovernCMS.Controllers
 
             logger.Info($"Form Collection Count: {formCollection.Count}");
 
-            // Re-fetch the Agenda by ID
-            Agenda agenda = null;
-            int agendaId;
-            if (formCollection["AgendaId"] != null && int.TryParse(formCollection["AgendaId"], out agendaId))
+            // Re-fetch the Artifact by ID
+            Artifact artifact = null;
+            int artifactId;
+            if (formCollection["ArtifactIdUploadForm"] != null && int.TryParse(formCollection["ArtifactIdUploadForm"], out artifactId))
             {
-                agenda = db.Agenda.Find(agendaId);
+                artifact = artifactService.FindArtifactById(artifactId, true);
+            }
+            else
+            {
+                artifact = artifactService.CreateArtifactFromUrl()
             }
 
             // if the Agenda was not found, create a new one
-            if (agenda == null)
+            if (artifact == null)
             {
-                agenda = new Agenda();
-                agenda.OrganizationId = currentUser.OrganizationId.GetValueOrDefault();
-                agenda.OwnerId = currentUser.UserId;
+                artifact = new Artifact();
+                artifact.OrganizationId = currentUser.OrganizationId;
+                artifact.OwnerId = currentUser.UserId;
+                artifact.CreateDate = DateTime.Now.Date;
             }
 
             // Populate fields
-            agenda.AgendaName = formCollection["AgendaName"];
-            agenda.MeetingLocation = formCollection["MeetingLocation"];
-            agenda.MeetingDateTime = StringUtils.ParseDateAndTime(formCollection["MeetingDate"], formCollection["MeetingTime"]);
-            agenda.Type = formCollection["AgendaType"];
-            agenda.TypeDesc = formCollection["AgendaTypeDesc"];
-            agenda.AgendaOrigFileName = formCollection["AgendaOrigFileName"];
+            artifact.Name = formCollection["NameUploadForm"];
+            artifact.Description = formCollection["DescriptionUploadForm"];
+            artifact.UpdateDate = DateTime.Now.Date;
+            //agenda.AgendaOrigFileName = formCollection["AgendaOrigFileName"];
 
 
-            CloudBlockBlob documentBlob;
 
             foreach (string fileName in Request.Files)
             {
                 HttpPostedFileBase file = Request.Files[fileName];
 
-                if (file != null && file.ContentLength != 0)
-                {
-                    documentBlob = BlobUtils.UploadAndSaveBlob(agendaBlobContainer, file);
 
-                    // We will take the First File as the Agenda, and any subsequent ones will be assumed to be secondary attachments.
-                    agenda.AgendaOrigUrl = documentBlob.Uri.ToString();
-                    db.Agenda.AddOrUpdate(agenda);
-                    db.SaveChanges();
-
-                    BlobInformation blobInfo = new BlobInformation()
-                    {
-                        Id = agenda.AgendaId,
-                        Type = IdType.Agenda,
-                        BlobUri = new Uri(agenda.AgendaOrigUrl)
-                    };
-                    var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(blobInfo));
-                    documentQueue.AddMessage(queueMessage);
-                    logger.Debug(String.Format("Created queue message for Agenda ID {0}", agenda.AgendaId));
-                }
-            }
             ManageAgenda manageAgenda = new ManageAgenda();
             manageAgenda.AgendaId = agenda.AgendaId;
             manageAgenda.AgendaOrigFileName = agenda.AgendaOrigFileName;

@@ -30,11 +30,11 @@ namespace GovernCMS
 
             logger.Debug("Creating cms blob container");
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var cmsArtifactsBlobContainer = blobClient.GetContainerReference("cmsArtifacts");
-            if (cmsArtifactsBlobContainer.CreateIfNotExists())
+            var cmsContentBlobContainer = blobClient.GetContainerReference("cmsContent");
+            if (cmsContentBlobContainer.CreateIfNotExists())
             {
                 // Enable public access on the newly created "agendas" container.
-                cmsArtifactsBlobContainer.SetPermissions(
+                cmsContentBlobContainer.SetPermissions(
                     new BlobContainerPermissions
                     {
                         PublicAccess = BlobContainerPublicAccessType.Blob
