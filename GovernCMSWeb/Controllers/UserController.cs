@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Security.Authentication;
@@ -9,6 +8,8 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using GovernCMS.Models;
+using GovernCMS.Services;
+using GovernCMS.Services.Impl;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
 using log4net;
@@ -20,6 +21,13 @@ namespace GovernCMS.Controllers
         private static ILog logger = LogManager.GetLogger(typeof(UserController));
 
         private GovernCmsContext db = new GovernCmsContext();
+
+        private IUserService userService;
+
+        public UserController()
+        {
+            userService = new UserService();
+        }
 
         // GET: Users/Create
         public ActionResult Create()
@@ -36,82 +44,13 @@ namespace GovernCMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check to see if there is already a User registered with this email address
-                string cleanEmailAddr = StringUtils.CleanEmailAddr(createUserViewModel.EmailAddr);
-                User existingUserCheck = db.Users.FirstOrDefault(u => u.EmailAddr == cleanEmailAddr);
-                if (existingUserCheck != null)
-                {
-                    ModelState.AddModelError("ErrorMessage",
-                        "There is already a User Registered with this Email Address.");
-                    return View(createUserViewModel);
-                }
-
-                // No existing User registered with Email Address - proceed
-
-                // Sanitize the Email Address
-                createUserViewModel.EmailAddr = StringUtils.CleanEmailAddr(createUserViewModel.EmailAddr);
-
-                // At this point, we should be good
-                User user = new User();
-                user.UpdateDate = DateTime.Now;
-                user.EmailAddr = createUserViewModel.EmailAddr;
-
-                // Get Password Salt
-                Random random = new Random();
-                int salt = random.Next();
-                user.Salt = salt;
-
-                string hashedPasswd = PasswordUtils.Sha256(createUserViewModel.Passwd + salt);
-
-                // Store encrypted Password
-                user.Passwd = hashedPasswd;
-                user.FirstName = createUserViewModel.FirstName;
-                user.LastName = createUserViewModel.LastName;
-                user.CreateDate = DateTime.Now;
-                user.Admin = false;
-
-                // Set User as Company Admin
-                user.Type = Constants.USER_TYPE_ADMINISTRATOR;
-
-                // Existing Organization
-                if (createUserViewModel.OrganizationId.HasValue)
-                {
-                    user.OrganizationId = createUserViewModel.OrganizationId.Value;
-                }
-                // Potentially new
-                else
-                { 
-                    // Try to lookup Organization by Slug
-                    string slug = StringUtils.CreateSlug(createUserViewModel.OrganizationName);
-                    Organization organization = db.Organizations.FirstOrDefault(o => o.Slug.Equals(slug));
-
-                    // existing organization found by Slug
-                    if (organization != null)
-                    {
-                        user.OrganizationId = organization.OrganizationId;
-                    }
-                    // Completely new Organization
-                    else
-                    {
-                        organization = new Organization();
-                        organization.Name = createUserViewModel.OrganizationName;
-                        organization.Slug = slug;
-                        organization.CreateDate = DateTime.Now.Date;
-
-                        // Attempt to get Email Host
-                        string domain = EmailUtils.GetDomainFromEmailAddr(user.EmailAddr);
-                        if (!string.IsNullOrEmpty(domain) && !EmailUtils.IsEmailHostCommonProvider(domain))
-                        {
-                            organization.EmailHost = domain.Trim().ToLower();
-                        }
-                        user.Organization = organization;
-                        db.Organizations.Add(organization);
-                    }
-                }
-                
-                db.Users.Add(user);
-                db.SaveChanges();
-
+                User user = userService.CreateUser(createUserViewModel.EmailAddr, 
+                                                   createUserViewModel.Passwd,
+                                                   createUserViewModel.ConfirmPasswd,
+                                                   createUserViewModel.FirstName, 
+                                                   createUserViewModel.LastName, 
+                                                   createUserViewModel.OrganizationId,
+                                                   createUserViewModel.OrganizationName);
                 // Put User in the session
                 Session[Constants.CURRENT_USER] = user;
 
@@ -221,39 +160,22 @@ namespace GovernCMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditUser(CreateUserViewModel createUserViewModel)
         {
-            User user = db.Users.Find(createUserViewModel.UserId);
-            if (user != null)
+            try
             {
-                if (!string.IsNullOrEmpty(createUserViewModel.Passwd) &&
-                    !string.IsNullOrEmpty(createUserViewModel.ConfirmPasswd) &&
-                    createUserViewModel.Passwd.Equals(createUserViewModel.ConfirmPasswd))
-                {
-                    string hashedPasswd = PasswordUtils.Sha256(createUserViewModel.Passwd + user.Salt);
-                    user.Passwd = hashedPasswd;
-                }
-
-                if (!string.IsNullOrEmpty(createUserViewModel.FirstName))
-                {
-                    user.FirstName = createUserViewModel.FirstName;
-                }
-                if (!string.IsNullOrEmpty(createUserViewModel.LastName))
-                {
-                    user.LastName = createUserViewModel.LastName;
-                }
-
-                db.Users.AddOrUpdate(user);
-                db.SaveChanges();
+                User user = userService.EditUser(createUserViewModel.UserId, createUserViewModel.Passwd,
+                    createUserViewModel.ConfirmPasswd,
+                    createUserViewModel.FirstName, createUserViewModel.LastName);
 
                 // Put Updated User in the session
                 Session[Constants.CURRENT_USER] = user;
 
                 TempData["successMessage"] = "User Successfully Updated";
             }
-            else
+            catch (Exception ex)
             {
+                logger.Error(ex);
                 TempData["errorMessage"] = "Unable to update User";
-            }
-            
+            }            
             return RedirectToAction("Index", "Home");
         }
 
