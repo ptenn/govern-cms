@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Web.Security;
@@ -10,6 +11,11 @@ namespace GovernCMS.Services.Impl
     public class UserService : IUserService
     {
         private GovernCmsContext db = new GovernCmsContext();
+
+        public User FindUserById(int userId)
+        {
+            return db.Users.Find(userId);
+        }
 
         public User CreateUser(string emailAddr, string passwd, string confirmPasswd, string firstName, string lastName,
                                int?  organizationId, string organizationName)
@@ -124,6 +130,30 @@ namespace GovernCMS.Services.Impl
             db.SaveChanges();
 
             return user;
+        }
+
+        public IList<User> FindUsers(string term, int organizationId)
+        {
+            IList<User> users;
+
+            if (string.IsNullOrEmpty(term))
+            {
+                return null;
+            }
+            if (term.Contains(' '))
+            {
+                string[] sTokens = term.Split(' ');
+                users = db.Users.Where(u => u.OrganizationId == organizationId &&
+                                            u.FirstName.ToLower().StartsWith(sTokens[0].ToLower()) ||
+                                            u.LastName.ToLower().StartsWith(sTokens[1].ToLower())).ToList();
+            }
+            else
+            {
+                users = db.Users.Where(u => u.OrganizationId == organizationId &&
+                                            u.FirstName.ToLower().StartsWith(term.ToLower()) ||
+                                            u.LastName.ToLower().StartsWith(term.ToLower())).ToList();
+            }
+            return users;
         }
     }
 }

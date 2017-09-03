@@ -1,9 +1,17 @@
-﻿using GovernCMS.Models;
+﻿using System.Collections.Generic;
+using GovernCMS.Models;
 
 namespace GovernCMS.Services
 {
     interface IUserService
     {
+        /// <summary>
+        /// Find a User by unique ID
+        /// </summary>
+        /// <param name="userId">ID of User to Find</param>
+        /// <returns>User with unique ID, null if not found</returns>
+        User FindUserById(int userId);
+
         /// <summary>
         /// Create a New User, persist and return User
         /// </summary>
@@ -28,5 +36,13 @@ namespace GovernCMS.Services
         /// <param name="lastName">New Last Name</param>
         /// <returns>Updated User</returns>
         User EditUser(int userId, string passwd, string confirmPasswd, string firstName, string lastName);
+
+        /// <summary>
+        /// Find Users by search term
+        /// </summary>
+        /// <param name="term">Search Term</param>
+        /// <param name="organizationId">The Organization ID</param>
+        /// <returns>List of matching Users</returns>
+        IList<User> FindUsers(string term, int organizationId);
     }
 }

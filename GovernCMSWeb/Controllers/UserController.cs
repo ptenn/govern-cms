@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
-using System.Security.Authentication;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -24,9 +23,12 @@ namespace GovernCMS.Controllers
 
         private IUserService userService;
 
+        private IOrganizationService organizationService;
+
         public UserController()
         {
             userService = new UserService();
+            organizationService = new OrganizationService();
         }
 
         // GET: Users/Create
@@ -44,23 +46,35 @@ namespace GovernCMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = userService.CreateUser(createUserViewModel.EmailAddr, 
-                                                   createUserViewModel.Passwd,
-                                                   createUserViewModel.ConfirmPasswd,
-                                                   createUserViewModel.FirstName, 
-                                                   createUserViewModel.LastName, 
-                                                   createUserViewModel.OrganizationId,
-                                                   createUserViewModel.OrganizationName);
-                // Put User in the session
-                Session[Constants.CURRENT_USER] = user;
+                try
+                {
 
-                // Record LoginViewModel Attempt
-                RecordLoginAttempt(user, Request);
 
-                logger.Debug("Created User " + user.UserId);
-                TempData["successMessage"] = $"User {user.FirstName} {user.LastName} successfully created";
+                    User user = userService.CreateUser(createUserViewModel.EmailAddr,
+                        createUserViewModel.Passwd,
+                        createUserViewModel.ConfirmPasswd,
+                        createUserViewModel.FirstName,
+                        createUserViewModel.LastName,
+                        createUserViewModel.OrganizationId,
+                        createUserViewModel.OrganizationName);
+                    // Put User in the session
+                    Session[Constants.CURRENT_USER] = user;
 
-                return RedirectToAction("Index", "Home");
+                    // Record LoginViewModel Attempt
+                    RecordLoginAttempt(user, Request);
+
+                    logger.Debug("Created User " + user.UserId);
+                    TempData["successMessage"] = $"User {user.FirstName} {user.LastName} successfully created";
+
+                    return RedirectToAction("Index", "Home");
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e);
+                    TempData["errorMessage"] = e.Message;
+                    return View(createUserViewModel);
+                }
+
             }
 
             return View(createUserViewModel);
@@ -128,17 +142,12 @@ namespace GovernCMS.Controllers
 
         public ActionResult Edit()
         {
+            // Guard block
+            UserCheck();
+
             User currentUser = (User) Session[Constants.CURRENT_USER];
 
-            // Guard block
-            if (currentUser == null)
-            {
-                throw new AuthenticationException(
-                    "You must be logged in and have an active Session in order to Edit Profile.");
-            }
-
-            User user = db.Users.Find(currentUser.UserId);
-
+            User user = userService.FindUserById(currentUser.UserId);
             if (user != null)
             {
                 CreateUserViewModel createUserViewModel = new CreateUserViewModel();
@@ -149,11 +158,9 @@ namespace GovernCMS.Controllers
 
                 return View(createUserViewModel);
             }
-            else
-            {
-                TempData["errorMessage"] = "Unable to Edit User";
-                return RedirectToAction("Index", "Home");
-            }
+            TempData["errorMessage"] = "Unable to Edit User";
+            return View();
+
         }
 
         [HttpPost]
@@ -181,32 +188,12 @@ namespace GovernCMS.Controllers
 
         [HttpPost]
         public JsonResult FindUsers(string term)
-        {
+        {            
+            UserCheck();
             User currentUser = (User)Session[Constants.CURRENT_USER];
-            // Guard blocks
-            if (currentUser == null)
-            {
-                throw new AuthenticationException("You must be logged in to create an Agenda.");
-            }
-            IList<User> users;
-            if (string.IsNullOrEmpty(term))
-            {
-                return null;
-            }
-            if (term.Contains(' '))
-            {
-                string[] sTokens = term.Split(' ');
-                users = db.Users.Where(u => u.OrganizationId == currentUser.OrganizationId && 
-                                        u.FirstName.ToLower().StartsWith(sTokens[0].ToLower()) || 
-                                        u.LastName.ToLower().StartsWith(sTokens[1].ToLower())).ToList();
-            }
-            else
-            {
-                users = db.Users.Where(u => u.OrganizationId == currentUser.OrganizationId && 
-                                            u.FirstName.ToLower().StartsWith(term.ToLower()) ||
-                                            u.LastName.ToLower().StartsWith(term.ToLower())).ToList();
-            }
 
+            IList<User> users = userService.FindUsers(term, currentUser.OrganizationId);
+            
             IList<IDictionary<string, object>> autoCompleteUsers = new List<IDictionary<string, object>>();
             foreach (User user in users)
             {
@@ -222,35 +209,21 @@ namespace GovernCMS.Controllers
         [HttpPost]
         public JsonResult FindOrganizationByEmail(string emailAddr)
         {
+            UserCheck();
             OrgSearchResultViewModel searchResultViewModel = new OrgSearchResultViewModel();
-            Organization organization = null;
 
-            // Guard block
-            if (string.IsNullOrEmpty(emailAddr))
+            Organization organization = organizationService.FindOrganizationByEmailAddr(emailAddr);
+            if (organization != null)
             {
-                searchResultViewModel.Match = false;
-                searchResultViewModel.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
-                return Json(searchResultViewModel);
+                searchResultViewModel.Match = true;
+                searchResultViewModel.OrgId = organization.OrganizationId;
+                searchResultViewModel.OrgName = organization.Name;
             }
-            
-            string domain = EmailUtils.GetDomainFromEmailAddr(emailAddr).Trim().ToLower();
-            if (!string.IsNullOrEmpty(domain) && !EmailUtils.IsEmailHostCommonProvider(domain))
-            {
-                organization = db.Organizations.FirstOrDefault(o => o.EmailHost.Equals(domain));
-                if (organization != null)
-                {
-                    searchResultViewModel.Match = true;
-                    searchResultViewModel.OrgId = organization.OrganizationId;
-                    searchResultViewModel.OrgName = organization.Name;
-                }
-            }
-
-            if (organization == null)
+            else
             {
                 searchResultViewModel.Match = false;
                 searchResultViewModel.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
             }
-
             return Json(searchResultViewModel);
         }
 
