@@ -1,7 +1,7 @@
 ﻿@model GovernCMS.ViewModels.ManageArtifact
 
-@{string pageTitle = Model.ArtifactId.HasValue ? "Edit Artifact" : "Create Artifact"; }
-@{string buttonLabel = Model.ArtifactId.HasValue ? "Update" : "Save"; }
+@{string pageTitle = Model.ArtifactId != null ? "Edit Artifact" : "Create Artifact"; }
+@{string buttonLabel = Model.ArtifactId != null ? "Update" : "Save"; }
 
 @{
     ViewBag.Title = pageTitle;
@@ -14,7 +14,7 @@
 <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=ordiki4vjt0cezv0e31yzk03tqsxy4ikd55fgsn8hky2j51k"></script>
 <script>
     tinymce.init({
-        selector: 'textarea',
+        selector: "textarea:not(.mceNoEditor)",
         height: 500,
         theme: 'modern',
         plugins: [
@@ -119,23 +119,26 @@
                                             </thead>
                                             <tbody>
 
-                                            @foreach (var content in Model.ContentItems)
-                                            {
-                                                <tr id="@content.ContentId">
-                                                    <td>Version #@content.Version</td>
-                                                    <td>@content.CreateDate.ToString("MM/dd/yyyy")</td>
-                                                    <td>
-                                                        @if (!string.IsNullOrEmpty(content.ContentUrl))
-                                                        {
-                                                            <a class="btn btn-danger" onclick="viewContentUrl('@content.ContentUrl')" aria-label="View Content File">
-                                                                <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
-                                                            </a>
-                                                        }
-                                                        else
-                                                        {
-                                                        }
-                                                    </td>
-                                                </tr>
+                                            @if (Model.HasContent())
+                                            { 
+                                                foreach (var content in Model.ContentItems)
+                                                {
+                                                    <tr id="@content.ContentId">
+                                                        <td>Version #@content.Version</td>
+                                                        <td>@content.CreateDate.ToString("MM/dd/yyyy")</td>
+                                                        <td>
+                                                            @if (!string.IsNullOrEmpty(content.ContentUrl))
+                                                            {
+                                                                <a class="btn btn-danger" onclick="viewContentUrl('@content.ContentUrl')" aria-label="View Content File">
+                                                                    <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
                                             }
                                         </table>
 

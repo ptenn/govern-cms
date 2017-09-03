@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using GovernCMS.Azure;
 using GovernCMS.Models;
 using GovernCMS.Services;
+using GovernCMS.Services.Impl;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
 using log4net;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace GovernCMS.Controllers
 {
@@ -34,7 +31,7 @@ namespace GovernCMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult ManageArtifact(int? artifactId)
+        public ActionResult Manage(int? artifactId)
         {
             ManageArtifact manageArtifact = new ManageArtifact();
             if (artifactId.HasValue)
@@ -47,12 +44,7 @@ namespace GovernCMS.Controllers
                 manageArtifact.OrganizationId = artifact.OrganizationId;
                 manageArtifact.OwnerId = artifact.OwnerId;
             }
-            return View();
-        }
-
-        public ActionResult Manage(int artifactid)
-        {
-            throw new System.NotImplementedException();
+            return View("ManageArtifact", manageArtifact);
         }
 
         public ActionResult Delete(int artifactid)
@@ -68,7 +60,7 @@ namespace GovernCMS.Controllers
             logger.Info($"Form Collection Count: {formCollection.Count}");
 
             // Re-fetch the Artifact by ID
-            Artifact artifact = null;
+            Artifact artifact;
             int artifactId;
             if (formCollection["ArtifactIdUploadForm"] != null && int.TryParse(formCollection["ArtifactIdUploadForm"], out artifactId))
             {
@@ -76,36 +68,18 @@ namespace GovernCMS.Controllers
             }
             else
             {
-                artifact = artifactService.CreateArtifactFromUrl()
+                string artifactName = formCollection["NameUploadForm"];
+                string artifactDesc = formCollection["DescriptionUploadForm"];
+                HttpPostedFileBase file = null;
+                foreach (string fileName in Request.Files)
+                {
+                    file = Request.Files[fileName];
+                }
+
+                artifact = artifactService.CreateArtifactFromFile(artifactName, artifactDesc, file, currentUser);
             }
 
-            // if the Agenda was not found, create a new one
-            if (artifact == null)
-            {
-                artifact = new Artifact();
-                artifact.OrganizationId = currentUser.OrganizationId;
-                artifact.OwnerId = currentUser.UserId;
-                artifact.CreateDate = DateTime.Now.Date;
-            }
-
-            // Populate fields
-            artifact.Name = formCollection["NameUploadForm"];
-            artifact.Description = formCollection["DescriptionUploadForm"];
-            artifact.UpdateDate = DateTime.Now.Date;
-            //agenda.AgendaOrigFileName = formCollection["AgendaOrigFileName"];
-
-
-
-            foreach (string fileName in Request.Files)
-            {
-                HttpPostedFileBase file = Request.Files[fileName];
-
-
-            ManageAgenda manageAgenda = new ManageAgenda();
-            manageAgenda.AgendaId = agenda.AgendaId;
-            manageAgenda.AgendaOrigFileName = agenda.AgendaOrigFileName;
-            manageAgenda.AgendaPdfUrl = agenda.AgendaPdfUrl;
-            return Json(manageAgenda);
+            return Json(artifact);
         }
     }
 }

@@ -5,7 +5,6 @@ using log4net;
 using log4net.Config;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace GovernCMS
 {
@@ -28,19 +27,19 @@ namespace GovernCMS
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["GovernCmsStorage"].ConnectionString);
 
-            logger.Debug("Creating cms blob container");
+            logger.Info("Creating cms blob container");
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var cmsContentBlobContainer = blobClient.GetContainerReference("cmsContent");
-            if (cmsContentBlobContainer.CreateIfNotExists())
+            var cmsBlobContainer = blobClient.GetContainerReference("cmsartifacts");
+            if (cmsBlobContainer.CreateIfNotExists())
             {
-                // Enable public access on the newly created "agendas" container.
-                cmsContentBlobContainer.SetPermissions(
+                // Enable public access on the newly created "images" container.
+                cmsBlobContainer.SetPermissions(
                     new BlobContainerPermissions
                     {
                         PublicAccess = BlobContainerPublicAccessType.Blob
                     });
             }
-            logger.Debug("Storage initialized");
+            logger.Info("Storage initialized");
         }
     }
 }

@@ -17,7 +17,7 @@ namespace GovernCMS.Services
         /// <param name="contentFile">The Content URL for the first Content Version of the Artifact</param>
         /// <param name="creator">The User who is creating the Artifact</param>
         /// <returns>Newly-created Artifact.  By default, it will be accessible to the User and the User's Group.</returns>
-        Artifact CreateArtifactFromUrl(string artifactName, string description, HttpPostedFileBase contentFile, User creator);
+        Artifact CreateArtifactFromFile(string artifactName, string description, HttpPostedFileBase contentFile, User creator);
 
         /// <summary>
         /// Create an Artifact Entity from Content (such as a Webpage)

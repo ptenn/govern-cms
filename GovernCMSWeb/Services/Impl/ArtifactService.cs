@@ -20,7 +20,7 @@ namespace GovernCMS.Services.Impl
             
         }
 
-        public Artifact CreateArtifactFromUrl(string artifactName, string description, HttpPostedFileBase contentFile, User creator)
+        public Artifact CreateArtifactFromFile(string artifactName, string description, HttpPostedFileBase contentFile, User creator)
         {
             // Store File and get URL
             Artifact artifact = CreateArtifact(artifactName, description, contentFile, null, creator);
