@@ -2,7 +2,7 @@
 
 namespace GovernCMS.ViewModels
 {
-    public class Login
+    public class LoginViewModel
     {
         public String EmailAddr { get; set; }
         public String Passwd { get; set; }

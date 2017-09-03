@@ -32,41 +32,41 @@ namespace GovernCMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateUser createUser)
+        public ActionResult Create(CreateUserViewModel createUserViewModel)
         {
             if (ModelState.IsValid)
             {
                 // Check to see if there is already a User registered with this email address
-                string cleanEmailAddr = StringUtils.CleanEmailAddr(createUser.EmailAddr);
+                string cleanEmailAddr = StringUtils.CleanEmailAddr(createUserViewModel.EmailAddr);
                 User existingUserCheck = db.Users.FirstOrDefault(u => u.EmailAddr == cleanEmailAddr);
                 if (existingUserCheck != null)
                 {
                     ModelState.AddModelError("ErrorMessage",
                         "There is already a User Registered with this Email Address.");
-                    return View(createUser);
+                    return View(createUserViewModel);
                 }
 
                 // No existing User registered with Email Address - proceed
 
                 // Sanitize the Email Address
-                createUser.EmailAddr = StringUtils.CleanEmailAddr(createUser.EmailAddr);
+                createUserViewModel.EmailAddr = StringUtils.CleanEmailAddr(createUserViewModel.EmailAddr);
 
                 // At this point, we should be good
                 User user = new User();
                 user.UpdateDate = DateTime.Now;
-                user.EmailAddr = createUser.EmailAddr;
+                user.EmailAddr = createUserViewModel.EmailAddr;
 
                 // Get Password Salt
                 Random random = new Random();
                 int salt = random.Next();
                 user.Salt = salt;
 
-                string hashedPasswd = PasswordUtils.Sha256(createUser.Passwd + salt);
+                string hashedPasswd = PasswordUtils.Sha256(createUserViewModel.Passwd + salt);
 
                 // Store encrypted Password
                 user.Passwd = hashedPasswd;
-                user.FirstName = createUser.FirstName;
-                user.LastName = createUser.LastName;
+                user.FirstName = createUserViewModel.FirstName;
+                user.LastName = createUserViewModel.LastName;
                 user.CreateDate = DateTime.Now;
                 user.Admin = false;
 
@@ -74,15 +74,15 @@ namespace GovernCMS.Controllers
                 user.Type = Constants.USER_TYPE_ADMINISTRATOR;
 
                 // Existing Organization
-                if (createUser.OrganizationId.HasValue)
+                if (createUserViewModel.OrganizationId.HasValue)
                 {
-                    user.OrganizationId = createUser.OrganizationId.Value;
+                    user.OrganizationId = createUserViewModel.OrganizationId.Value;
                 }
                 // Potentially new
                 else
                 { 
                     // Try to lookup Organization by Slug
-                    string slug = StringUtils.CreateSlug(createUser.OrganizationName);
+                    string slug = StringUtils.CreateSlug(createUserViewModel.OrganizationName);
                     Organization organization = db.Organizations.FirstOrDefault(o => o.Slug.Equals(slug));
 
                     // existing organization found by Slug
@@ -94,7 +94,7 @@ namespace GovernCMS.Controllers
                     else
                     {
                         organization = new Organization();
-                        organization.Name = createUser.OrganizationName;
+                        organization.Name = createUserViewModel.OrganizationName;
                         organization.Slug = slug;
                         organization.CreateDate = DateTime.Now.Date;
 
@@ -115,7 +115,7 @@ namespace GovernCMS.Controllers
                 // Put User in the session
                 Session[Constants.CURRENT_USER] = user;
 
-                // Record Login Attempt
+                // Record LoginViewModel Attempt
                 RecordLoginAttempt(user, Request);
 
                 logger.Debug("Created User " + user.UserId);
@@ -124,10 +124,10 @@ namespace GovernCMS.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(createUser);
+            return View(createUserViewModel);
         }
 
-        // Get: User/Login
+        // Get: User/LoginViewModel
         public ActionResult Login()
         {
             return View();
@@ -135,10 +135,10 @@ namespace GovernCMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(Login login)
+        public ActionResult Login(LoginViewModel loginViewModel)
         {
             // First, find the Real User based on the email address
-            string cleanEmailAddr = StringUtils.CleanEmailAddr(login.EmailAddr);
+            string cleanEmailAddr = StringUtils.CleanEmailAddr(loginViewModel.EmailAddr);
 
             // There should only be one result due to AK on CleanEmailAddr column in DB
             User user = db.Users
@@ -151,15 +151,15 @@ namespace GovernCMS.Controllers
                 return View();
             }
 
-            var encrypedPass = PasswordUtils.Sha256(login.Passwd + user.Salt);
+            var encrypedPass = PasswordUtils.Sha256(loginViewModel.Passwd + user.Salt);
 
             // user entered correct password
             if (encrypedPass.Equals(user.Passwd))
             {
-                // Login successful, Put User in the session
+                // LoginViewModel successful, Put User in the session
                 Session[Constants.CURRENT_USER] = user;
 
-                // Record Login Attempt
+                // Record LoginViewModel Attempt
                 RecordLoginAttempt(user, Request);
 
                 TempData["successMessage"] = $"User {user.FirstName} {user.LastName} successfully logged in";
@@ -202,13 +202,13 @@ namespace GovernCMS.Controllers
 
             if (user != null)
             {
-                CreateUser createUserVM = new CreateUser();
-                createUserVM.UserId = user.UserId;
-                createUserVM.EmailAddr = user.EmailAddr;
-                createUserVM.FirstName = user.FirstName;
-                createUserVM.LastName = user.LastName;
+                CreateUserViewModel createUserViewModel = new CreateUserViewModel();
+                createUserViewModel.UserId = user.UserId;
+                createUserViewModel.EmailAddr = user.EmailAddr;
+                createUserViewModel.FirstName = user.FirstName;
+                createUserViewModel.LastName = user.LastName;
 
-                return View(createUserVM);
+                return View(createUserViewModel);
             }
             else
             {
@@ -219,26 +219,26 @@ namespace GovernCMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditUser(CreateUser createUser)
+        public ActionResult EditUser(CreateUserViewModel createUserViewModel)
         {
-            User user = db.Users.Find(createUser.UserId);
+            User user = db.Users.Find(createUserViewModel.UserId);
             if (user != null)
             {
-                if (!string.IsNullOrEmpty(createUser.Passwd) &&
-                    !string.IsNullOrEmpty(createUser.ConfirmPasswd) &&
-                    createUser.Passwd.Equals(createUser.ConfirmPasswd))
+                if (!string.IsNullOrEmpty(createUserViewModel.Passwd) &&
+                    !string.IsNullOrEmpty(createUserViewModel.ConfirmPasswd) &&
+                    createUserViewModel.Passwd.Equals(createUserViewModel.ConfirmPasswd))
                 {
-                    string hashedPasswd = PasswordUtils.Sha256(createUser.Passwd + user.Salt);
+                    string hashedPasswd = PasswordUtils.Sha256(createUserViewModel.Passwd + user.Salt);
                     user.Passwd = hashedPasswd;
                 }
 
-                if (!string.IsNullOrEmpty(createUser.FirstName))
+                if (!string.IsNullOrEmpty(createUserViewModel.FirstName))
                 {
-                    user.FirstName = createUser.FirstName;
+                    user.FirstName = createUserViewModel.FirstName;
                 }
-                if (!string.IsNullOrEmpty(createUser.LastName))
+                if (!string.IsNullOrEmpty(createUserViewModel.LastName))
                 {
-                    user.LastName = createUser.LastName;
+                    user.LastName = createUserViewModel.LastName;
                 }
 
                 db.Users.AddOrUpdate(user);
@@ -300,15 +300,15 @@ namespace GovernCMS.Controllers
         [HttpPost]
         public JsonResult FindOrganizationByEmail(string emailAddr)
         {
-            OrgSearchResult searchResult = new OrgSearchResult();
+            OrgSearchResultViewModel searchResultViewModel = new OrgSearchResultViewModel();
             Organization organization = null;
 
             // Guard block
             if (string.IsNullOrEmpty(emailAddr))
             {
-                searchResult.Match = false;
-                searchResult.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
-                return Json(searchResult);
+                searchResultViewModel.Match = false;
+                searchResultViewModel.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
+                return Json(searchResultViewModel);
             }
             
             string domain = EmailUtils.GetDomainFromEmailAddr(emailAddr).Trim().ToLower();
@@ -317,19 +317,19 @@ namespace GovernCMS.Controllers
                 organization = db.Organizations.FirstOrDefault(o => o.EmailHost.Equals(domain));
                 if (organization != null)
                 {
-                    searchResult.Match = true;
-                    searchResult.OrgId = organization.OrganizationId;
-                    searchResult.OrgName = organization.Name;
+                    searchResultViewModel.Match = true;
+                    searchResultViewModel.OrgId = organization.OrganizationId;
+                    searchResultViewModel.OrgName = organization.Name;
                 }
             }
 
             if (organization == null)
             {
-                searchResult.Match = false;
-                searchResult.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
+                searchResultViewModel.Match = false;
+                searchResultViewModel.AllOrgNames = db.Organizations.Select(o => o.Name).ToList();
             }
 
-            return Json(searchResult);
+            return Json(searchResultViewModel);
         }
 
         #region Helper Methods

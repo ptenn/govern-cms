@@ -25,26 +25,26 @@ namespace GovernCMS.Controllers
             User currentUser = (User)Session[Constants.CURRENT_USER];
 
             IList<Artifact> artifacts = db.Artifacts.Where(a => a.OrganizationId == currentUser.OrganizationId).ToList();
-            ArtifactList artifactList = new ArtifactList();
-            artifactList.Artifacts = artifacts;
-            return View(artifactList);
+            ArtifactListViewModel artifactListViewModel = new ArtifactListViewModel();
+            artifactListViewModel.Artifacts = artifacts;
+            return View(artifactListViewModel);
         }
 
         [HttpGet]
         public ActionResult Manage(int? artifactId)
         {
-            ManageArtifact manageArtifact = new ManageArtifact();
+            ManageArtifactViewModel manageArtifactViewModel = new ManageArtifactViewModel();
             if (artifactId.HasValue)
             {
                 Artifact artifact = artifactService.FindArtifactById(artifactId.Value, true);
-                manageArtifact.ArtifactId = artifact.ArtifactId;
-                manageArtifact.Name = artifact.Name;
-                manageArtifact.Description = artifact.Description;
-                manageArtifact.Version = artifact.Version;
-                manageArtifact.OrganizationId = artifact.OrganizationId;
-                manageArtifact.OwnerId = artifact.OwnerId;
+                manageArtifactViewModel.ArtifactId = artifact.ArtifactId;
+                manageArtifactViewModel.Name = artifact.Name;
+                manageArtifactViewModel.Description = artifact.Description;
+                manageArtifactViewModel.Version = artifact.Version;
+                manageArtifactViewModel.OrganizationId = artifact.OrganizationId;
+                manageArtifactViewModel.OwnerId = artifact.OwnerId;
             }
-            return View("ManageArtifact", manageArtifact);
+            return View("ManageArtifact", manageArtifactViewModel);
         }
 
         public ActionResult Delete(int artifactid)

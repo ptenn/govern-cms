@@ -1,9 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GovernCMS.ViewModels
 {
-    public class CreateUser
+    public class CreateUserViewModel
     {
         public int UserId { get; set; }
 

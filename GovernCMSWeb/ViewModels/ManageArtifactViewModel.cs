@@ -3,7 +3,7 @@ using GovernCMS.Models;
 
 namespace GovernCMS.ViewModels
 {
-    public class ManageArtifact
+    public class ManageArtifactViewModel
     {
         /// <summary>
         /// Artifact ID.  If it is null, we are creating a new Artifact, otherwise we are editing an existing Artifact.

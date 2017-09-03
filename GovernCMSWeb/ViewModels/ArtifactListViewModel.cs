@@ -3,7 +3,7 @@ using GovernCMS.Models;
 
 namespace GovernCMS.ViewModels
 {
-    public class ArtifactList
+    public class ArtifactListViewModel
     {
         public IList<Artifact> Artifacts { get; set; }
     }

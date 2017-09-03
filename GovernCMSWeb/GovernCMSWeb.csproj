@@ -181,11 +181,11 @@
     <Compile Include="Utils\EmailUtils.cs" />
     <Compile Include="Utils\PasswordUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="ViewModels\ArtifactList.cs" />
-    <Compile Include="ViewModels\CreateUser.cs" />
-    <Compile Include="ViewModels\Login.cs" />
-    <Compile Include="ViewModels\ManageArtifact.cs" />
-    <Compile Include="ViewModels\OrgSearchResult.cs" />
+    <Compile Include="ViewModels\ArtifactListViewModel.cs" />
+    <Compile Include="ViewModels\CreateUserViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
+    <Compile Include="ViewModels\OrgSearchResultViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\dropzone.css" />
