@@ -38,6 +38,7 @@ namespace GovernCMS.Controllers
         [HttpGet]
         public ActionResult Manage(int? artifactId)
         {            
+            UserCheck();
             Artifact artifact = null;
             if (artifactId.HasValue)
             {
