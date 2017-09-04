@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using GovernCMS.Models;
 
 namespace GovernCMS.ViewModels
@@ -22,6 +23,7 @@ namespace GovernCMS.ViewModels
 
         public IList<Content> ContentItems { get; set; }
 
+        [AllowHtml]
         public string ContentHtml { get; set; }
 
         public string ContentUrl { get; set; }
