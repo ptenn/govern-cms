@@ -60,9 +60,11 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                @using (Html.BeginForm())
+                                @using (Html.BeginForm("Manage", "Artifact", FormMethod.Post, new { id = "ManageArtifactForm" }))
                                 {
                                     @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(model => model.ArtifactId)
+                                    @Html.HiddenFor(model => model.ContentHtml)
                                     <div class="form-group row">
                                         <label for="Name" class="col-md-3 form-control-label">Artifact Name</label>
                                         <div class="col-md-9">
@@ -88,9 +90,9 @@
                                 </ul>
                                 <div class="tab-content clearfix">
                                     <div id="content-html" class="tab-pane active" role="tabpanel">
-                                        <label for="ContentHtml" class="control-label">Content (HTML)</label>
+                                        <label for="ContentAsHtml" class="control-label">Content (HTML)</label>
                                         <br/>
-                                        @Html.TextAreaFor(model => model.ContentHtml, new {@class = "form-control", rows = "8", cols = "60"})
+                                        <textarea id="ContentAsHtml" class="form-control" rows="8" cols="60"></textarea>
                                     </div>
                                     <div class="tab-pane" id="content-upload" role="tabpanel">
                                         <label for="dropzone" class="control-label">Content Upload</label>
@@ -155,7 +157,7 @@
 
                                 </div>@*/tab content*@
                                 <div class="panel-footer">
-                                    <button type="submit" class="btn btn-sm btn-primary"><span class="fa fa-dot-circle-o"></span> @buttonLabel</button>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="submitForm();"><span class="fa fa-dot-circle-o"></span> @buttonLabel</button>
                                 </div>
                             </div>
                         </div>
@@ -208,4 +210,8 @@
         }
     }
 
+    function submitForm() {
+        $("#ContentHtml").val(tinyMCE.activeEditor.getContent());
+        $("#ManageArtifactForm").submit();
+    }
 </script>

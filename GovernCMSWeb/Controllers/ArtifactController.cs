@@ -30,22 +30,60 @@ namespace GovernCMS.Controllers
             return View(artifactListViewModel);
         }
 
+        /// <summary>
+        /// Entry point for ManageArtifact Page
+        /// </summary>
+        /// <param name="artifactId">Optional Artifact ID, toggles between Create and Update modes</param>
+        /// <returns>View with ViewModel for populating page</returns>
         [HttpGet]
         public ActionResult Manage(int? artifactId)
-        {
-            ManageArtifactViewModel manageArtifactViewModel = new ManageArtifactViewModel();
+        {            
+            Artifact artifact = null;
             if (artifactId.HasValue)
             {
-                Artifact artifact = artifactService.FindArtifactById(artifactId.Value, true);
-                manageArtifactViewModel.ArtifactId = artifact.ArtifactId;
-                manageArtifactViewModel.Name = artifact.Name;
-                manageArtifactViewModel.Description = artifact.Description;
-                manageArtifactViewModel.Version = artifact.Version;
-                manageArtifactViewModel.OrganizationId = artifact.OrganizationId;
-                manageArtifactViewModel.OwnerId = artifact.OwnerId;
+                artifact = artifactService.FindArtifactById(artifactId.Value, true);
             }
+            ManageArtifactViewModel manageArtifactViewModel = ConvertArtifactToViewModel(artifact);
             return View("ManageArtifact", manageArtifactViewModel);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Manage(ManageArtifactViewModel manageArtifactViewModel)
+        {
+            UserCheck();
+            User currentUser = (User)Session[Constants.CURRENT_USER];
+            HttpPostedFileBase file = null;
+            foreach (string fileName in Request.Files)
+            {
+                file = Request.Files[fileName];
+            }
+
+            Artifact artifact;
+            if (manageArtifactViewModel.ArtifactId != null)
+            {
+                artifact = artifactService.FindArtifactById(manageArtifactViewModel.ArtifactId.Value, false);
+                artifact = artifactService.AddContentToArtifact(artifact, file, manageArtifactViewModel.ContentHtml,
+                    currentUser);
+            }
+            else
+            {
+                if (file == null)
+                {
+                    artifact = artifactService.CreateArtifactFromContent(manageArtifactViewModel.Name,
+                        manageArtifactViewModel.Description, manageArtifactViewModel.ContentHtml, currentUser);
+                }
+                else
+                {
+                    artifact = artifactService.CreateArtifactFromFile(manageArtifactViewModel.Name,
+                        manageArtifactViewModel.Description, file, currentUser);
+                }                
+            }
+            // Model has been updated, update ViewModel.
+            manageArtifactViewModel = ConvertArtifactToViewModel(artifact);
+            return View("ManageArtifact", manageArtifactViewModel);
+        }
+
 
         public ActionResult Delete(int artifactid)
         {
@@ -80,6 +118,30 @@ namespace GovernCMS.Controllers
             }
 
             return Json(artifact);
+        }
+
+        /// <summary>
+        /// Helper method, converts Artifact Model to ViewModel.
+        /// </summary>
+        /// <param name="artifact">The Artifact Entity Model</param>
+        /// <returns>Manage Artifact ViewModel</returns>
+        private ManageArtifactViewModel ConvertArtifactToViewModel(Artifact artifact)
+        {
+            if (artifact == null)
+            {
+                return new ManageArtifactViewModel();
+            }
+            ManageArtifactViewModel manageArtifactViewModel = new ManageArtifactViewModel()
+            {
+                ArtifactId = artifact.ArtifactId,
+                Name = artifact.Name,
+                Description = artifact.Description,
+                Version = artifact.Version,
+                OrganizationId = artifact.OrganizationId,
+                OwnerId = artifact.OwnerId,
+                ContentItems = artifact.Contents.ToList()
+            };
+            return manageArtifactViewModel;
         }
     }
 }

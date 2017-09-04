@@ -62,9 +62,10 @@ namespace GovernCMS.Services
         /// Adds Content to an existing Artifact
         /// </summary>
         /// <param name="artifact">The Artifact where Content will be added</param>
-        /// <param name="contentUrl">The Content URL, either this or HTML should be provided, but not both</param>
-        /// <param name="contentHtml">The Content HTML, either this or URL should be provided, but not both</param>
+        /// <param name="contentFile">The Content File either this or HTML should be provided, but not both</param>
+        /// <param name="contentHtml">The Content HTML, either this or File should be provided, but not both</param>
+        /// <param name="creator">User who is creating the Content</param>
         /// <returns>Artifact with new Content added</returns>
-        Artifact AddContentToArtifact(Artifact artifact, string contentUrl, string contentHtml);
+        Artifact AddContentToArtifact(Artifact artifact, HttpPostedFileBase contentFile, string contentHtml, User creator);
     }
 }

@@ -72,20 +72,9 @@ namespace GovernCMS.Services.Impl
             return artifact;
         }
 
-        public Artifact AddContentToArtifact(Artifact artifact, string contentUrl, string contentHtml)
+        public Artifact AddContentToArtifact(Artifact artifact, HttpPostedFileBase contentFile, string contentHtml, User creator)
         {
-            DateTime currentDateTime = DateTime.Now.Date;
-            int version = artifact.Version + 1;
-
-            Content content = new Content();
-            content.Artifact = artifact;
-            content.ContentUrl = contentUrl;
-            content.ContentHtml = contentHtml;
-            content.CreateDate = currentDateTime;
-            content.UpdateDate = currentDateTime;
-            content.Version = version;
-            artifact.Version = version;
-
+            Content content = CreateContent(contentFile, artifact, creator);
             db.Contents.Add(content);
 
             artifact.Contents.Add(content);
@@ -101,31 +90,31 @@ namespace GovernCMS.Services.Impl
         private Artifact CreateArtifact(string artifactName, string description, HttpPostedFileBase contentFile, string contentHtml,
             User creator)
         {
-            DateTime currentDateTime = DateTime.Now;
+            DateTime currentDateTime = DateTime.Now.Date;
             Artifact artifact = new Artifact();
             artifact.Name = artifactName;
             artifact.Description = description;
             artifact.CreateDate = currentDateTime;
             artifact.OwnerId = creator.UserId;
             artifact.Version = 0;
-
-            Content content = new Content();
-
+            artifact.OrganizationId = creator.OrganizationId;
+            artifact.Contents = new List<Content>();
+            
             if (contentFile == null && !string.IsNullOrEmpty(contentHtml))
-            { 
+            {
+                Content content = new Content();
                 content.Artifact = artifact;
-                content.ContentHtml = contentHtml;
+                content.ContentHtml = contentHtml;                
                 content.CreateDate = currentDateTime;
                 content.UpdateDate = currentDateTime;
+                content.CreatorId = creator.UserId;
                 content.Version = 0;
+                artifact.Contents.Add(content);
             }
             else
             {
-                content = CreateContent(contentFile, artifact, creator);
+                CreateContent(contentFile, artifact, creator);
             }
-
-            artifact.Contents = new List<Content>();
-            artifact.Contents.Add(content);
 
             db.Artifacts.Add(artifact);
             db.Contents.Add(artifact.Contents.First());
