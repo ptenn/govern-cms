@@ -191,6 +191,7 @@
     <Compile Include="ViewModels\OrgSearchResultViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\css\bootstrap-datepicker3.min.css" />
     <Content Include="Content\css\dropzone.css" />
     <Content Include="Content\css\editable-select.css" />
     <Content Include="Content\css\font-awesome.css" />
@@ -227,6 +228,7 @@
       <LastGenOutput>GovCMSModel.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\dropzone.js" />
     <Content Include="Scripts\dropzone.min.js" />
     <Content Include="Scripts\editable-select.js" />

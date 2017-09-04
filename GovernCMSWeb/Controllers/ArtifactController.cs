@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,6 +9,7 @@ using GovernCMS.Services.Impl;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
 using log4net;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 
 namespace GovernCMS.Controllers
 {
@@ -45,6 +47,15 @@ namespace GovernCMS.Controllers
                 artifact = artifactService.FindArtifactById(artifactId.Value, true);
             }
             ManageArtifactViewModel manageArtifactViewModel = ConvertArtifactToViewModel(artifact);
+            if (manageArtifactViewModel.ContentItems != null)
+            {
+                Content content = manageArtifactViewModel.ContentItems.Last();
+                manageArtifactViewModel.PublishDate = content.PublishDate.ToString("MM/dd/yyyy");
+            }
+            else
+            {
+                manageArtifactViewModel.PublishDate = DateTime.Now.Date.ToString("MM/dd/yyyy");
+            }
             return View("ManageArtifact", manageArtifactViewModel);
         }
 
@@ -53,6 +64,7 @@ namespace GovernCMS.Controllers
         public ActionResult Manage(ManageArtifactViewModel manageArtifactViewModel)
         {
             UserCheck();
+            DateTime publishDate = DateTime.Parse(manageArtifactViewModel.PublishDate);
             User currentUser = (User)Session[Constants.CURRENT_USER];
             HttpPostedFileBase file = null;
             foreach (string fileName in Request.Files)
@@ -65,19 +77,19 @@ namespace GovernCMS.Controllers
             {
                 artifact = artifactService.FindArtifactById(manageArtifactViewModel.ArtifactId.Value, false);
                 artifact = artifactService.AddContentToArtifact(artifact, file, manageArtifactViewModel.ContentHtml,
-                    currentUser);
+                    publishDate, currentUser);
             }
             else
             {
                 if (file == null)
                 {
-                    artifact = artifactService.CreateArtifactFromContent(manageArtifactViewModel.Name,
-                        manageArtifactViewModel.Description, manageArtifactViewModel.ContentHtml, currentUser);
+                    artifact = artifactService.CreateArtifactFromContent(manageArtifactViewModel.Name, manageArtifactViewModel.Description, 
+                        manageArtifactViewModel.ContentHtml, publishDate, currentUser);
                 }
                 else
                 {
-                    artifact = artifactService.CreateArtifactFromFile(manageArtifactViewModel.Name,
-                        manageArtifactViewModel.Description, file, currentUser);
+                    artifact = artifactService.CreateArtifactFromFile(manageArtifactViewModel.Name, manageArtifactViewModel.Description,
+                        file, publishDate, currentUser);
                 }                
             }
             // Model has been updated, update ViewModel.
@@ -109,13 +121,14 @@ namespace GovernCMS.Controllers
             {
                 string artifactName = formCollection["NameUploadForm"];
                 string artifactDesc = formCollection["DescriptionUploadForm"];
+                DateTime publishDate = DateTime.Parse(formCollection["PublishDateUploadForm"]);
                 HttpPostedFileBase file = null;
                 foreach (string fileName in Request.Files)
                 {
                     file = Request.Files[fileName];
                 }
 
-                artifact = artifactService.CreateArtifactFromFile(artifactName, artifactDesc, file, currentUser);
+                artifact = artifactService.CreateArtifactFromFile(artifactName, artifactDesc, file, publishDate, currentUser);
             }
 
             return Json(artifact);

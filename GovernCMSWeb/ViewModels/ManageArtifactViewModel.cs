@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using GovernCMS.Models;
 
@@ -16,6 +17,8 @@ namespace GovernCMS.ViewModels
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public string PublishDate { get; set; }
 
         public int OwnerId { get; set; }
 

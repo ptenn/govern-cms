@@ -20,16 +20,18 @@ namespace GovernCMS.Services.Impl
             
         }
 
-        public Artifact CreateArtifactFromFile(string artifactName, string description, HttpPostedFileBase contentFile, User creator)
+        public Artifact CreateArtifactFromFile(string artifactName, string description, HttpPostedFileBase contentFile, 
+            DateTime publishDate, User creator)
         {
             // Store File and get URL
-            Artifact artifact = CreateArtifact(artifactName, description, contentFile, null, creator);
+            Artifact artifact = CreateArtifact(artifactName, description, contentFile, null, publishDate, creator);
             return artifact;
         }
 
-        public Artifact CreateArtifactFromContent(string artifactName, string description, string content, User creator)
+        public Artifact CreateArtifactFromContent(string artifactName, string description, string content,
+            DateTime publishDate, User creator)
         {
-            Artifact artifact = CreateArtifact(artifactName, description, null, content, creator);
+            Artifact artifact = CreateArtifact(artifactName, description, null, content, publishDate, creator);
             return artifact;
         }
 
@@ -72,9 +74,10 @@ namespace GovernCMS.Services.Impl
             return artifact;
         }
 
-        public Artifact AddContentToArtifact(Artifact artifact, HttpPostedFileBase contentFile, string contentHtml, User creator)
+        public Artifact AddContentToArtifact(Artifact artifact, HttpPostedFileBase contentFile, string contentHtml, 
+            DateTime publishDate, User creator)
         {
-            Content content = CreateContent(contentFile, artifact, creator);
+            Content content = CreateContent(contentFile, artifact, publishDate, creator);
             db.Contents.Add(content);
 
             artifact.Contents.Add(content);
@@ -88,7 +91,7 @@ namespace GovernCMS.Services.Impl
         }
 
         private Artifact CreateArtifact(string artifactName, string description, HttpPostedFileBase contentFile, string contentHtml,
-            User creator)
+            DateTime publishDate, User creator)
         {
             DateTime currentDateTime = DateTime.Now.Date;
             Artifact artifact = new Artifact();
@@ -107,13 +110,14 @@ namespace GovernCMS.Services.Impl
                 content.ContentHtml = contentHtml;                
                 content.CreateDate = currentDateTime;
                 content.UpdateDate = currentDateTime;
+                content.PublishDate = publishDate;
                 content.CreatorId = creator.UserId;
                 content.Version = 0;
                 artifact.Contents.Add(content);
             }
             else
             {
-                CreateContent(contentFile, artifact, creator);
+                CreateContent(contentFile, artifact, publishDate, creator);
             }
 
             db.Artifacts.Add(artifact);
@@ -122,7 +126,7 @@ namespace GovernCMS.Services.Impl
             return artifact;
         }
 
-        private Content CreateContent(HttpPostedFileBase contentFile, Artifact artifact, User creator)
+        private Content CreateContent(HttpPostedFileBase contentFile, Artifact artifact, DateTime publishDate, User creator)
         {
             CloudBlockBlob contentBlob;
             Content content = new Content();
@@ -136,6 +140,7 @@ namespace GovernCMS.Services.Impl
                 content.ContentUrl = contentBlob.Uri.ToString();
                 content.CreatorId = creator.UserId;
                 content.CreateDate = DateTime.Now.Date;
+                content.PublishDate = publishDate;
                 if (artifact.Version > 0)
                 {
                     artifact.Version++;

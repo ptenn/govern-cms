@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using GovernCMS.Models;
 
@@ -15,9 +16,11 @@ namespace GovernCMS.Services
         /// <param name="artifactName">The Artifact Name</param>
         /// <param name="description">The Artifact Description</param>
         /// <param name="contentFile">The Content URL for the first Content Version of the Artifact</param>
+        /// <param name="publishDate">Publish Date for the Content, defaults to today</param>
         /// <param name="creator">The User who is creating the Artifact</param>
         /// <returns>Newly-created Artifact.  By default, it will be accessible to the User and the User's Group.</returns>
-        Artifact CreateArtifactFromFile(string artifactName, string description, HttpPostedFileBase contentFile, User creator);
+        Artifact CreateArtifactFromFile(string artifactName, string description, HttpPostedFileBase contentFile, 
+            DateTime publishDate, User creator);
 
         /// <summary>
         /// Create an Artifact Entity from Content (such as a Webpage)
@@ -25,9 +28,11 @@ namespace GovernCMS.Services
         /// <param name="artifactName">The Artifact Name</param>
         /// <param name="description">The Artifact Description</param>
         /// <param name="content">The Content for the first Content Version of the Artifact</param>
+        /// <param name="publishDate">Publish Date for the Content, defaults to today</param>
         /// <param name="creator">The User who is creating the Artifact</param>
         /// <returns>Newly-created Artifact.  By default, it will be accessible to the User and the User's Group.</returns>
-        Artifact CreateArtifactFromContent(string artifactName, string description, string content, User creator);
+        Artifact CreateArtifactFromContent(string artifactName, string description, string content, 
+            DateTime publishDate, User creator);
 
         /// <summary>
         /// Find all Artifacts for a User
@@ -64,8 +69,10 @@ namespace GovernCMS.Services
         /// <param name="artifact">The Artifact where Content will be added</param>
         /// <param name="contentFile">The Content File either this or HTML should be provided, but not both</param>
         /// <param name="contentHtml">The Content HTML, either this or File should be provided, but not both</param>
+        /// <param name="publishDate">Publish Date for the Content, defaults to today</param>
         /// <param name="creator">User who is creating the Content</param>
         /// <returns>Artifact with new Content added</returns>
-        Artifact AddContentToArtifact(Artifact artifact, HttpPostedFileBase contentFile, string contentHtml, User creator);
+        Artifact AddContentToArtifact(Artifact artifact, HttpPostedFileBase contentFile, string contentHtml,
+            DateTime publishDate, User creator);
     }
 }

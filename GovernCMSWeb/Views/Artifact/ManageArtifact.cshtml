@@ -50,77 +50,137 @@
     </div>
 }
 <div class="container-fluid">
-<div class="animated fadeIn">
-    <div class="row">
-        <div class="col-sm-11">
-            <div class="card">
-                <div class="card-header">
-                    <h1>@pageTitle</h1>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            @using (Html.BeginForm("Manage", "Artifact", FormMethod.Post, new { id = "ManageArtifactForm" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                @Html.HiddenFor(model => model.ArtifactId)
-                                @Html.HiddenFor(model => model.ContentHtml)
-                                <div class="form-group row">
-                                    <label for="Name" class="col-md-3 form-control-label">Artifact Name</label>
-                                    <div class="col-md-9">
-                                        @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", autofocus = true}})
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-sm-11">
+                <div class="card">
+                    <div class="card-header">
+                        <h1>@pageTitle</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                @using (Html.BeginForm("Manage", "Artifact", FormMethod.Post, new { id = "ManageArtifactForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(model => model.ArtifactId)
+                                    @Html.HiddenFor(model => model.ContentHtml)
+                                    <div class="form-group row">
+                                        <label for="Name" class="col-md-3 form-control-label">Artifact Name</label>
+                                        <div class="col-md-9">
+                                            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", autofocus = true}})
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="Description" class="col-md-3 control-label">Description</label>
-                                    <div class="col-md-9">
-                                        @Html.TextAreaFor(model => model.Description, new {@class = "mceNoEditor form-control", rows = "8", cols = "60"})
+                                    <div class="form-group row">
+                                        <label for="Description" class="col-md-3 control-label">Description</label>
+                                        <div class="col-md-9">
+                                            @Html.TextAreaFor(model => model.Description, new {@class = "mceNoEditor form-control", rows = "8", cols = "60"})
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                            @* Tabs *@
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#content-html" role="tab" aria-controls="content-html">Content HTML</a>
-                                </li>                                    
-
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#content-upload" role="tab" aria-controls="content-upload">Content Upload</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content clearfix">
-                                <div id="content-html" class="tab-pane active" role="tabpanel">
-                                    <label for="ContentAsHtml" class="control-label">Content (HTML)</label>
-                                    <br/>
-                                    <textarea id="ContentAsHtml" class="form-control" rows="8" cols="60"></textarea>
-                                </div>
-                                <div class="tab-pane" id="content-upload" role="tabpanel">
-                                    <label for="dropzone" class="control-label">Content Upload</label>
-                                    <div id="dropzone">
-                                        @using (Html.BeginForm("Upload", "Artifact", FormMethod.Post, new
-                                        {
-                                            id = "UploadForm",
-                                            name = "UploadForm",
-                                            @class = "dropzone needsclick dz-clickable",
-                                            enctype = "multipart/form-data",
-                                            onsubmit = "uploadFormOnSubmit()"
-                                        }))
-                                        {
-
-                                            @Html.HiddenFor(model => model.ArtifactId, new {id = "ArtifactIdUploadForm"})
-                                            @Html.HiddenFor(model => model.Name, new {id = "NameUploadForm"})
-                                            @Html.HiddenFor(model => model.Description, new {id = "DescriptionUploadForm"})
-                                            @Html.HiddenFor(model => model.ContentOrigFileName, new {id = "ContentOrigFileNameUploadForm"})
-
-                                            <div class="dz-message needsclick">
-                                                Drop your Content file here or click to upload.<br>
+                                    <div class="form-group row">
+                                        <label class="col-md-3 control-label">Publish Date</label>
+                                        <div class="col-md-3">
+                                            <div id="publishDate" class="input-group date" data-provide="datepicker">
+                                                @Html.EditorFor(model => model.PublishDate, new { htmlAttributes = new { @class = "form-control", @aria_label = "Publish Date"} })
+                                                <div class="input-group-addon">
+                                                    <span class="fa fa-calendar"></span>
+                                                </div>
                                             </div>
-                                        }
+                                        </div>
                                     </div>
+                                }
+                                @* Tabs *@
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#content-html" role="tab" aria-controls="content-html">Content HTML</a>
+                                    </li>                                    
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#content-upload" role="tab" aria-controls="content-upload">Content Upload</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content clearfix">
+                                    <div id="content-html" class="tab-pane active" role="tabpanel">
+                                        <label for="ContentAsHtml" class="control-label">Content (HTML)</label>
+                                        <br/>
+                                        <textarea id="ContentAsHtml" class="form-control" rows="8" cols="60"></textarea>
+                                    </div>
+                                    <div class="tab-pane" id="content-upload" role="tabpanel">
+                                        <label for="dropzone" class="control-label">Content Upload</label>
+                                        <div id="dropzone">
+                                            @using (Html.BeginForm("Upload", "Artifact", FormMethod.Post, new
+                                            {
+                                                id = "UploadForm",
+                                                name = "UploadForm",
+                                                @class = "dropzone needsclick dz-clickable",
+                                                enctype = "multipart/form-data",
+                                                onsubmit = "uploadFormOnSubmit()"
+                                            }))
+                                            {
+
+                                                @Html.HiddenFor(model => model.ArtifactId, new {id = "ArtifactIdUploadForm"})
+                                                @Html.HiddenFor(model => model.Name, new {id = "NameUploadForm"})
+                                                @Html.HiddenFor(model => model.Description, new {id = "DescriptionUploadForm"})
+                                                @Html.HiddenFor(model => model.PublishDate, new { id = "PublishDateUploadForm" })
+                                                @Html.HiddenFor(model => model.ContentOrigFileName, new {id = "ContentOrigFileNameUploadForm"})
+
+                                                <div class="dz-message needsclick">
+                                                    Drop your Content file here or click to upload.<br>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>@*/tab content*@
+                                <div class="panel-footer">
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="submitForm();"><span class="fa fa-dot-circle-o"></span> @buttonLabel</button>
                                 </div>
-                            </div>@*/tab content*@
-                            <div class="panel-footer">
-                                <button type="button" class="btn btn-sm btn-primary" onclick="submitForm();"><span class="fa fa-dot-circle-o"></span> @buttonLabel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-11">
+                <div class="card">
+                    <div class="card-header">
+                        <h1>Content History of Artifact</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="contentTable" class="table table-striped table-bordered bootstrap-datatable datatable">
+                                    <thead>
+                                    <tr>
+                                        <th>Version</th>
+                                        <th>Date</th>
+                                        <th>Content</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    @if (Model.HasContent())
+                                    {
+                                        foreach (var content in Model.ContentItems)
+                                        {
+                                            <tr id="@content.ContentId">
+                                                <td>Version #@content.Version</td>
+                                                <td>@content.CreateDate.ToString("MM/dd/yyyy")</td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(content.ContentUrl))
+                                                    {
+                                                        <a class="btn btn-danger" onclick="viewContentUrl('@content.ContentUrl')" aria-label="View Content File">
+                                                            <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>                           
                             </div>
                         </div>
                     </div>
@@ -128,55 +188,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-11">
-            <div class="card">
-                <div class="card-header">
-                    <h1>Content History of Artifact</h1>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="contentTable" class="table table-striped table-bordered bootstrap-datatable datatable">
-                                <thead>
-                                <tr>
-                                    <th>Version</th>
-                                    <th>Date</th>
-                                    <th>Content</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                @if (Model.HasContent())
-                                {
-                                    foreach (var content in Model.ContentItems)
-                                    {
-                                        <tr id="@content.ContentId">
-                                            <td>Version #@content.Version</td>
-                                            <td>@content.CreateDate.ToString("MM/dd/yyyy")</td>
-                                            <td>
-                                                @if (!string.IsNullOrEmpty(content.ContentUrl))
-                                                {
-                                                    <a class="btn btn-danger" onclick="viewContentUrl('@content.ContentUrl')" aria-label="View Content File">
-                                                        <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
-                                                    </a>
-                                                }
-                                                else
-                                                {
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                            </table>                           
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-
 <!-- View Content Modal -->
 <div id="ViewContentModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -199,6 +211,7 @@
                 $("#ArtifactIdUploadForm").val($("#ArtifactId").val());
                 $("#NameUploadForm").val($("#Name").val());
                 $("#DescriptionUploadForm").val($("#Description").val());
+                $("#PublishDateUploadForm").val($("#PublishDate").val());
             });
         },
         success: function (file, response) {
@@ -210,6 +223,12 @@
     $(document).ready(function () {
         $("#contentTable").DataTable();
         $("#Name").focus();
+
+        @* Hide DatePicker once a Date is selected (this is NOT default behavior) *@
+        $('#publishDate').datepicker()
+            .on('changeDate', function(ev){
+                $('#publishDate').datepicker('hide');
+            });
     });
 
     function viewContentUrl(url) {

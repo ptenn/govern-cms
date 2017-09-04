@@ -22,6 +22,8 @@ namespace GovernCMS.Models
         public string ContentUrl { get; set; }
         public int ArtifactId { get; set; }
         public int CreatorId { get; set; }
+        public string OrigFileName { get; set; }
+        public System.DateTime PublishDate { get; set; }
     
         public virtual Artifact Artifact { get; set; }
         public virtual User User { get; set; }

@@ -9,7 +9,7 @@
           <Key>
             <PropertyRef Name="ArtifactId" />
           </Key>
-          <Property Name="ArtifactId" Type="int" Nullable="false" />
+          <Property Name="ArtifactId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Version" Type="int" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="Description" Type="text" />
@@ -42,20 +42,22 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Key>
             <PropertyRef Name="ContentId" />
           </Key>
-          <Property Name="ContentId" Type="int" Nullable="false" />
+          <Property Name="ContentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Version" Type="int" Nullable="false" />
           <Property Name="ContentHtml" Type="ntext" />
           <Property Name="ContentUrl" Type="varchar" MaxLength="255" />
+          <Property Name="OrigFileName" Type="varchar" MaxLength="255" />
           <Property Name="ArtifactId" Type="int" Nullable="false" />
           <Property Name="CreatorId" Type="int" Nullable="false" />
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="UpdateDate" Type="datetime2" Precision="7" />
+          <Property Name="PublishDate" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <EntityType Name="Group">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="GroupName" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="OrganizationId" Type="int" Nullable="false" />
@@ -374,6 +376,8 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <NavigationProperty Name="Artifact" Relationship="Self.FK_Content_Artifact" FromRole="Content" ToRole="Artifact" />
           <Property Name="CreatorId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="User" Relationship="GovernCMS.Models.FK_Content_User" FromRole="Content" ToRole="User" />
+          <Property Name="OrigFileName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="PublishDate" Type="DateTime" Nullable="false" Precision="7" />
         </EntityType>
         <Association Name="FK_Content_Artifact">
           <End Role="Artifact" Type="Self.Artifact" Multiplicity="1" />
@@ -597,6 +601,8 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <EntitySetMapping Name="Contents">
             <EntityTypeMapping TypeName="GovernCMS.Models.Content">
               <MappingFragment StoreEntitySet="Content">
+                <ScalarProperty Name="PublishDate" ColumnName="PublishDate" />
+                <ScalarProperty Name="OrigFileName" ColumnName="OrigFileName" />
                 <ScalarProperty Name="CreatorId" ColumnName="CreatorId" />
                 <ScalarProperty Name="ContentId" ColumnName="ContentId" />
                 <ScalarProperty Name="Version" ColumnName="Version" />
