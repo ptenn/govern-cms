@@ -4,8 +4,26 @@
 @{
     ViewBag.Title = "Website Breadcrumb Navigation";
 }
+@helper ShowCategories(IEnumerable<Category> categories)
+{
+    <ol class="dd-list">
+        @foreach (var category in Model.Categories)
+        {
+            <li class="dd-item" data-type="section" data-id="@category.CategoryId" id="@category.CategoryId">
+                <div class="dd-handle">
+                    <span style="font-weight: bold">@category.CategoryName</span>
+                </div>
+                @if (category.SubCategories.Any())
+                {
+                    @ShowCategories(category.SubCategories)
+                }
+            </li>
+        }
+    </ol>
+}
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="/Content/css/nestable.css"/>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 
 @if (TempData["successMessage"] != null)
@@ -52,24 +70,7 @@
                                 </p>
                                 <!-- Begin embedded nestable-->
                                 <div class="dd" name="category-nestable" id="nestable">
-
-                                    @helper ShowTree(IEnumerable<Category> categories)
-                                    {
-                                        <ol class="dd-list">
-                                            @foreach (var category in Model.Categories)
-                                            {
-                                                <li class="dd-item" data-type="section" data-id="@category.CategoryId" id="@category.CategoryId">
-                                                    <div class="dd-handle">
-                                                        <span style="font-weight: bold">@category.CategoryName</span>
-                                                    </div>
-                                                    @if (category.SubCategories.Any())
-                                                    {
-                                                        @ShowTree(category.SubCategories)
-                                                    }
-                                                </li>
-                                            }
-                                        </ol>
-                                    }
+                                    @ShowCategories(Model.Categories)
                                 </div>
                             </div>
                         </div>
@@ -100,6 +101,9 @@
         </div>
     </div>
 </div>
+<script src="/Scripts/jquery.nestable.min.js"></script>
+<script src="/Scripts/ui-nestable-list.js"></script>
+
 <script type="text/javascript">
     $("#WebsiteId").focus();
 
@@ -142,9 +146,11 @@
             },
             function (data) {
                 var categoryDiv = $("[name='category-nestable']");
-                var categoriesRender = $(categoryDiv).find("ol#category-root");
+                var categoriesRender = $(categoryDiv).find("ol.dd-list");
                 categoriesRender.append('<li class="dd-item" data-type="section" data-id="' + data.CategoryId + '" id="' + data.CategoryId + '">' +
                     '<div class="dd-handle"><span style="font-weight:bold">' + data.CategoryName + '</span></div></li>');
+                $('#categoryModal').modal('hide');
+
             },
             "json");
     }    
@@ -176,6 +182,7 @@
 
                 var optionToRemove = removeDropDown.find('[value= ' + data + ']');
                 optionToRemove.remove();
+                $('#categoryModal').modal('hide');
             }, "json");
     }
 
@@ -202,6 +209,7 @@
             function () {
                 var categoryDiv = $("[name='category-nestable']");
                 categoryDiv.empty();
+                $('#categoryModal').modal('hide');
             }, "json");
     }
 

@@ -211,6 +211,7 @@
     <Content Include="Content\css\glyphicons-social.css" />
     <Content Include="Content\css\glyphicons.css" />
     <Content Include="Content\css\govern-cms.css" />
+    <Content Include="Content\css\nestable.css" />
     <Content Include="Content\css\simple-line-icons.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style.min.css" />
@@ -245,7 +246,9 @@
     <Content Include="Scripts\dropzone.min.js" />
     <Content Include="Scripts\editable-select.js" />
     <Content Include="Scripts\jquery.mmenu.min.js" />
+    <Content Include="Scripts\jquery.nestable.min.js" />
     <Content Include="Scripts\pace.min.js" />
+    <Content Include="Scripts\ui-nestable-list.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
