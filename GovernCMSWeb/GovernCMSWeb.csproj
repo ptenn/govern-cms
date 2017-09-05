@@ -144,6 +144,9 @@
     <Compile Include="Models\Artifact.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Category.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Content.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
@@ -191,6 +194,7 @@
     <Compile Include="Utils\PasswordUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="ViewModels\ArtifactListViewModel.cs" />
+    <Compile Include="ViewModels\BreadcrumbViewModel.cs" />
     <Compile Include="ViewModels\CreateUserViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
@@ -214,6 +218,7 @@
     <Content Include="Content\images\municipal_agenda_logo.png" />
     <Content Include="Content\images\municipal_agenda_logo_invert_sm.png" />
     <Content Include="Content\images\municipal_agenda_logo_sm.png" />
+    <Content Include="Content\images\select.png" />
     <Content Include="Content\images\select_arrow.gif" />
     <Content Include="Content\images\select_arrow_down.gif" />
     <Content Include="Content\images\select_arrow_over.gif" />

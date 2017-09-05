@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using GovernCMS.Models;
 
 namespace GovernCMS.Services
@@ -17,5 +13,19 @@ namespace GovernCMS.Services
         /// <param name="creator">Website Creator</param>
         /// <returns>Newly created Website</returns>
         Website CreateWebsite(string name, string url, User creator);
+
+        /// <summary>
+        /// Find all Websites for an Organization.
+        /// </summary>
+        /// <param name="organizationId">The Organization ID for finding all Websites.</param>
+        /// <returns>List of all Websites for Organization</returns>
+        IList<Website> FindWebsitesByOrganizationId(int organizationId);
+
+        /// <summary>
+        /// Find Categories by Website, including Subcategories
+        /// </summary>
+        /// <param name="websiteId">The Website ID for finding all Categories</param>
+        /// <returns>Categories, including subcategories</returns>
+        IList<Category> FindCategoriesByWebsiteId(int websiteId);
     }
 }

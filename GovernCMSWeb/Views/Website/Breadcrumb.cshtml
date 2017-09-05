@@ -1,8 +1,208 @@
-﻿@model dynamic
+﻿@using GovernCMS.Models
+@model GovernCMS.ViewModels.BreadcrumbViewModel
 
 @{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+    ViewBag.Title = "Website Breadcrumb Navigation";
 }
 
-<h2>title</h2>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+
+@if (TempData["successMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["successMessage"]
+    </div>
+
+}
+@if (TempData["errorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["errorMessage"]
+    </div>
+}
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-sm-11">
+                <div class="card">
+                    <div class="card-header">
+                        <h1>Website Breadcrumb Navigation</h1>
+                        <span>In order to add Web Content, you will need to create a Website.  The Website is the container for all Web Content, Widgets, and Artifacts.</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <label class="col-md-2 control-label">Select Website</label>
+                            <div class="col-md-2">
+                                @using (Html.BeginForm("Create", "Website", FormMethod.Post, new {id = "CreateWebsiteForm"}))
+                                {
+                                    @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, new {@class = "form-control", aria_label = "Selected Website"})
+                                }
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:50px">
+                            <div class="col-sm-12">
+                                <p style="font-weight: bold">
+                                    Drag and drop the Breadcrumb Categories / Subcategories to reorder.
+                                </p>
+                                <p>
+                                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal" onclick="beginAddCategory()" ><span class="fa fa-plus fa-span"></span> Add&nbsp;&nbsp;&nbsp; </button>&nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="btn btn-sm btn-danger"  data-toggle="modal" onclick="beginRemoveCategory()"><span class="fa fa-minus fa-span"></span> Remove</button>&nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="btn btn-sm btn-danger"  data-toggle="modal" onclick="beginRemoveAllCategories()"><span class="fa fa-minus fa-span"></span> Remove All</button>&nbsp;&nbsp;&nbsp;
+                                </p>
+                                <!-- Begin embedded nestable-->
+                                <div class="dd" name="category-nestable" id="nestable">
+
+                                    @helper ShowTree(IEnumerable<Category> categories)
+                                    {
+                                        <ol class="dd-list">
+                                            @foreach (var category in Model.Categories)
+                                            {
+                                                <li class="dd-item" data-type="section" data-id="@category.CategoryId" id="@category.CategoryId">
+                                                    <div class="dd-handle">
+                                                        <span style="font-weight: bold">@category.CategoryName</span>
+                                                    </div>
+                                                    @if (category.SubCategories.Any())
+                                                    {
+                                                        @ShowTree(category.SubCategories)
+                                                    }
+                                                </li>
+                                            }
+                                        </ol>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Section/Item Modal -->
+<div class="modal fade" id="categoryModal" role="dialog" aria-hidden="true">
+    <div id="categoryModalDiv" class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="categoryModalTitle" class="modal-title">Add Category</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" name="newCategory" id="newCategory" aria-label="New Category Name"/>
+                <select id="removeCategoryId" class="form-control" aria-label="Category to Remove"></select>
+                <span id="removeAllText">This action will remove all Categories from the Website, providing you a blank slate to build your Breadcrumb navigation categories.</span>
+            </div>
+            <div class="modal-footer">
+                <button id="categoryModalSubmitButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal" onclick="processCategoryModal();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#WebsiteId").focus();
+
+    var mode = 'add';
+
+    function processCategoryModal() {
+        if (mode === 'add') {
+            addCategory();
+        }
+        else if (mode === 'remove') {
+            removeCategory();
+        }
+        else if (mode === 'removeAll') {
+            removeAllCategories();
+        }
+    }
+
+    function beginAddCategory() {
+        // Set up Modal
+        $("#categoryModalDiv").removeClass();
+        $("#categoryModalDiv").addClass("modal-dialog");
+        $("#categoryModalDiv").addClass("modal-primary");
+        $("#categoryModalTitle").text("Add Category");
+        $("#newCategory").show();
+        $("#removeCategoryId").hide();
+        $("#removeAllText").hide();
+        $("#categoryModalSubmitButton").text("Save");
+        mode = 'add';
+        $('#categoryModal').modal('show');
+    }
+
+    function addCategory() {
+        var categoryName = $('#newCategory').val();
+        var websiteId = $('#WebsiteId').val();
+
+        $.post("/Website/CategoryAdd",
+            {
+                "websiteId": websiteId,
+                "categoryName": categoryName
+            },
+            function (data) {
+                var categoryDiv = $("[name='category-nestable']");
+                var categoriesRender = $(categoryDiv).find("ol#category-root");
+                categoriesRender.append('<li class="dd-item" data-type="section" data-id="' + data.CategoryId + '" id="' + data.CategoryId + '">' +
+                    '<div class="dd-handle"><span style="font-weight:bold">' + data.CategoryName + '</span></div></li>');
+            },
+            "json");
+    }    
+    
+    function beginRemoveCategory() {
+        // Set up Modal
+        $("#categoryModalDiv").removeClass();
+        $("#categoryModalDiv").addClass("modal-dialog");
+        $("#categoryModalDiv").addClass("modal-danger");
+        $("#categoryModalTitle").text("Remove Category");
+        $("#newCategory").hide();
+        $("#removeCategoryId").show();
+        $("#removeAllText").hide();
+        $("#categoryModalSubmitButton").text("Remove");
+        mode = 'remove';
+        $('#categoryModal').modal('show');
+    }
+
+    function removeCategory() {
+        var removeCategoryId = $("#removeCategoryId").val();
+        $.post("/Website/CategoryDelete",
+            {
+                "categoryId": removeCategoryId
+            },
+            function (data) {
+                var agendaDiv = $("[name='agenda-nestable']");
+                agendaDiv.find('#' + data).remove();
+                var removeDropDown = $("#removeCategoryId");
+
+                var optionToRemove = removeDropDown.find('[value= ' + data + ']');
+                optionToRemove.remove();
+            }, "json");
+    }
+
+    function beginRemoveAllCategories() {
+        // Set up Modal
+        $("#categoryModalDiv").removeClass();
+        $("#categoryModalDiv").addClass("modal-dialog");
+        $("#categoryModalDiv").addClass("modal-danger");
+        $("#categoryModalTitle").text("Remove All Categories");
+        $("#newCategory").hide();
+        $("#removeCategoryId").hide();
+        $("#removeAllText").show();
+        $("#categoryModalSubmitButton").text("Remove All");
+        mode = 'removeAll';
+        $('#categoryModal').modal('show');
+    }
+
+    function removeAllCategories() {
+        var websiteId = $('#WebsiteId').val();
+        $.post("/Website/CategoryDeleteAll",
+            {
+                "websiteId": websiteId
+            },
+            function () {
+                var categoryDiv = $("[name='category-nestable']");
+                categoryDiv.empty();
+            }, "json");
+    }
+
+</script>

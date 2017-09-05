@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GenesisUI - Bootstrap 4 Admin Template
  * @version v1.8.5
  * @link https://genesisui.com
@@ -12928,7 +12928,7 @@ body > .ui-select-bootstrap.open {
     outline: 0; }
 
 select {
-  background: white url("../img/select.png") no-repeat !important;
+  background: white url("/Content/images/select.png") no-repeat !important;
   background-size: 24px 20px !important;
   background-position: right center !important;
   border-radius: 0px !important;

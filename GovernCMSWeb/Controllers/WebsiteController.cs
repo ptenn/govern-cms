@@ -1,4 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
 using GovernCMS.Models;
 using GovernCMS.Services;
 using GovernCMS.Services.Impl;
@@ -50,10 +54,102 @@ namespace GovernCMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult Breadcrumb()
+        public ActionResult Breadcrumb(int? websiteId)
         {
-            return View();
+            UserCheck();
+            User currentUser = (User)Session[Constants.CURRENT_USER];
+
+            IList<Website> websites = websiteService.FindWebsitesByOrganizationId(currentUser.OrganizationId);
+            IList<SelectListItem> selectListItems = new List<SelectListItem>();
+
+            foreach (var website in websites)
+            {
+                SelectListItem item = new SelectListItem()
+                {
+                    Text = website.SiteName,
+                    Value = website.Id.ToString()
+                };
+                selectListItems.Add(item);
+            }
+            
+            if (websites.Count > 0)
+            {
+                if (websiteId == null)
+                {
+                    websiteId = websites.First().Id;
+                }
+            }
+            IList<Category> categories = websiteService.FindCategoriesByWebsiteId(websiteId.Value);
+            BreadcrumbViewModel breadcrumbViewModel = new BreadcrumbViewModel()
+            {
+                WebsiteId = websiteId.Value,
+                WebsiteSelectList = new SelectList(selectListItems, "Value", "Text"),
+                Categories = categories
+            };
+            
+            return View(breadcrumbViewModel);
         }
+
+        // POST: Website/CategoryAdd
+        [HttpPost]
+        public JsonResult CategoryAdd(int websiteId, string categoryName)
+        {
+            UserCheck();
+            User currentUser = (User)Session[Constants.CURRENT_USER];
+
+            // Delete and replace.
+            Category category = new Category();
+            category.WebsiteId = websiteId;
+            category.CategoryName = categoryName;
+            category.CreateDate = DateTime.Now.Date;
+            category.Number = 0;
+
+            // Get the highest Category Number
+            List<Category> categories;
+            categories = db.Categories.Where(c => c.WebsiteId == websiteId).OrderByDescending(c => c.Number).ToList();
+            
+            if (categories.Count > 0)
+            {
+                Category topCategory = categories.First();
+                if (topCategory != null)
+                {
+                    category.Number = topCategory.Number + 1;
+                }
+            }
+
+            db.Categories.Add(category);
+            db.SaveChanges();
+
+            return Json(category);
+        }
+
+        // POST: Website/CategoryDelete
+        [HttpPost]
+        public JsonResult CategoryDelete(int categoryId)
+        {
+            // Delete and replace.
+            var deleteEntries = db.Categories.Where(c => c.CategoryId == categoryId);
+            foreach (var entry in deleteEntries)
+            {
+                db.Categories.Remove(entry);
+            }
+            db.SaveChanges();
+            return Json(categoryId);
+        }
+
+        // POST: Website/CategoryDeleteAll
+        [HttpPost]
+        public void CategoryDeleteAll(int websiteId)
+        {
+            // Delete and replace.
+            var deleteEntries = db.Categories.Where(c => c.WebsiteId == websiteId);
+            foreach (var entry in deleteEntries)
+            {
+                db.Categories.Remove(entry);
+            }
+            db.SaveChanges();
+        }
+
 
         [HttpGet]
         public ActionResult Calendar()

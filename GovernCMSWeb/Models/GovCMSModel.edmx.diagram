@@ -10,7 +10,7 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Content_Artifact" ManuallyRouted="false" />
         <EntityTypeShape EntityType="GovernCMS.Models.Group" Width="1.5" PointX="0.5" PointY="5.5" />
         <EntityTypeShape EntityType="GovernCMS.Models.Organization" Width="1.5" PointX="4.125" PointY="5.75" />
-        <EntityTypeShape EntityType="GovernCMS.Models.User" Width="1.5" PointX="7.25" PointY="1.5" />
+        <EntityTypeShape EntityType="GovernCMS.Models.User" Width="1.5" PointX="6.875" PointY="1.5" />
         <AssociationConnector Association="GovernCMS.Models.FK_Group_Organization" />
         <AssociationConnector Association="GovernCMS.Models.FK_User_Group" />
         <AssociationConnector Association="GovernCMS.Models.FK_User_Organization" />
@@ -22,9 +22,12 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Organization" />
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Owner" />
         <AssociationConnector Association="GovernCMS.Models.UserGroup" />
-        <EntityTypeShape EntityType="GovernCMS.Models.Website" Width="1.5" PointX="9.5" PointY="2.5" />
+        <EntityTypeShape EntityType="GovernCMS.Models.Website" Width="1.5" PointX="9.375" PointY="2.625" />
         <AssociationConnector Association="GovernCMS.Models.FK_Website_User" />
         <AssociationConnector Association="GovernCMS.Models.FK_Website_Organization" />
+        <EntityTypeShape EntityType="GovernCMS.Models.Category" Width="1.5" PointX="10.375" PointY="6.125" />
+        <AssociationConnector Association="GovernCMS.Models.FK_Category_ParentCategory" />
+        <AssociationConnector Association="GovernCMS.Models.FK_Category_Website" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

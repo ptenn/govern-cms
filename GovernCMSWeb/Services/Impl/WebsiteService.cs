@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using GovernCMS.Models;
 
 namespace GovernCMS.Services.Impl
@@ -23,6 +26,16 @@ namespace GovernCMS.Services.Impl
             db.Websites.Add(website);
             db.SaveChanges();
             return website;
+        }
+
+        public IList<Website> FindWebsitesByOrganizationId(int organizationId)
+        {
+            return db.Websites.Where(w => w.OrganizationId == organizationId).ToList();
+        }
+
+        public IList<Category> FindCategoriesByWebsiteId(int websiteId)
+        {
+            return db.Categories.Where(c => c.WebsiteId == websiteId).Include(c => c.SubCategories).ToList();
         }
     }
 }

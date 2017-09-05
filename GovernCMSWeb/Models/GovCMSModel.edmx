@@ -38,6 +38,17 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="ArtifactId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="CategoryId" />
+          </Key>
+          <Property Name="CategoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CategoryName" Type="varchar" MaxLength="500" />
+          <Property Name="Number" Type="int" Nullable="false" />
+          <Property Name="ParentCategoryId" Type="int" />
+          <Property Name="WebsiteId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="Content">
           <Key>
             <PropertyRef Name="ContentId" />
@@ -190,6 +201,30 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Category_ParentCategory">
+          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
+          <End Role="Category1" Type="Self.Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="CategoryId" />
+            </Principal>
+            <Dependent Role="Category1">
+              <PropertyRef Name="ParentCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Category_Website">
+          <End Role="Website" Type="Self.Website" Multiplicity="1" />
+          <End Role="Category" Type="Self.Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Website">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Category">
+              <PropertyRef Name="WebsiteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Content_Artifact">
           <End Role="Artifact" Type="Self.Artifact" Multiplicity="1" />
           <End Role="Content" Type="Self.Content" Multiplicity="*" />
@@ -300,6 +335,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
         </Association>
         <EntityContainer Name="GovernCMSModelsStoreContainer">
           <EntitySet Name="Artifact" EntityType="Self.Artifact" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="Category" EntityType="Self.Category" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Content" EntityType="Self.Content" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Group" EntityType="Self.Group" Schema="cms" store:Type="Tables" />
           <EntitySet Name="LoginAttempt" EntityType="Self.LoginAttempt" Schema="cms" store:Type="Tables" />
@@ -347,6 +383,14 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <AssociationSet Name="FK_ArtifactUserEditor_User" Association="Self.FK_ArtifactUserEditor_User">
             <End Role="User" EntitySet="User" />
             <End Role="ArtifactUserEditor" EntitySet="ArtifactUserEditor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Category_ParentCategory" Association="Self.FK_Category_ParentCategory">
+            <End Role="Category" EntitySet="Category" />
+            <End Role="Category1" EntitySet="Category" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Category_Website" Association="Self.FK_Category_Website">
+            <End Role="Website" EntitySet="Website" />
+            <End Role="Category" EntitySet="Category" />
           </AssociationSet>
           <AssociationSet Name="FK_Content_Artifact" Association="Self.FK_Content_Artifact">
             <End Role="Artifact" EntitySet="Artifact" />
@@ -491,6 +535,15 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <AssociationSet Name="FK_Website_Organization" Association="GovernCMS.Models.FK_Website_Organization">
             <End Role="Organization" EntitySet="Organizations" />
             <End Role="Website" EntitySet="Websites" />
+          </AssociationSet>
+          <EntitySet Name="Categories" EntityType="GovernCMS.Models.Category" />
+          <AssociationSet Name="FK_Category_ParentCategory" Association="GovernCMS.Models.FK_Category_ParentCategory">
+            <End Role="Category" EntitySet="Categories" />
+            <End Role="Category1" EntitySet="Categories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Category_Website" Association="GovernCMS.Models.FK_Category_Website">
+            <End Role="Website" EntitySet="Websites" />
+            <End Role="Category" EntitySet="Categories" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Group">
@@ -647,6 +700,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <NavigationProperty Name="User" Relationship="GovernCMS.Models.FK_Website_User" FromRole="Website" ToRole="User" />
           <Property Name="OrganizationId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Organization" Relationship="GovernCMS.Models.FK_Website_Organization" FromRole="Website" ToRole="Organization" />
+          <NavigationProperty Name="Categories" Relationship="GovernCMS.Models.FK_Category_Website" FromRole="Website" ToRole="Category" />
         </EntityType>
         <Association Name="FK_Website_User">
           <End Type="GovernCMS.Models.User" Role="User" Multiplicity="1" />
@@ -669,6 +723,44 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Principal>
             <Dependent Role="Website">
               <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="CategoryId" />
+          </Key>
+          <Property Name="CategoryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CategoryName" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ParentCategoryId" Type="Int32" />
+          <Property Name="WebsiteId" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="SubCategories" Relationship="GovernCMS.Models.FK_Category_ParentCategory" FromRole="Category" ToRole="Category1" />
+          <NavigationProperty Name="ParentCategory" Relationship="GovernCMS.Models.FK_Category_ParentCategory" FromRole="Category1" ToRole="Category" />
+          <NavigationProperty Name="Website" Relationship="GovernCMS.Models.FK_Category_Website" FromRole="Category" ToRole="Website" />
+          <Property Name="Number" Type="Int32" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Category_ParentCategory">
+          <End Type="GovernCMS.Models.Category" Role="Category" Multiplicity="0..1" />
+          <End Type="GovernCMS.Models.Category" Role="Category1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="CategoryId" />
+            </Principal>
+            <Dependent Role="Category1">
+              <PropertyRef Name="ParentCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Category_Website">
+          <End Type="GovernCMS.Models.Website" Role="Website" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Category" Role="Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Website">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Category">
+              <PropertyRef Name="WebsiteId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -789,6 +881,18 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
                 <ScalarProperty Name="SiteUrl" ColumnName="SiteUrl" />
                 <ScalarProperty Name="SiteName" ColumnName="SiteName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="GovernCMS.Models.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="WebsiteId" ColumnName="WebsiteId" />
+                <ScalarProperty Name="ParentCategoryId" ColumnName="ParentCategoryId" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
