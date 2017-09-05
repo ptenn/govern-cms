@@ -182,8 +182,10 @@
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\Impl\OrganizationService.cs" />
     <Compile Include="Services\Impl\UserService.cs" />
+    <Compile Include="Services\Impl\WebsiteService.cs" />
     <Compile Include="Services\IOrganizationService.cs" />
     <Compile Include="Services\IUserService.cs" />
+    <Compile Include="Services\IWebsiteService.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\EmailUtils.cs" />
     <Compile Include="Utils\PasswordUtils.cs" />

@@ -8,7 +8,7 @@ using log4net;
 
 namespace GovernCMS.Controllers
 {
-    public class WebsiteController : Controller
+    public class WebsiteController : ErrorHandlingController
     {
         private static ILog logger = LogManager.GetLogger(typeof(WebsiteController));
 
@@ -16,14 +16,18 @@ namespace GovernCMS.Controllers
 
         private readonly IOrganizationService organizationService;
 
+        private readonly IWebsiteService websiteService;
+
         public WebsiteController()
         {
             organizationService = new OrganizationService();
+            websiteService = new WebsiteService();
         }
 
         [HttpGet]
         public ActionResult Create()
         {
+            UserCheck();
             User currentUser = (User) Session[Constants.CURRENT_USER];
 
             ManageWebsiteViewModel manageWebsiteViewModel = new ManageWebsiteViewModel();
@@ -31,6 +35,18 @@ namespace GovernCMS.Controllers
             manageWebsiteViewModel.OwnerId = currentUser.UserId;
 
             return View(manageWebsiteViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(ManageWebsiteViewModel manageWebsiteViewModel)
+        {
+            UserCheck();
+            User currentUser = (User)Session[Constants.CURRENT_USER];
+
+            websiteService.CreateWebsite(manageWebsiteViewModel.SiteName, manageWebsiteViewModel.SiteUrl, currentUser);
+
+            return RedirectToAction("Create");
         }
 
         [HttpGet]

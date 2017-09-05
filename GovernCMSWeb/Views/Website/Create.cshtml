@@ -1,8 +1,11 @@
 ﻿@model GovernCMS.ViewModels.ManageWebsiteViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Create Website";
 }
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 
 @if (TempData["successMessage"] != null)
 {
@@ -44,10 +47,10 @@
                                             @Html.EditorFor(model => model.SiteUrl, new { htmlAttributes = new { @class = "form-control" } })
                                         </div>
                                     </div>
+                                    <div class="panel-footer">
+                                        <button type="submit" class="btn btn-sm btn-primary"><span class="fa fa-dot-circle-o"></span> Add Website</button>
+                                    </div>
                                 }
-                                <div class="panel-footer">
-                                    <button type="submit" class="btn btn-sm btn-primary"><span class="fa fa-dot-circle-o"></span> Add Website</button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -81,8 +84,8 @@
                                                 <td>@site.SiteName</td>
                                                 <td>@site.SiteUrl</td>
                                                 <td>
-                                                    <a class="btn btn-danger" onclick="deleteSite('@site.Id', '@site.SiteName')" aria-label="Delete Website">
-                                                        <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
+                                                    <a class="btn btn-danger" style="color:#ffffff" onclick="deleteSite(@site.Id, '@site.SiteName')" aria-label="Delete Website">
+                                                        <i style="color: #FFFFFF;" class="fa fa-trash-o "></i> Delete Website
                                                     </a>
                                                 </td>
                                             </tr>
@@ -97,7 +100,7 @@
         }
     </div>
 </div>
-<div id="deleteSiteModal" style="height:600px" class="modal fade" role="dialog" style="display:none">
+<div id="deleteSiteModal" style="height: 600px; display:none" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -121,11 +124,10 @@
     </div>
 </div>
 <script type="text/javascript">
-
     $(document).ready(function () {
         @if (Model.Websites != null && Model.Websites.Count > 0)
         {
-            @Html.Raw("$(\"#siteTable\").DataTable()")
+            @Html.Raw("        $(\"#siteTable\").DataTable()\n")
         }
         $("#SiteName").focus();
     });
@@ -147,6 +149,4 @@
             }
         });
     }
-
-
 </script>
