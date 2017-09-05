@@ -61,7 +61,7 @@ namespace GovernCMS.Controllers
             return View();
         }
 
-        [HttpDelete]
+        [HttpPost]
         public JsonResult Delete(int siteId)
         {
             Website siteToDelete = new Website() { Id = siteId};
