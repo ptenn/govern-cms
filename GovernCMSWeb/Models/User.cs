@@ -21,6 +21,7 @@ namespace GovernCMS.Models
             this.Contents = new HashSet<Content>();
             this.LoginAttempts = new HashSet<LoginAttempt>();
             this.Groups = new HashSet<Group>();
+            this.Websites = new HashSet<Website>();
         }
     
         public int UserId { get; set; }
@@ -44,5 +45,7 @@ namespace GovernCMS.Models
         public virtual ICollection<LoginAttempt> LoginAttempts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Group> Groups { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Website> Websites { get; set; }
     }
 }

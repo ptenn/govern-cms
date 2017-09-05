@@ -31,5 +31,6 @@ namespace GovernCMS.Models
         public virtual DbSet<Organization> Organizations { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<LoginAttempt> LoginAttempts { get; set; }
+        public virtual DbSet<Website> Websites { get; set; }
     }
 }

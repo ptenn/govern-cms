@@ -15,7 +15,7 @@ namespace GovernCMS.Controllers
 {
     public class ArtifactController : ErrorHandlingController
     {
-        private static ILog logger = LogManager.GetLogger(typeof(UserController));
+        private static ILog logger = LogManager.GetLogger(typeof(ArtifactController));
 
         private GovernCmsContext db = new GovernCmsContext();
 

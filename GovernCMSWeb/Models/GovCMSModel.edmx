@@ -106,6 +106,18 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="GroupId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Website">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SiteName" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="SiteUrl" Type="varchar" MaxLength="255" />
+          <Property Name="OwnerId" Type="int" Nullable="false" />
+          <Property Name="OrganizationId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" />
+        </EntityType>
         <Association Name="FK_Artifact_Organization">
           <End Role="Organization" Type="Self.Organization" Multiplicity="1" />
           <End Role="Artifact" Type="Self.Artifact" Multiplicity="*" />
@@ -262,6 +274,30 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Website_Organization">
+          <End Role="Organization" Type="Self.Organization" Multiplicity="1" />
+          <End Role="Website" Type="Self.Website" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="Website">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Website_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Website" Type="Self.Website" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Website">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="GovernCMSModelsStoreContainer">
           <EntitySet Name="Artifact" EntityType="Self.Artifact" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Content" EntityType="Self.Content" Schema="cms" store:Type="Tables" />
@@ -269,6 +305,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <EntitySet Name="LoginAttempt" EntityType="Self.LoginAttempt" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Organization" EntityType="Self.Organization" Schema="cms" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="Website" EntityType="Self.Website" Schema="cms" store:Type="Tables" />
           <EntitySet Name="ArtifactGroupEditor" EntityType="Self.ArtifactGroupEditor" store:Type="Tables" store:Schema="cms">
             <DefiningQuery>SELECT 
     [ArtifactGroupEditor].[ArtifactId] AS [ArtifactId], 
@@ -338,6 +375,14 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <AssociationSet Name="FK_UserGroup_User" Association="Self.FK_UserGroup_User">
             <End Role="User" EntitySet="User" />
             <End Role="UserGroup" EntitySet="UserGroup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Website_Organization" Association="Self.FK_Website_Organization">
+            <End Role="Organization" EntitySet="Organization" />
+            <End Role="Website" EntitySet="Website" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Website_User" Association="Self.FK_Website_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Website" EntitySet="Website" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -438,6 +483,15 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             <End Role="Group" EntitySet="Groups" />
             <End Role="User" EntitySet="Users" />
           </AssociationSet>
+          <EntitySet Name="Websites" EntityType="GovernCMS.Models.Website" />
+          <AssociationSet Name="FK_Website_User" Association="GovernCMS.Models.FK_Website_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Website" EntitySet="Websites" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Website_Organization" Association="GovernCMS.Models.FK_Website_Organization">
+            <End Role="Organization" EntitySet="Organizations" />
+            <End Role="Website" EntitySet="Websites" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Group">
           <Key>
@@ -463,6 +517,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <NavigationProperty Name="Groups" Relationship="GovernCMS.Models.FK_Group_Organization" FromRole="Organization" ToRole="Group" />
           <NavigationProperty Name="Users" Relationship="GovernCMS.Models.FK_User_Organization" FromRole="Organization" ToRole="User" />
           <NavigationProperty Name="Artifacts" Relationship="GovernCMS.Models.FK_Artifact_Organization" FromRole="Organization" ToRole="Artifact" />
+          <NavigationProperty Name="Websites" Relationship="GovernCMS.Models.FK_Website_Organization" FromRole="Organization" ToRole="Website" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -484,6 +539,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <NavigationProperty Name="Contents" Relationship="GovernCMS.Models.FK_Content_User" FromRole="User" ToRole="Content" />
           <NavigationProperty Name="LoginAttempts" Relationship="GovernCMS.Models.FK_LoginAttempt_User" FromRole="User" ToRole="LoginAttempt" />
           <NavigationProperty Name="Groups" Relationship="GovernCMS.Models.UserGroup" FromRole="User" ToRole="Group" />
+          <NavigationProperty Name="Websites" Relationship="GovernCMS.Models.FK_Website_User" FromRole="User" ToRole="Website" />
         </EntityType>
         <Association Name="FK_Group_Organization">
           <End Type="GovernCMS.Models.Organization" Role="Organization" Multiplicity="1" />
@@ -577,6 +633,44 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
         <Association Name="UserGroup">
           <End Type="GovernCMS.Models.Group" Role="Group" Multiplicity="*" />
           <End Type="GovernCMS.Models.User" Role="User" Multiplicity="*" />
+        </Association>
+        <EntityType Name="Website">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SiteName" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="SiteUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="OwnerId" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="User" Relationship="GovernCMS.Models.FK_Website_User" FromRole="Website" ToRole="User" />
+          <Property Name="OrganizationId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Organization" Relationship="GovernCMS.Models.FK_Website_Organization" FromRole="Website" ToRole="Organization" />
+        </EntityType>
+        <Association Name="FK_Website_User">
+          <End Type="GovernCMS.Models.User" Role="User" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Website" Role="Website" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Website">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Website_Organization">
+          <End Type="GovernCMS.Models.Organization" Role="Organization" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Website" Role="Website" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="OrganizationId" />
+            </Principal>
+            <Dependent Role="Website">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -685,6 +779,19 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
               <ScalarProperty Name="Id" ColumnName="GroupId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Websites">
+            <EntityTypeMapping TypeName="GovernCMS.Models.Website">
+              <MappingFragment StoreEntitySet="Website">
+                <ScalarProperty Name="OrganizationId" ColumnName="OrganizationId" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+                <ScalarProperty Name="SiteUrl" ColumnName="SiteUrl" />
+                <ScalarProperty Name="SiteName" ColumnName="SiteName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

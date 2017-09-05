@@ -22,6 +22,9 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Organization" />
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Owner" />
         <AssociationConnector Association="GovernCMS.Models.UserGroup" />
+        <EntityTypeShape EntityType="GovernCMS.Models.Website" Width="1.5" PointX="9.5" PointY="2.5" />
+        <AssociationConnector Association="GovernCMS.Models.FK_Website_User" />
+        <AssociationConnector Association="GovernCMS.Models.FK_Website_Organization" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -137,6 +137,7 @@
     <Compile Include="Controllers\ErrorHandlingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\WebsiteController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -173,6 +174,9 @@
     <Compile Include="Models\User.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Website.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Impl\ArtifactService.cs" />
     <Compile Include="Services\IArtifactService.cs" />
@@ -188,6 +192,7 @@
     <Compile Include="ViewModels\CreateUserViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
+    <Compile Include="ViewModels\ManageWebsiteViewModel.cs" />
     <Compile Include="ViewModels\OrgSearchResultViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +289,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Artifact\ManageArtifact.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Website\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Website\Breadcrumb.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Website\Calendar.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

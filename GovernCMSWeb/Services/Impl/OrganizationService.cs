@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using GovernCMS.Models;
 using GovernCMS.Utils;
 
@@ -23,6 +24,11 @@ namespace GovernCMS.Services.Impl
                 }
             }
             return organization;
+        }
+
+        public IList<Website> FindWebsitesByOrganizationId(int organizationId)
+        {
+            return db.Websites.Where(w => w.OrganizationId == organizationId).ToList();
         }
     }
 }

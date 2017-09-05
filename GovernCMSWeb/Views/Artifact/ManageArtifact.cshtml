@@ -140,6 +140,8 @@
                 </div>
             </div>
         </div>
+    @if (Model.HasContent())
+    {
         <div class="row">
             <div class="col-sm-11">
                 <div class="card">
@@ -158,35 +160,32 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-
-                                    @if (Model.HasContent())
+                                    @foreach (var content in Model.ContentItems)
                                     {
-                                        foreach (var content in Model.ContentItems)
-                                        {
-                                            <tr id="@content.ContentId">
-                                                <td>Version #@content.Version</td>
-                                                <td>@content.CreateDate.ToString("MM/dd/yyyy")</td>
-                                                <td>
-                                                    @if (!string.IsNullOrEmpty(content.ContentUrl))
-                                                    {
-                                                        <a class="btn btn-danger" onclick="viewContentUrl('@content.ContentUrl')" aria-label="View Content File">
-                                                            <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
-                                                        </a>
-                                                    }
-                                                    else
-                                                    {
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
+                                    <tr id="@content.ContentId">
+                                        <td>Version #@content.Version</td>
+                                        <td>@content.CreateDate.ToString("MM/dd/yyyy")</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(content.ContentUrl))
+                                            {
+                                                <a class="btn btn-danger" onclick="viewContentUrl('@content.ContentUrl')" aria-label="View Content File">
+                                                    <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                            }
+                                        </td>
+                                    </tr>
                                     }
-                                </table>                           
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    }
     </div>
 </div>
 <!-- View Content Modal -->

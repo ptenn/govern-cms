@@ -1,0 +1,152 @@
+﻿@model GovernCMS.ViewModels.ManageWebsiteViewModel
+
+@{
+    ViewBag.Title = "title";
+}
+
+@if (TempData["successMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["successMessage"]
+    </div>
+
+}
+@if (TempData["errorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["errorMessage"]
+    </div>
+}
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-sm-11">
+                <div class="card">
+                    <div class="card-header">
+                        <h1>Websites</h1>
+                        <span>In order to add Web Content, you will need to create a Website.  The Website is the container for all Web Content, Widgets, and Artifacts.</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                @using (Html.BeginForm("Create", "Website", FormMethod.Post, new {id = "CreateWebsiteForm"}))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="form-group row">
+                                        <label for="SiteName" class="col-md-3 form-control-label">Website Name</label>
+                                        <div class="col-md-9">
+                                            @Html.EditorFor(model => model.SiteName, new {htmlAttributes = new {@class = "form-control", autofocus = true}})
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="SiteUrl" class="col-md-3 control-label">Website URL</label>
+                                        <div class="col-md-9">
+                                            @Html.EditorFor(model => model.SiteUrl, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                    </div>
+                                }
+                                <div class="panel-footer">
+                                    <button type="submit" class="btn btn-sm btn-primary"><span class="fa fa-dot-circle-o"></span> Add Website</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Websites != null && Model.Websites.Count > 0)
+        {
+            <div class="row">
+                <div class="col-sm-11">
+                    <div class="card">
+                        <div class="card-header">
+                            <h1>Organization Websites</h1>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table id="siteTable" class="table table-striped table-bordered bootstrap-datatable datatable">
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>URL</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        @foreach (var site in Model.Websites)
+                                        {
+                                            <tr id="@site.Id">
+                                                <td>@site.SiteName</td>
+                                                <td>@site.SiteUrl</td>
+                                                <td>
+                                                    <a class="btn btn-danger" onclick="deleteSite('@site.Id', '@site.SiteName')" aria-label="Delete Website">
+                                                        <i style="color: #FFFFFF;" class="fa fa-file-o "></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="deleteSiteModal" style="height:600px" class="modal fade" role="dialog" style="display:none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Delete Website</h4>
+            </div>
+            @using (Html.BeginForm("Delete", "Website"))
+            {
+                <input type="hidden" id="deleteSiteId" />
+                <div class="modal-body" style="height: 200px">
+                    Delete Website <span id="deleteSiteName" style="font-weight: bold"></span>
+                    <br />
+                    <span class="page-error">This action cannot be reversed, and will result in loss of data.</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="confirmDeleteWebsite();" class="btn btn-danger"> Delete</button>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteSiteModal"> Cancel</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        @if (Model.Websites != null && Model.Websites.Count > 0)
+        {
+            @Html.Raw("$(\"#siteTable\").DataTable()")
+        }
+        $("#SiteName").focus();
+    });
+
+    function deleteSite(id, siteName) {
+        $("#deleteSiteId").val(id);
+        $("#deleteSiteName").val(siteName);
+        $("#deleteSiteModal").show();
+    }
+
+    function confirmDeleteWebsite() {
+        $.ajax({
+            url: '/Website/Delete',
+            type: 'DELETE',
+            data: { siteId: $("#deleteSiteId").val() },
+            success: function(result) {
+                $('#' + data).remove();
+                $('#deleteSiteModal').modal('hide');
+            }
+        });
+    }
+
+
+</script>
