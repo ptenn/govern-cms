@@ -216,6 +216,7 @@
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style.min.css" />
     <Content Include="Content\images\azure_resources.png" />
+    <Content Include="Content\images\governcms_logo_sm.png" />
     <Content Include="Content\images\municipal_agenda_logo.png" />
     <Content Include="Content\images\municipal_agenda_logo_invert_sm.png" />
     <Content Include="Content\images\municipal_agenda_logo_sm.png" />
