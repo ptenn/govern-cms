@@ -74,7 +74,7 @@
                                 </div>
                             </div>
                             <p/>
-                            <button type="button" class="btn btn-sm btn-primary"><span class="fa fa-dot-circle-o"></span> Save</button>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="saveCategories()"><span class="fa fa-dot-circle-o"></span> Save</button>
                         </div>
                     </div>
                 </div>
@@ -178,8 +178,8 @@
                 "categoryId": removeCategoryId
             },
             function (data) {
-                var agendaDiv = $("[name='agenda-nestable']");
-                agendaDiv.find('#' + data).remove();
+                var categoryDiv = $("[name='category-nestable']");
+                categoryDiv.find('#' + data).remove();
                 var removeDropDown = $("#removeCategoryId");
 
                 var optionToRemove = removeDropDown.find('[value= ' + data + ']');
@@ -213,6 +213,43 @@
                 categoryDiv.empty();
                 $('#categoryModal').modal('hide');
             }, "json");
+    }
+
+    function saveCategories() {
+        var websiteId = $('#WebsiteId').val();
+
+        // Build a Categories object
+        var categoriesRead = $('#category-nestable>ol>li');
+        var categories = buildCategories(categoriesRead);
+
+        var categoriesJson = JSON.stringify(categories, null, 2);
+        $.post("/Website/SaveCategories",
+            {
+                "websiteId": websiteId,
+                "categoriesAsJson": categoriesJson
+            },
+            function () {
+            },
+        "json");
+        
+    }
+
+    function buildCategories(categoriesRead) {
+        var categories = [];
+
+        categoriesRead.each(function() {
+            var category = {};
+            category.CategoryId = $(this).attr('data-id');
+            category.CategoryName = $(this).find(".dd-handle").first().text();
+            categories.push(category);
+
+            var subCategories = $(this).find('.dd-list').find('.dd-item');
+            category.SubCategories = buildCategories(subCategories);
+
+        });
+
+        return categories;
+
     }
 
 </script>
