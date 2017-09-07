@@ -204,6 +204,7 @@
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
     <Compile Include="ViewModels\ManageWebsiteViewModel.cs" />
     <Compile Include="ViewModels\OrgSearchResultViewModel.cs" />
+    <Compile Include="Web\CategoryExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\bootstrap-datepicker3.min.css" />

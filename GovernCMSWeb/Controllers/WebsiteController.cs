@@ -152,10 +152,10 @@ namespace GovernCMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveCategories(int websiteId, string categoriesAsJson)
+        public ActionResult SaveCategories(int websiteId, IList<Category> categories)
         {
             // Now, create all new Sections and Items, providing the Agenda Id for Referential Integrity
-            IList<Category> categories = JsonConvert.DeserializeObject<IList<Category>>(categoriesAsJson);
+//            IList<Category> categories = JsonConvert.DeserializeObject<IList<Category>>(categoriesAsJson);
 
             categories = ProcessCategories(websiteId, categories);
 

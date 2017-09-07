@@ -1,25 +1,9 @@
 ﻿@using GovernCMS.Models
+@using GovernCMS.Web
 @model GovernCMS.ViewModels.BreadcrumbViewModel
 
 @{
     ViewBag.Title = "Website Breadcrumb Navigation";
-}
-@helper ShowCategories(IEnumerable<Category> categories)
-{
-    <ol class="dd-list">
-        @foreach (var category in Model.Categories)
-        {
-            <li class="dd-item" data-type="section" data-id="@category.CategoryId" id="@category.CategoryId">
-                <div class="dd-handle">
-                    <span style="font-weight: bold">@category.CategoryName</span>
-                </div>
-                @if (category.SubCategories.Any())
-                {
-                    @ShowCategories(category.SubCategories)
-                }
-            </li>
-        }
-    </ol>
 }
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
@@ -69,9 +53,7 @@
                                     <button type="button" class="btn btn-sm btn-danger"  data-toggle="modal" onclick="beginRemoveAllCategories()"><span class="fa fa-minus"></span> Remove All</button>&nbsp;&nbsp;&nbsp;
                                 </p>
                                 <!-- Begin embedded nestable-->
-                                <div class="dd" name="category-nestable" id="nestable">
-                                    @ShowCategories(Model.Categories)
-                                </div>
+                                @Html.CategoryDisplay(Model.Categories, 32)
                             </div>
                             <p/>
                             <button type="button" class="btn btn-sm btn-primary" onclick="saveCategories()"><span class="fa fa-dot-circle-o"></span> Save</button>
@@ -148,7 +130,7 @@
             },
             function (data) {
                 var categoryDiv = $("[name='category-nestable']");
-                var categoriesRender = $(categoryDiv).find("ol.dd-list");
+                var categoriesRender = $(categoryDiv).first("ol.dd-list");
                 categoriesRender.append('<li class="dd-item" data-type="section" data-id="' + data.CategoryId + '" id="' + data.CategoryId + '">' +
                     '<div class="dd-handle"><span style="font-weight:bold">' + data.CategoryName + '</span></div></li>');
                 $('#categoryModal').modal('hide');
@@ -219,14 +201,14 @@
         var websiteId = $('#WebsiteId').val();
 
         // Build a Categories object
-        var categoriesRead = $('#category-nestable>ol>li');
+        var categoriesRead = $('#nestable>ol>li');
         var categories = buildCategories(categoriesRead);
 
         var categoriesJson = JSON.stringify(categories, null, 2);
         $.post("/Website/SaveCategories",
             {
                 "websiteId": websiteId,
-                "categoriesAsJson": categoriesJson
+                "categories": categoriesJson
             },
             function () {
             },
