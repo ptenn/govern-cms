@@ -208,7 +208,7 @@
         $.post("/Website/SaveCategories",
             {
                 "websiteId": websiteId,
-                "categories": categoriesJson
+                "categoriesJson": categoriesJson
             },
             function () {
             },
@@ -223,6 +223,9 @@
             var category = {};
             category.CategoryId = $(this).attr('data-id');
             category.CategoryName = $(this).find(".dd-handle").first().text();
+            if (category.CategoryName !== null) {
+                category.CategoryName = category.CategoryName.trim();
+            }
             categories.push(category);
 
             var subCategories = $(this).find('.dd-list').find('.dd-item');
