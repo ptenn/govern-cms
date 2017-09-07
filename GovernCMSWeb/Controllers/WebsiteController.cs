@@ -160,6 +160,7 @@ namespace GovernCMS.Controllers
             categories = ProcessCategories(websiteId, categories);
 
             db.SaveChanges();
+            TempData["successMessage"] = "Breadcrumb Categories Saved";
             return RedirectToAction("Breadcrumb", new { websiteId = websiteId});
         }
 

@@ -209,7 +209,6 @@ namespace GovernCMS.Controllers
         [HttpPost]
         public JsonResult FindOrganizationByEmail(string emailAddr)
         {
-            UserCheck();
             OrgSearchResultViewModel searchResultViewModel = new OrgSearchResultViewModel();
 
             Organization organization = organizationService.FindOrganizationByEmailAddr(emailAddr);

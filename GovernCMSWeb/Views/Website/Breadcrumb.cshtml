@@ -1,5 +1,4 @@
-﻿@using GovernCMS.Models
-@using GovernCMS.Web
+﻿@using GovernCMS.Web
 @model GovernCMS.ViewModels.BreadcrumbViewModel
 
 @{
@@ -35,7 +34,7 @@
                     <div class="card-body">
                         <div class="row">
                             <label class="col-md-2 control-label">Select Website</label>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 @using (Html.BeginForm("Create", "Website", FormMethod.Post, new {id = "CreateWebsiteForm"}))
                                 {
                                     @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, new {@class = "form-control", aria_label = "Selected Website"})
@@ -89,9 +88,22 @@
 <script src="/Scripts/ui-nestable-list.js"></script>
 
 <script type="text/javascript">
-    $("#WebsiteId").focus();
-
     var mode = 'add';
+
+    $(document).ready(function() {
+
+        $("#WebsiteId").focus();
+        @* Modals set focus on Field when Opened. *@
+        $('#categoryModal').on('shown.bs.modal',
+            function() {
+                if (mode === 'add') {
+                    $('#newCategory').focus();    
+                }
+                else if (mode === 'remove') {
+                    $('#removeCategoryId').focus();
+                }                
+            });
+    });   
 
     function processCategoryModal() {
         if (mode === 'add') {
@@ -141,6 +153,7 @@
     
     function beginRemoveCategory() {
         // Set up Modal
+        $('#newCategory').val('');
         $("#categoryModalDiv").removeClass();
         $("#categoryModalDiv").addClass("modal-dialog");
         $("#categoryModalDiv").addClass("modal-danger");
@@ -212,7 +225,7 @@
             },
             function () {
             },
-        "json");
+            "json");
         
     }
 
