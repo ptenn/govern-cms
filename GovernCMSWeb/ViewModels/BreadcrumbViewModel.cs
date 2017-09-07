@@ -9,5 +9,6 @@ namespace GovernCMS.ViewModels
         public int WebsiteId { get; set; }
         public SelectList WebsiteSelectList { get; set; }
         public IList<Category> Categories { get; set; }
+        public string CategoriesJson { get; set; }
     }
 }

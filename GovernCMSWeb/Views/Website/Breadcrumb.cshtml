@@ -35,9 +35,11 @@
                         <div class="row">
                             <label class="col-md-2 control-label">Select Website</label>
                             <div class="col-md-4">
-                                @using (Html.BeginForm("Create", "Website", FormMethod.Post, new {id = "CreateWebsiteForm"}))
+                                @using (Html.BeginForm("Breadcrumb", "Website", FormMethod.Post, new {id = "BreadcrumbForm"}))
                                 {
+                                    @Html.AntiForgeryToken()
                                     @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, new {@class = "form-control", aria_label = "Selected Website"})
+                                    @Html.HiddenFor(model => model.CategoriesJson)
                                 }
                             </div>
                         </div>
@@ -74,7 +76,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" name="newCategory" id="newCategory" aria-label="New Category Name"/>
+                <input type="text" class="form-control" name="newCategory" id="newCategory" aria-label="New Category Name" onclick="newCategoryClickHandler()"/>
                 <select id="removeCategoryId" class="form-control" aria-label="Category to Remove"></select>
                 <span id="removeAllText">This action will remove all Categories from the Website, providing you a blank slate to build your Breadcrumb navigation categories.</span>
             </div>
@@ -119,6 +121,7 @@
 
     function beginAddCategory() {
         // Set up Modal
+        $('#newCategory').val('');
         $("#categoryModalDiv").removeClass();
         $("#categoryModalDiv").addClass("modal-dialog");
         $("#categoryModalDiv").addClass("modal-primary");
@@ -153,7 +156,6 @@
     
     function beginRemoveCategory() {
         // Set up Modal
-        $('#newCategory').val('');
         $("#categoryModalDiv").removeClass();
         $("#categoryModalDiv").addClass("modal-dialog");
         $("#categoryModalDiv").addClass("modal-danger");
@@ -211,22 +213,13 @@
     }
 
     function saveCategories() {
-        var websiteId = $('#WebsiteId').val();
-
         // Build a Categories object
         var categoriesRead = $('#nestable>ol>li');
         var categories = buildCategories(categoriesRead);
 
         var categoriesJson = JSON.stringify(categories, null, 2);
-        $.post("/Website/SaveCategories",
-            {
-                "websiteId": websiteId,
-                "categoriesJson": categoriesJson
-            },
-            function () {
-            },
-            "json");
-        
+        $("#CategoriesJson").val(categoriesJson);
+        $("#BreadcrumbForm").submit();
     }
 
     function buildCategories(categoriesRead) {
@@ -249,5 +242,12 @@
         return categories;
 
     }
+
+    document.querySelector('#newCategory').addEventListener('keypress', function (e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) { 
+            addCategory();
+        }
+    });
 
 </script>

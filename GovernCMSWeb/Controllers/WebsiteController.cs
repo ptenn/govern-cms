@@ -91,6 +91,39 @@ namespace GovernCMS.Controllers
             return View(breadcrumbViewModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult BreadCrumb(BreadcrumbViewModel breadcrumbViewModel)
+        {
+            // Now, create all new Sections and Items, providing the Agenda Id for Referential Integrity
+            IList<Category> categories = JsonConvert.DeserializeObject<IList<Category>>(breadcrumbViewModel.CategoriesJson);
+
+            ProcessCategories(breadcrumbViewModel.WebsiteId, categories);
+
+            db.SaveChanges();
+            TempData["successMessage"] = "Breadcrumb Categories Saved";
+            return RedirectToAction("Breadcrumb", new { websiteId = breadcrumbViewModel.WebsiteId });
+        }
+
+        private void ProcessCategories(int websiteId, IList<Category> categories)
+        {
+            int number = 0;
+            foreach (Category category in categories)
+            {
+                category.WebsiteId = websiteId;
+                category.CreateDate = DateTime.Now.Date;
+                category.Number = number;
+                number++;
+                if (category.SubCategories != null && category.SubCategories.Count > 0)
+                {
+                    ProcessCategories(websiteId, category.SubCategories.ToList());
+                }
+            }
+            db.Categories.AddRange(categories);            
+        }
+
+
+
         // POST: Website/CategoryAdd
         [HttpPost]
         public JsonResult CategoryAdd(int websiteId, string categoryName)
@@ -149,38 +182,6 @@ namespace GovernCMS.Controllers
                 db.Categories.Remove(entry);
             }
             db.SaveChanges();
-        }
-
-        [HttpPost]
-        public ActionResult SaveCategories(int websiteId, string categoriesJson)
-        {
-            // Now, create all new Sections and Items, providing the Agenda Id for Referential Integrity
-            IList<Category> categories = JsonConvert.DeserializeObject<IList<Category>>(categoriesJson);
-
-            categories = ProcessCategories(websiteId, categories);
-
-            db.SaveChanges();
-            TempData["successMessage"] = "Breadcrumb Categories Saved";
-            return RedirectToAction("Breadcrumb", new { websiteId = websiteId});
-        }
-
-        private IList<Category> ProcessCategories(int websiteId, IList<Category> categories)
-        {
-            int number = 0;
-            foreach (Category category in categories)
-            {
-                category.WebsiteId = websiteId;
-                category.CreateDate = DateTime.Now.Date;
-                category.Number = number;
-                number++;
-                if (category.SubCategories != null && category.SubCategories.Count > 0)
-                {
-                    ProcessCategories(websiteId, category.SubCategories.ToList());
-                }
-            }
-            db.Categories.AddRange(categories);
-            
-            return categories;
         }
 
 
