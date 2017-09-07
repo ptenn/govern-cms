@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using GovernCMS.Models;
@@ -114,12 +115,31 @@ namespace GovernCMS.Controllers
                 category.CreateDate = DateTime.Now.Date;
                 category.Number = number;
                 number++;
+
+                if (category.CategoryId != null && category.SubCategories != null && category.SubCategories.Count > 0)
+                {
+                    foreach (Category subCategory in category.SubCategories)
+                    {
+                        subCategory.ParentCategoryId = category.CategoryId;
+                    }
+                }
+
+                if (category.CategoryId > 0)
+                {
+                    db.Categories.Attach(category);
+                    db.Entry(category).State = EntityState.Modified;
+                }
+                else
+                {
+                    db.Categories.Add(category);
+                }
                 if (category.SubCategories != null && category.SubCategories.Count > 0)
                 {
                     ProcessCategories(websiteId, category.SubCategories.ToList());
                 }
             }
-            db.Categories.AddRange(categories);            
+            
+
         }
 
 
