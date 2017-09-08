@@ -148,6 +148,12 @@
     <Compile Include="Models\Artifact.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Calendar.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CalendarItem.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Category.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
@@ -199,6 +205,7 @@
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="ViewModels\ArtifactListViewModel.cs" />
     <Compile Include="ViewModels\BreadcrumbViewModel.cs" />
+    <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\CreateUserViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
@@ -251,6 +258,7 @@
     <Content Include="Scripts\dropzone.js" />
     <Content Include="Scripts\dropzone.min.js" />
     <Content Include="Scripts\editable-select.js" />
+    <Content Include="Scripts\gcal.js" />
     <Content Include="Scripts\jquery.mmenu.min.js" />
     <Content Include="Scripts\jquery.nestable.min.js" />
     <Content Include="Scripts\pace.min.js" />

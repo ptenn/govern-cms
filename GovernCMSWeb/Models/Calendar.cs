@@ -12,28 +12,22 @@ namespace GovernCMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Website
+    public partial class Calendar
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Website()
+        public Calendar()
         {
-            this.Categories = new HashSet<Category>();
-            this.Calendars = new HashSet<Calendar>();
+            this.CalendarItems = new HashSet<CalendarItem>();
         }
     
-        public int Id { get; set; }
-        public string SiteName { get; set; }
-        public string SiteUrl { get; set; }
-        public int OwnerId { get; set; }
+        public int CalendarId { get; set; }
+        public string CalendarName { get; set; }
+        public int WebsiteId { get; set; }
         public System.DateTime CreateDate { get; set; }
         public Nullable<System.DateTime> UpdateDate { get; set; }
-        public int OrganizationId { get; set; }
     
-        public virtual User User { get; set; }
-        public virtual Organization Organization { get; set; }
+        public virtual Website Website { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Category> Categories { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Calendar> Calendars { get; set; }
+        public virtual ICollection<CalendarItem> CalendarItems { get; set; }
     }
 }

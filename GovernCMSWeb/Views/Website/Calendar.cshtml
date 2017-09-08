@@ -1,18 +1,86 @@
-﻿@model dynamic
+﻿@using GovernCMS.Web
+@model GovernCMS.ViewModels.CalendarViewModel
 
 @{
-    Layout = null;
+    ViewBag.Title = "Website Calendars";
 }
 
-<!DOCTYPE html>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.css"/>
 
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
+
+@if (TempData["successMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["successMessage"]
+    </div>
+
+}
+@if (TempData["errorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["errorMessage"]
+    </div>
+}
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-sm-11">
+                <div class="card">
+                    <div class="card-header">
+                        <h1>Website Calendar</h1>
+                        <span>In order to add Web Content, you will need to create a Website.  The Website is the container for all Web Content, Widgets, and Artifacts.</span>
+                    </div>
+                    <div class="card-body">
+                    @using (Html.BeginForm("Calendar", "Website", FormMethod.Post, new { id = "CalendarForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <label class="col-md-2 control-label">Select Website</label>
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, new {@class = "form-control", aria_label = "Selected Website"})
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 50px">
+                            <label class="col-md-2 control-label">Select Calendar</label>
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, new {@class = "form-control", aria_label = "Selected Calendar"})
+                            </div>
+                        </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</body>
-</html>
+<!-- Section/Item Modal -->
+<div class="modal fade" id="calendarModal" role="dialog" aria-hidden="true">
+    <div id="categoryModalDiv" class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="categoryModalTitle" class="modal-title">Add Category</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" name="newCategory" id="newCategory" aria-label="New Category Name" onclick="newCategoryClickHandler()" />
+                <select id="removeCategoryId" class="form-control" aria-label="Category to Remove"></select>
+                <span id="removeAllText">This action will remove all Categories from the Website, providing you a blank slate to build your Breadcrumb navigation categories.</span>
+            </div>
+            <div class="modal-footer">
+                <button id="categoryModalSubmitButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal" onclick="processCategoryModal();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.js"></script>
+<script type="text/javascript" src="/Scripts/gcal.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+    });
+
+</script>

@@ -142,8 +142,6 @@ namespace GovernCMS.Controllers
 
         }
 
-
-
         // POST: Website/CategoryAdd
         [HttpPost]
         public JsonResult CategoryAdd(int websiteId, string categoryName)
@@ -202,12 +200,53 @@ namespace GovernCMS.Controllers
             }
             db.SaveChanges();
         }
-
-
+        
         [HttpGet]
-        public ActionResult Calendar()
+        public ActionResult Calendar(int? websiteId)
         {
-            return View();
+            UserCheck();
+            User currentUser = (User)Session[Constants.CURRENT_USER];
+
+            IList<Website> websites = websiteService.FindWebsitesByOrganizationId(currentUser.OrganizationId);
+            IList<SelectListItem> selectListItems = new List<SelectListItem>();
+
+            foreach (var website in websites)
+            {
+                SelectListItem item = new SelectListItem()
+                {
+                    Text = website.SiteName,
+                    Value = website.Id.ToString()
+                };
+                selectListItems.Add(item);
+
+                // Get the Calendars for each Website
+
+
+            }
+
+            if (websites.Count > 0)
+            {
+                if (websiteId == null)
+                {
+                    websiteId = websites.First().Id;
+                }
+            }
+
+            CalendarViewModel calendarViewModel = new CalendarViewModel()
+            {
+                WebsiteId = websiteId.GetValueOrDefault(),
+                WebsiteSelectList = new SelectList(selectListItems, "Value", "Text"),
+            };
+
+            return View(calendarViewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Calendar(CalendarViewModel calendarViewModel)
+        {
+            TempData["successMessage"] = "Calendar Saved";
+            return RedirectToAction("Calendar", new { websiteId = calendarViewModel.WebsiteId });
+
         }
 
         [HttpPost]
