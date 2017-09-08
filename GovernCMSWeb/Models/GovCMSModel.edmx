@@ -48,7 +48,7 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="UpdateDate" Type="datetime2" Precision="7" />
         </EntityType>
-        <EntityType Name="CalendarItem">
+        <EntityType Name="CalendarEvent">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -56,6 +56,7 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="CalendarId" Type="int" Nullable="false" />
           <Property Name="StartDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="EndDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="EventUrl" Type="varchar" MaxLength="255" />
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <EntityType Name="Category">
@@ -235,12 +236,12 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
         </Association>
         <Association Name="FK_CalendarItem_Calendar">
           <End Role="Calendar" Type="Self.Calendar" Multiplicity="1" />
-          <End Role="CalendarItem" Type="Self.CalendarItem" Multiplicity="*" />
+          <End Role="CalendarEvent" Type="Self.CalendarEvent" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Calendar">
               <PropertyRef Name="CalendarId" />
             </Principal>
-            <Dependent Role="CalendarItem">
+            <Dependent Role="CalendarEvent">
               <PropertyRef Name="CalendarId" />
             </Dependent>
           </ReferentialConstraint>
@@ -380,7 +381,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
         <EntityContainer Name="GovernCMSModelsStoreContainer">
           <EntitySet Name="Artifact" EntityType="Self.Artifact" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Calendar" EntityType="Self.Calendar" Schema="cms" store:Type="Tables" />
-          <EntitySet Name="CalendarItem" EntityType="Self.CalendarItem" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="CalendarEvent" EntityType="Self.CalendarEvent" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Category" EntityType="Self.Category" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Content" EntityType="Self.Content" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Group" EntityType="Self.Group" Schema="cms" store:Type="Tables" />
@@ -436,7 +437,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           </AssociationSet>
           <AssociationSet Name="FK_CalendarItem_Calendar" Association="Self.FK_CalendarItem_Calendar">
             <End Role="Calendar" EntitySet="Calendar" />
-            <End Role="CalendarItem" EntitySet="CalendarItem" />
+            <End Role="CalendarEvent" EntitySet="CalendarEvent" />
           </AssociationSet>
           <AssociationSet Name="FK_Category_ParentCategory" Association="Self.FK_Category_ParentCategory">
             <End Role="Category" EntitySet="Category" />
@@ -600,14 +601,14 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             <End Role="Category" EntitySet="Categories" />
           </AssociationSet>
           <EntitySet Name="Calendars" EntityType="GovernCMS.Models.Calendar" />
-          <EntitySet Name="CalendarItems" EntityType="GovernCMS.Models.CalendarItem" />
           <AssociationSet Name="FK_Calendar_Website" Association="GovernCMS.Models.FK_Calendar_Website">
             <End Role="Website" EntitySet="Websites" />
             <End Role="Calendar" EntitySet="Calendars" />
           </AssociationSet>
+          <EntitySet Name="CalendarEvents" EntityType="GovernCMS.Models.CalendarEvent" />
           <AssociationSet Name="FK_CalendarItem_Calendar" Association="GovernCMS.Models.FK_CalendarItem_Calendar">
             <End Role="Calendar" EntitySet="Calendars" />
-            <End Role="CalendarItem" EntitySet="CalendarItems" />
+            <End Role="CalendarEvent" EntitySet="CalendarEvents" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Group">
@@ -839,18 +840,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="UpdateDate" Type="DateTime" Precision="7" />
           <NavigationProperty Name="Website" Relationship="GovernCMS.Models.FK_Calendar_Website" FromRole="Calendar" ToRole="Website" />
-          <NavigationProperty Name="CalendarItems" Relationship="GovernCMS.Models.FK_CalendarItem_Calendar" FromRole="Calendar" ToRole="CalendarItem" />
-        </EntityType>
-        <EntityType Name="CalendarItem">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CalendarId" Type="Int32" Nullable="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
-          <NavigationProperty Name="Calendar" Relationship="GovernCMS.Models.FK_CalendarItem_Calendar" FromRole="CalendarItem" ToRole="Calendar" />
+          <NavigationProperty Name="CalendarEvents" Relationship="GovernCMS.Models.FK_CalendarItem_Calendar" FromRole="Calendar" ToRole="CalendarEvent" />
         </EntityType>
         <Association Name="FK_Calendar_Website">
           <End Type="GovernCMS.Models.Website" Role="Website" Multiplicity="1" />
@@ -864,14 +854,26 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="CalendarEvent">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CalendarId" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="EventUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Calendar" Relationship="GovernCMS.Models.FK_CalendarItem_Calendar" FromRole="CalendarEvent" ToRole="Calendar" />
+        </EntityType>
         <Association Name="FK_CalendarItem_Calendar">
           <End Type="GovernCMS.Models.Calendar" Role="Calendar" Multiplicity="1" />
-          <End Type="GovernCMS.Models.CalendarItem" Role="CalendarItem" Multiplicity="*" />
+          <End Type="GovernCMS.Models.CalendarEvent" Role="CalendarEvent" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Calendar">
               <PropertyRef Name="CalendarId" />
             </Principal>
-            <Dependent Role="CalendarItem">
+            <Dependent Role="CalendarEvent">
               <PropertyRef Name="CalendarId" />
             </Dependent>
           </ReferentialConstraint>
@@ -1019,10 +1021,11 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="CalendarItems">
-            <EntityTypeMapping TypeName="GovernCMS.Models.CalendarItem">
-              <MappingFragment StoreEntitySet="CalendarItem">
+          <EntitySetMapping Name="CalendarEvents">
+            <EntityTypeMapping TypeName="GovernCMS.Models.CalendarEvent">
+              <MappingFragment StoreEntitySet="CalendarEvent">
                 <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="EventUrl" ColumnName="EventUrl" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="CalendarId" ColumnName="CalendarId" />

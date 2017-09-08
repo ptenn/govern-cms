@@ -12,12 +12,13 @@ namespace GovernCMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class CalendarItem
+    public partial class CalendarEvent
     {
         public int Id { get; set; }
         public int CalendarId { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
+        public string EventUrl { get; set; }
         public System.DateTime CreateDate { get; set; }
     
         public virtual Calendar Calendar { get; set; }

@@ -27,5 +27,12 @@ namespace GovernCMS.Services
         /// <param name="websiteId">The Website ID for finding all Categories</param>
         /// <returns>Categories, including subcategories</returns>
         IList<Category> FindCategoriesByWebsiteId(int websiteId);
+
+        /// <summary>
+        /// Find Calendars by Website, including Calendar Events
+        /// </summary>
+        /// <param name="websiteId">The Website ID for finding all Calendars</param>
+        /// <returns>Calendars, including Events</returns>
+        IList<Calendar> FindCalendarsByWebsiteId(int websiteId);
     }
 }

@@ -84,3 +84,21 @@ h1 {
         color: #000;
     }
 }
+
+.modal-primary .modal-header {
+    color: #fff;
+    background-color: #003FBB;
+}
+.modal-primary .modal-content {
+    border-color: #003FBB;
+}
+
+.modal-danger .modal-header {
+    color: #fff;
+    background-color: #ff1717;
+}
+
+.modal-danger .modal-content {
+    border-color: #ff1717;
+}
+

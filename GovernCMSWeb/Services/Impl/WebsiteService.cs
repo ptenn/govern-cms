@@ -42,5 +42,13 @@ namespace GovernCMS.Services.Impl
             return categories;
         }
 
+        public IList<Calendar> FindCalendarsByWebsiteId(int websiteId)
+        {
+            IList<Calendar> calendars = db.Calendars.Where(c => c.WebsiteId == websiteId)
+                                                    .Include(c => c.CalendarEvents)
+                                                    .ToList();
+            return calendars;
+        }
+
     }
 }

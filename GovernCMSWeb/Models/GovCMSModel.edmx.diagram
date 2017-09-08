@@ -29,8 +29,8 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Category_ParentCategory" />
         <AssociationConnector Association="GovernCMS.Models.FK_Category_Website" />
         <EntityTypeShape EntityType="GovernCMS.Models.Calendar" Width="1.5" PointX="11.625" PointY="3" />
-        <EntityTypeShape EntityType="GovernCMS.Models.CalendarItem" Width="1.5" PointX="13.875" PointY="3.125" />
         <AssociationConnector Association="GovernCMS.Models.FK_Calendar_Website" />
+        <EntityTypeShape EntityType="GovernCMS.Models.CalendarEvent" Width="1.5" PointX="13.875" PointY="3" />
         <AssociationConnector Association="GovernCMS.Models.FK_CalendarItem_Calendar" />
       </Diagram>
     </edmx:Diagrams>

@@ -151,7 +151,7 @@
     <Compile Include="Models\Calendar.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CalendarItem.cs">
+    <Compile Include="Models\CalendarEvent.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Category.cs">

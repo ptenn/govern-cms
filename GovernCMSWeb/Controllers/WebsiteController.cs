@@ -54,6 +54,17 @@ namespace GovernCMS.Controllers
             return RedirectToAction("Create");
         }
 
+        [HttpPost]
+        public JsonResult Delete(int siteId)
+        {
+            Website siteToDelete = new Website() { Id = siteId };
+            db.Websites.Attach(siteToDelete);
+            db.Websites.Remove(siteToDelete);
+            db.SaveChanges();
+
+            return Json(siteId);
+        }
+
         [HttpGet]
         public ActionResult Breadcrumb(int? websiteId)
         {
@@ -209,7 +220,12 @@ namespace GovernCMS.Controllers
 
             IList<Website> websites = websiteService.FindWebsitesByOrganizationId(currentUser.OrganizationId);
             IList<SelectListItem> selectListItems = new List<SelectListItem>();
+            IList<SelectListItem> calendarSelectListItems = new List<SelectListItem>();
 
+
+            IList<Calendar> allCalendars = new List<Calendar>();
+
+            IDictionary<int, IList<Calendar>> websiteCalendars = new Dictionary<int, IList<Calendar>>();
             foreach (var website in websites)
             {
                 SelectListItem item = new SelectListItem()
@@ -220,8 +236,16 @@ namespace GovernCMS.Controllers
                 selectListItems.Add(item);
 
                 // Get the Calendars for each Website
+                IList<Calendar> calendars = websiteService.FindCalendarsByWebsiteId(website.Id);
 
-
+                if (calendars != null)
+                {
+                    foreach (var calendar in calendars)
+                    {
+                        allCalendars.Add(calendar);
+                    }
+                    websiteCalendars.Add(website.Id, calendars);
+                }
             }
 
             if (websites.Count > 0)
@@ -229,6 +253,20 @@ namespace GovernCMS.Controllers
                 if (websiteId == null)
                 {
                     websiteId = websites.First().Id;
+                    if (websiteCalendars.ContainsKey(websiteId.Value))
+                    {
+                        IList<Calendar> selectedCalendars = websiteCalendars[websiteId.Value];
+                        foreach (var calendar in selectedCalendars)
+                        {
+                            SelectListItem item = new SelectListItem()
+                            {
+                                Text = calendar.CalendarName,
+                                Value = calendar.CalendarId.ToString()
+                            };
+                            calendarSelectListItems.Add(item);
+                        }
+                    }
+                    
                 }
             }
 
@@ -236,6 +274,7 @@ namespace GovernCMS.Controllers
             {
                 WebsiteId = websiteId.GetValueOrDefault(),
                 WebsiteSelectList = new SelectList(selectListItems, "Value", "Text"),
+                CalendarSelectList = new SelectList(calendarSelectListItems, "Value", "Text")
             };
 
             return View(calendarViewModel);
@@ -250,14 +289,16 @@ namespace GovernCMS.Controllers
         }
 
         [HttpPost]
-        public JsonResult Delete(int siteId)
+        public JsonResult CalendarAdd(int websiteId, string calendarName)
         {
-            Website siteToDelete = new Website() { Id = siteId};
-            db.Websites.Attach(siteToDelete);
-            db.Websites.Remove(siteToDelete);
+            Calendar calendar = new Calendar();
+            calendar.CalendarName = calendarName;
+            calendar.CreateDate = DateTime.Now.Date;
+            calendar.WebsiteId = websiteId;
+            db.Calendars.Add(calendar);
             db.SaveChanges();
 
-            return Json(siteId);
+            return Json(calendar);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace GovernCMS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Calendar()
         {
-            this.CalendarItems = new HashSet<CalendarItem>();
+            this.CalendarEvents = new HashSet<CalendarEvent>();
         }
     
         public int CalendarId { get; set; }
@@ -28,6 +28,6 @@ namespace GovernCMS.Models
     
         public virtual Website Website { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CalendarItem> CalendarItems { get; set; }
+        public virtual ICollection<CalendarEvent> CalendarEvents { get; set; }
     }
 }
