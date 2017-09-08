@@ -35,7 +35,12 @@ namespace GovernCMS.Services.Impl
 
         public IList<Category> FindCategoriesByWebsiteId(int websiteId)
         {
-            return db.Categories.Where(c => c.WebsiteId == websiteId).Include(c => c.SubCategories).ToList();
+            IList<Category> categories = db.Categories.Where(c => c.WebsiteId == websiteId)
+                                                      .Where(c => c.ParentCategoryId == null) // filter sub-categories
+                                                      .Include(c => c.SubCategories)
+                                                      .ToList();
+            return categories;
         }
+
     }
 }

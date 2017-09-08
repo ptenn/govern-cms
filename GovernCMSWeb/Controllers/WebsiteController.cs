@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -81,6 +80,7 @@ namespace GovernCMS.Controllers
                     websiteId = websites.First().Id;
                 }
             }
+            
             IList<Category> categories = websiteService.FindCategoriesByWebsiteId(websiteId.Value);
             BreadcrumbViewModel breadcrumbViewModel = new BreadcrumbViewModel()
             {
@@ -116,7 +116,7 @@ namespace GovernCMS.Controllers
                 category.Number = number;
                 number++;
 
-                if (category.CategoryId != null && category.SubCategories != null && category.SubCategories.Count > 0)
+                if (category.SubCategories != null && category.SubCategories.Count > 0)
                 {
                     foreach (Category subCategory in category.SubCategories)
                     {
@@ -149,7 +149,6 @@ namespace GovernCMS.Controllers
         public JsonResult CategoryAdd(int websiteId, string categoryName)
         {
             UserCheck();
-            User currentUser = (User)Session[Constants.CURRENT_USER];
 
             // Delete and replace.
             Category category = new Category();
