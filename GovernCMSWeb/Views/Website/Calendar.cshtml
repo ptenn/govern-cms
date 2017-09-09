@@ -46,6 +46,9 @@
                                     @Html.DropDownListFor(model => model.CalendarId, Model.CalendarSelectList, new {@class = "form-control", aria_label = "Selected Calendar"})
                                     <p style="margin-top:20px"/>
                                     <button type="button" class="btn btn-sm btn-success" onclick="addCalendar()"><span class="fa fa-calendar"></span> Add Calendar</button>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addEvent()"><span class="fa fa-calendar-plus-o"></span> Add Event</button>
+
                                 </div>
                             </div>
                         }
@@ -59,12 +62,7 @@
     <div class="animated fadeIn">
         <div class="card">
             <div class="card-header">
-                <i class="icon-calendar"></i> FullCalendar
-                <div class="card-actions">
-                    <a href="http://angular-ui.github.io/ui-calendar/">
-                        <small class="text-muted">docs</small>
-                    </a>
-                </div>
+                <span class="fa fa-calendar"></span> <span id="currentCalendarName">FullCalendar</span>
             </div>
             <div class="card-body">
                 <div id="calendar"></div>
@@ -79,13 +77,33 @@
     <div id="categoryModalDiv" class="modal-dialog modal-primary" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 id="categoryModalTitle" class="modal-title">Add Calendar</h4>
+                <h4 id="categoryModalTitle" class="modal-title">Add <span id="addType">Calendar</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">
+                <label id="newCalendarLabel" for="newCalendar">New Calendar Name: </label>
                 <input type="text" class="form-control" name="newCalendar" id="newCalendar" aria-label="New Calendar Name"/>
+                
+                <div id="newEventDiv" style="display:none">
+                    <label for="newEvent">Event Name: </label>
+                    <input type="text" class="form-control" name="newEvent" id="newEvent" aria-label="New Event Name"/>
+                    <label for="startDate">Start Date:</label>
+                    <div id="startDatePicker" class="input-group date" data-provide="datepicker">
+                        <input id="startDate" class="form-control" aria-label="Event Start Date"/>
+                        <div class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </div>
+                    </div>
+                    <label for="endDate">End Date:</label>
+                    <div id="endDatePicker" class="input-group date" data-provide="datepicker">
+                        <input id="endDate" class="form-control" aria-label="Event End Date" />
+                        <div class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button id="calendarModalSubmitButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#calendarModal" onclick="submitAddCalendar();">Save</button>
@@ -95,7 +113,6 @@
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.js"></script>
-<script type="text/javascript" src="/Scripts/gcal.js"></script>
 
 <script type="text/javascript">
 
@@ -139,10 +156,48 @@
         }
     }
 
-    function addCalendar() {
-        $('#calendarModal').modal('show');
+    function changeCalendarHandler(calendarSelect) {
+        var calendarId = calendarSelect.options[calendarSelect.selectedIndex].value;
+        var calendarName = calendarSelect.options[calendarSelect.selectedIndex].Text;
+
+        $("currentCalendarName").val(calendarName);
+
+        $.post('/Website/FindEventsByCalendarId',
+            {
+                calendarId: calendarId
+            },
+            function(data) {
+                if (data != null && data.length > 0) {
+                    $('#calendar').fullCalendar.events = [];
+                    for (var i = 0; i < data.length; i++) {
+                        var event = new Object();
+                        event.title = data[i].EventName;
+                        event.start = data[i].StartDate;
+                        event.end = data[i].EndDate;
+                        event.url = data[i].EventUrl;
+                    }
+
+                }
+        });
+    }
+
+    function addCalendar() {        
+        $('#addType').text('Calendar');
+        $('#newCalendarLabel').show();
+        $('#newCalendar').show();
         $('#newCalendar').val('');
-        $('#newCalendar').focus();
+        $('#newEventDiv').hide();
+        $('#calendarModal').modal('show');
+        setTimeout($('#newCalendar').focus(), 1);
+    }
+
+    function addEvent() {        
+        $('#addType').text('Event');
+        $('#newCalendarLabel').hide();
+        $('#newCalendar').hide();
+        $('#newEventDiv').show();
+        $('#calendarModal').modal('show');
+        setTimeout($('#newEvent').focus(), 1);
     }
 
     function submitAddCalendar() {
@@ -153,7 +208,7 @@
             },
             function (data) {
                 var select = $("#CalendarId");
-                var option = new Option(data.CalendarName, data.CalendarId)
+                var option = new Option(data.CalendarName, data.CalendarId);
                 select.append(option);
                 $('#calendarModal').modal('hide');
             },
@@ -178,7 +233,6 @@
                 center: 'title',
                 right: 'month,basicWeek,basicDay'
             },
-            defaultDate: '2016-01-12',
             editable: true,
             eventLimit: true, // allow "more" link when too many events
             events: [

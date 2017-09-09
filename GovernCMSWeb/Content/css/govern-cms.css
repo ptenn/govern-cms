@@ -102,3 +102,11 @@ h1 {
     border-color: #ff1717;
 }
 
+.card-header .card-actions a, .card-header .card-actions button {
+    width: 100px;
+}
+
+.calendarEventAdd {
+    color: #FFF;
+    background-color: #1e6b02;
+}

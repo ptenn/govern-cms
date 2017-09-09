@@ -258,7 +258,6 @@
     <Content Include="Scripts\dropzone.js" />
     <Content Include="Scripts\dropzone.min.js" />
     <Content Include="Scripts\editable-select.js" />
-    <Content Include="Scripts\gcal.js" />
     <Content Include="Scripts\jquery.mmenu.min.js" />
     <Content Include="Scripts\jquery.nestable.min.js" />
     <Content Include="Scripts\pace.min.js" />

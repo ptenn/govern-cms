@@ -46,7 +46,6 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="CalendarName" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="WebsiteId" Type="int" Nullable="false" />
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
-          <Property Name="UpdateDate" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="CalendarEvent">
           <Key>
@@ -54,6 +53,7 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CalendarId" Type="int" Nullable="false" />
+          <Property Name="EventName" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="StartDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="EndDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="EventUrl" Type="varchar" MaxLength="255" />
@@ -838,7 +838,6 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <Property Name="CalendarName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="WebsiteId" Type="Int32" Nullable="false" />
           <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="UpdateDate" Type="DateTime" Precision="7" />
           <NavigationProperty Name="Website" Relationship="GovernCMS.Models.FK_Calendar_Website" FromRole="Calendar" ToRole="Website" />
           <NavigationProperty Name="CalendarEvents" Relationship="GovernCMS.Models.FK_CalendarItem_Calendar" FromRole="Calendar" ToRole="CalendarEvent" />
         </EntityType>
@@ -865,6 +864,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <Property Name="EventUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
           <NavigationProperty Name="Calendar" Relationship="GovernCMS.Models.FK_CalendarItem_Calendar" FromRole="CalendarEvent" ToRole="Calendar" />
+          <Property Name="EventName" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
         </EntityType>
         <Association Name="FK_CalendarItem_Calendar">
           <End Type="GovernCMS.Models.Calendar" Role="Calendar" Multiplicity="1" />
@@ -1013,7 +1013,6 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <EntitySetMapping Name="Calendars">
             <EntityTypeMapping TypeName="GovernCMS.Models.Calendar">
               <MappingFragment StoreEntitySet="Calendar">
-                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
                 <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
                 <ScalarProperty Name="WebsiteId" ColumnName="WebsiteId" />
                 <ScalarProperty Name="CalendarName" ColumnName="CalendarName" />
@@ -1024,6 +1023,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <EntitySetMapping Name="CalendarEvents">
             <EntityTypeMapping TypeName="GovernCMS.Models.CalendarEvent">
               <MappingFragment StoreEntitySet="CalendarEvent">
+                <ScalarProperty Name="EventName" ColumnName="EventName" />
                 <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
                 <ScalarProperty Name="EventUrl" ColumnName="EventUrl" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />

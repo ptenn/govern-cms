@@ -34,5 +34,12 @@ namespace GovernCMS.Services
         /// <param name="websiteId">The Website ID for finding all Calendars</param>
         /// <returns>Calendars, including Events</returns>
         IList<Calendar> FindCalendarsByWebsiteId(int websiteId);
+
+        /// <summary>
+        /// Find Calendar Events by Calendar.
+        /// </summary>
+        /// <param name="calendarId">The Calendar ID</param>
+        /// <returns>All Events for the Calendar</returns>
+        IList<CalendarEvent> FindEventsByCalendarId(int calendarId);
     }
 }

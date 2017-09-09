@@ -300,5 +300,12 @@ namespace GovernCMS.Controllers
 
             return Json(calendar);
         }
+
+        [HttpPost]
+        public JsonResult FindEventsByCalendarId(int calendarId)
+        {
+            IList<CalendarEvent> events = websiteService.FindEventsByCalendarId(calendarId);
+            return Json(events);
+        }
     }
 }

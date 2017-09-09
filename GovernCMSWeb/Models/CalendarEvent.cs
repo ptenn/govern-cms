@@ -20,6 +20,7 @@ namespace GovernCMS.Models
         public System.DateTime EndDate { get; set; }
         public string EventUrl { get; set; }
         public System.DateTime CreateDate { get; set; }
+        public string EventName { get; set; }
     
         public virtual Calendar Calendar { get; set; }
     }
