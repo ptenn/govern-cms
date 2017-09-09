@@ -30,31 +30,50 @@
                         <span>In order to add Web Content, you will need to create a Website.  The Website is the container for all Web Content, Widgets, and Artifacts.</span>
                     </div>
                     <div class="card-body">
-                    @using (Html.BeginForm("Calendar", "Website", FormMethod.Post, new { id = "CalendarForm" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        <div class="row">
-                            <label class="col-md-2 control-label">Select Website</label>
-                            <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, 
-                                    new {@class = "form-control", aria_label = "Selected Website", onchange="websiteChangeHandler(this)"})
+                        @using (Html.BeginForm("Calendar", "Website", FormMethod.Post, new { id = "CalendarForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="row">
+                                <label class="col-md-2 control-label">Select Website</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, 
+                                        new {@class = "form-control", aria_label = "Selected Website", onchange="websiteChangeHandler(this)"})
+                                </div>
                             </div>
-                        </div>
-                        <div class="row" style="margin-top:20px">
-                            <label class="col-md-2 control-label">Select Calendar</label>
-                            <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.CalendarId, Model.CalendarSelectList, new {@class = "form-control", aria_label = "Selected Calendar"})
-                                <p style="margin-top:20px"/>
-                                <button type="button" class="btn btn-sm btn-success" onclick="addCalendar()"><span class="fa fa-calendar"></span> Add Calendar</button>
+                            <div class="row" style="margin-top:20px">
+                                <label class="col-md-2 control-label">Select Calendar</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.CalendarId, Model.CalendarSelectList, new {@class = "form-control", aria_label = "Selected Calendar"})
+                                    <p style="margin-top:20px"/>
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addCalendar()"><span class="fa fa-calendar"></span> Add Calendar</button>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="card">
+            <div class="card-header">
+                <i class="icon-calendar"></i> FullCalendar
+                <div class="card-actions">
+                    <a href="http://angular-ui.github.io/ui-calendar/">
+                        <small class="text-muted">docs</small>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.conainer-fluid -->
 <!-- Calendar Modal -->
 <div class="modal fade" id="calendarModal" role="dialog" aria-hidden="true">
     <div id="categoryModalDiv" class="modal-dialog modal-primary" role="document">
@@ -128,17 +147,17 @@
 
     function submitAddCalendar() {
         $.post("/Website/CalendarAdd",
-        {
-            "websiteId": $("#WebsiteId").val(),
-            "calendarName": $("#newCalendar").val()
-        },
-        function (data) {
-            var select = $("#CalendarId");
-            var option = new Option(data.CalendarName, data.CalendarId)
-            select.append(option);
-            $('#calendarModal').modal('hide');
-        },
-        "json");
+            {
+                "websiteId": $("#WebsiteId").val(),
+                "calendarName": $("#newCalendar").val()
+            },
+            function (data) {
+                var select = $("#CalendarId");
+                var option = new Option(data.CalendarName, data.CalendarId)
+                select.append(option);
+                $('#calendarModal').modal('hide');
+            },
+            "json");
 
     }
 
@@ -149,4 +168,75 @@
         }
     });
 
+</script>
+<script type="text/javascript">
+    $(function(){
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,basicWeek,basicDay'
+            },
+            defaultDate: '2016-01-12',
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            events: [
+                {
+                    title: 'All Day Event',
+                    start: '2016-01-01'
+                },
+                {
+                    title: 'Long Event',
+                    start: '2016-01-07',
+                    end: '2016-01-10'
+                },
+                {
+                    id: 999,
+                    title: 'Repeating Event',
+                    start: '2016-01-09T16:00:00'
+                },
+                {
+                    id: 999,
+                    title: 'Repeating Event',
+                    start: '2016-01-16T16:00:00'
+                },
+                {
+                    title: 'Conference',
+                    start: '2016-01-11',
+                    end: '2016-01-13'
+                },
+                {
+                    title: 'Meeting',
+                    start: '2016-01-12T10:30:00',
+                    end: '2016-01-12T12:30:00'
+                },
+                {
+                    title: 'Lunch',
+                    start: '2016-01-12T12:00:00'
+                },
+                {
+                    title: 'Meeting',
+                    start: '2016-01-12T14:30:00'
+                },
+                {
+                    title: 'Happy Hour',
+                    start: '2016-01-12T17:30:00'
+                },
+                {
+                    title: 'Dinner',
+                    start: '2016-01-12T20:00:00'
+                },
+                {
+                    title: 'Birthday Party',
+                    start: '2016-01-13T07:00:00'
+                },
+                {
+                    title: 'Click for Google',
+                    url: 'http://google.com/',
+                    start: '2016-01-28'
+                }
+            ]
+        });
+    });
 </script>
