@@ -48,7 +48,6 @@
                                     <button type="button" class="btn btn-sm btn-success" onclick="addCalendar()"><span class="fa fa-calendar"></span> Add Calendar</button>
                                     &nbsp;&nbsp;&nbsp;
                                     <button type="button" class="btn btn-sm btn-success" onclick="addEvent()"><span class="fa fa-calendar-plus-o"></span> Add Event</button>
-
                                 </div>
                             </div>
                         }
@@ -83,12 +82,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <label id="newCalendarLabel" for="newCalendar">New Calendar Name: </label>
-                <input type="text" class="form-control" name="newCalendar" id="newCalendar" aria-label="New Calendar Name"/>
+                <label id="newEntityLabel" for="newEntity">Name: </label>
+                <input type="text" class="form-control" name="newEntity" id="newEntity" aria-label="New Entity Name"/>
                 
                 <div id="newEventDiv" style="display:none">
-                    <label for="newEvent">Event Name: </label>
-                    <input type="text" class="form-control" name="newEvent" id="newEvent" aria-label="New Event Name"/>
                     <label for="startDate">Start Date:</label>
                     <div id="startDatePicker" class="input-group date" data-provide="datepicker">
                         <input id="startDate" class="form-control" aria-label="Event Start Date"/>
@@ -178,33 +175,36 @@
                     }
 
                 }
-        });
+            });
     }
 
     function addCalendar() {        
         $('#addType').text('Calendar');
         $('#newCalendarLabel').show();
-        $('#newCalendar').show();
-        $('#newCalendar').val('');
+        $('#newEntity').val('');
         $('#newEventDiv').hide();
         $('#calendarModal').modal('show');
-        setTimeout($('#newCalendar').focus(), 1);
+        $('#newEntity').focus();
     }
 
-    function addEvent() {        
+    function addEvent() {  
+        var calendarId = calendarSelect.options[calendarSelect.selectedIndex].value;
+        if (calendarId == null) {
+            alert("You must select a Calendar in order to create an Event");
+        }
         $('#addType').text('Event');
         $('#newCalendarLabel').hide();
-        $('#newCalendar').hide();
+        $('#newEntity').val('');
         $('#newEventDiv').show();
         $('#calendarModal').modal('show');
-        setTimeout($('#newEvent').focus(), 1);
+        $('#newEntity').focus();
     }
 
     function submitAddCalendar() {
         $.post("/Website/CalendarAdd",
             {
                 "websiteId": $("#WebsiteId").val(),
-                "calendarName": $("#newCalendar").val()
+                "calendarName": $("#newEntity").val()
             },
             function (data) {
                 var select = $("#CalendarId");
@@ -213,10 +213,22 @@
                 $('#calendarModal').modal('hide');
             },
             "json");
-
     }
 
-    document.querySelector('#newCalendar').addEventListener('keypress', function (e) {
+    function submitAddEvent() {
+        $.post("/Website/CalendarEventAdd",
+            {
+                "calendarId": $("#CalendarId").val(),
+                "eventName": $("#newEntity").val(),
+                "startDate": $("#startDate").val(),
+                "endDate": $("#endDate").val()
+            },
+            function (data) {
+            },
+            "json");        
+    }
+
+    document.querySelector('#newEntity').addEventListener('keypress', function (e) {
         var key = e.which || e.keyCode;
         if (key === 13) { 
             submitAddCalendar();
@@ -225,8 +237,9 @@
 
 </script>
 <script type="text/javascript">
-    $(function(){
+    var mode = 'calendar';
 
+    $(function() {         
         $('#calendar').fullCalendar({
             header: {
                 left: 'prev,next today',

@@ -281,14 +281,6 @@ namespace GovernCMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult Calendar(CalendarViewModel calendarViewModel)
-        {
-            TempData["successMessage"] = "Calendar Saved";
-            return RedirectToAction("Calendar", new { websiteId = calendarViewModel.WebsiteId });
-
-        }
-
-        [HttpPost]
         public JsonResult CalendarAdd(int websiteId, string calendarName)
         {
             Calendar calendar = new Calendar();
@@ -298,7 +290,24 @@ namespace GovernCMS.Controllers
             db.Calendars.Add(calendar);
             db.SaveChanges();
 
+            TempData["successMessage"] = "Calendar " + calendarName + " saved";
+
             return Json(calendar);
+        }
+
+        [HttpPost]
+        public JsonResult CalendarEventAdd(int websiteId, int calendarId, string eventName, string startDate, string endDate)
+        {
+            CalendarEvent calendarEvent = new CalendarEvent();
+            calendarEvent.EventName = eventName;
+            calendarEvent.StartDate = DateTime.Parse(startDate);
+            calendarEvent.EndDate = DateTime.Parse(endDate);
+            calendarEvent.CreateDate = DateTime.Now.Date;
+            calendarEvent.CalendarId = calendarId;
+            db.CalendarEvents.Add(calendarEvent);
+            db.SaveChanges();
+
+            return Json(calendarEvent);
         }
 
         [HttpPost]
