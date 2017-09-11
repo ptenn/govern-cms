@@ -296,18 +296,29 @@ namespace GovernCMS.Controllers
         }
 
         [HttpPost]
-        public JsonResult CalendarEventAdd(int websiteId, int calendarId, string eventName, string startDate, string endDate)
+        public JsonResult CalendarEventAdd(int calendarId, string eventName, string startDate, string endDate, string eventUrl)
         {
             CalendarEvent calendarEvent = new CalendarEvent();
             calendarEvent.EventName = eventName;
             calendarEvent.StartDate = DateTime.Parse(startDate);
             calendarEvent.EndDate = DateTime.Parse(endDate);
             calendarEvent.CreateDate = DateTime.Now.Date;
+            calendarEvent.EventUrl = eventUrl;
             calendarEvent.CalendarId = calendarId;
             db.CalendarEvents.Add(calendarEvent);
             db.SaveChanges();
 
-            return Json(calendarEvent);
+            CalendarEventViewModel calendarEventViewModel = new CalendarEventViewModel()
+            {
+                Id = calendarEvent.Id,
+                CalendarId = calendarEvent.CalendarId,
+                EventName = calendarEvent.EventName,
+                StartDate = calendarEvent.StartDate.ToString("yyyy-MM-dd"),
+                EndDate = calendarEvent.EndDate.ToString("yyyy-MM-dd"),
+                EventUrl = calendarEvent.EventUrl
+            };
+
+            return Json(calendarEventViewModel);
         }
 
         [HttpPost]
