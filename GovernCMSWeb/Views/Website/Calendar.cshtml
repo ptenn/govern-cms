@@ -43,11 +43,11 @@
                             <div class="row" style="margin-top:20px">
                                 <label class="col-md-2 control-label">Select Calendar</label>
                                 <div class="col-md-4">
-                                    @Html.DropDownListFor(model => model.CalendarId, Model.CalendarSelectList, new {@class = "form-control", aria_label = "Selected Calendar"})
+                                    @Html.DropDownListFor(model => model.CalendarId, Model.CalendarSelectList, new {@class = "form-control", aria_label = "Selected Calendar", onchange= "changeCalendarHandler(this)" })
                                     <p style="margin-top:20px"/>
                                     <button type="button" class="btn btn-sm btn-success" onclick="addCalendar()"><span class="fa fa-calendar"></span> Add Calendar</button>
                                     &nbsp;&nbsp;&nbsp;
-                                    <button type="button" class="btn btn-sm btn-success" onclick="addEvent()"><span class="fa fa-calendar-plus-o"></span> Add Event</button>
+                                    <button id="addEventButton" type="button" class="btn btn-sm btn-success" onclick="addEvent()" style="display:none"><span class="fa fa-calendar-plus-o"></span> Add Event</button>
                                 </div>
                             </div>
                         }
@@ -112,10 +112,14 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.js"></script>
 
 <script type="text/javascript">
+    var mode = 'calendar';
 
     var calendars = [];
     $(document).ready(function() {
-
+        var calendarSelect = $("#CalendarId") != null && $("#CalendarId").length > 0 ? $("#CalendarId")[0] : null;
+        if (calendarSelect != null) {
+            changeCalendarHandler(calendarSelect);
+        }
     });
 
     function createCalendars() {
@@ -157,6 +161,10 @@
         var calendarId = calendarSelect.options[calendarSelect.selectedIndex].value;
         var calendarName = calendarSelect.options[calendarSelect.selectedIndex].Text;
 
+        if (calendarId != null && calendarId > 0) {
+            $("#addEventButton").show();
+        }
+
         $("currentCalendarName").val(calendarName);
 
         $.post('/Website/FindEventsByCalendarId',
@@ -187,7 +195,8 @@
         $('#newEntity').focus();
     }
 
-    function addEvent() {  
+    function addEvent() {
+        var calendarSelect = $("#CalendarId");
         var calendarId = calendarSelect.options[calendarSelect.selectedIndex].value;
         if (calendarId == null) {
             alert("You must select a Calendar in order to create an Event");
@@ -224,6 +233,12 @@
                 "endDate": $("#endDate").val()
             },
             function (data) {
+                var event = new Object();
+                event.title = data.EventName;
+                event.start = data.StartDate;
+                event.end = data.EndDate;
+                event.url = data.EventUrl;
+                $('#calendar').fullCalendar.events.push(event);
             },
             "json");        
     }
@@ -231,14 +246,18 @@
     document.querySelector('#newEntity').addEventListener('keypress', function (e) {
         var key = e.which || e.keyCode;
         if (key === 13) { 
-            submitAddCalendar();
+            if (mode === 'calendar') {
+                submitAddCalendar();
+            }
+            else {
+                submitAddEvent();
+            }
+
         }
     });
 
 </script>
 <script type="text/javascript">
-    var mode = 'calendar';
-
     $(function() {         
         $('#calendar').fullCalendar({
             header: {
