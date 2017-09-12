@@ -48,8 +48,6 @@ namespace GovernCMS.Controllers
             {
                 try
                 {
-
-
                     User user = userService.CreateUser(createUserViewModel.EmailAddr,
                         createUserViewModel.Passwd,
                         createUserViewModel.ConfirmPasswd,

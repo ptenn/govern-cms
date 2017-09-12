@@ -46,13 +46,16 @@ namespace GovernCMS.Services.Impl
         {
             IList<Calendar> calendars = db.Calendars.Where(c => c.WebsiteId == websiteId)
                                                     .Include(c => c.CalendarEvents)
+                                                    .OrderBy(c => c.CalendarId)
                                                     .ToList();
             return calendars;
         }
 
         public IList<CalendarEvent> FindEventsByCalendarId(int calendarId)
         {
-            IList<CalendarEvent> events = db.CalendarEvents.Where(e => e.CalendarId == calendarId).ToList();
+            IList<CalendarEvent> events = db.CalendarEvents.Where(e => e.CalendarId == calendarId)
+                                                           .OrderBy(e => e.Id)
+                                                           .ToList();
             return events;
         }
 

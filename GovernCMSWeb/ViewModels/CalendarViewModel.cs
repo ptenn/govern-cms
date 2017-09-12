@@ -12,5 +12,7 @@ namespace GovernCMS.ViewModels
         public int CalendarId { get; set; }
         public IList<Calendar> Calendars { get; set; }
         public SelectList CalendarSelectList { get; set; }
+
+        public IList<CalendarEventViewModel> SelectedCalendarEvents { get; set; }
     }
 }

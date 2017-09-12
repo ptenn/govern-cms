@@ -248,6 +248,8 @@ namespace GovernCMS.Controllers
                 }
             }
 
+            int calendarId = 0;
+            IList<CalendarEventViewModel> selectedCalendarEvents = new List<CalendarEventViewModel>();
             if (websites.Count > 0)
             {
                 if (websiteId == null)
@@ -255,9 +257,26 @@ namespace GovernCMS.Controllers
                     websiteId = websites.First().Id;
                     if (websiteCalendars.ContainsKey(websiteId.Value))
                     {
+                        Boolean firstCalendar = true;
                         IList<Calendar> selectedCalendars = websiteCalendars[websiteId.Value];
                         foreach (var calendar in selectedCalendars)
                         {
+                            if (firstCalendar)
+                            {
+                                calendarId = calendar.CalendarId;
+                                selectedCalendarEvents = calendar.CalendarEvents
+                                                                    .Select(e => new CalendarEventViewModel()
+                                                                        {
+                                                                            Id = e.Id,
+                                                                            CalendarId = e.CalendarId,
+                                                                            EventName = e.EventName,
+                                                                            EventUrl = e.EventUrl,
+                                                                            StartDate = e.StartDate.ToString("yyyy-MM-dd"),
+                                                                            EndDate = e.EndDate.ToString("yyyy-MM-dd")
+                                                                        })
+                                                                        .ToList();
+                                firstCalendar = false;
+                            }
                             SelectListItem item = new SelectListItem()
                             {
                                 Text = calendar.CalendarName,
@@ -273,8 +292,10 @@ namespace GovernCMS.Controllers
             CalendarViewModel calendarViewModel = new CalendarViewModel()
             {
                 WebsiteId = websiteId.GetValueOrDefault(),
+                CalendarId = calendarId,
                 WebsiteSelectList = new SelectList(selectListItems, "Value", "Text"),
-                CalendarSelectList = new SelectList(calendarSelectListItems, "Value", "Text")
+                CalendarSelectList = new SelectList(calendarSelectListItems, "Value", "Text"),
+                SelectedCalendarEvents = selectedCalendarEvents
             };
 
             return View(calendarViewModel);
@@ -324,7 +345,18 @@ namespace GovernCMS.Controllers
         [HttpPost]
         public JsonResult FindEventsByCalendarId(int calendarId)
         {
-            IList<CalendarEvent> events = websiteService.FindEventsByCalendarId(calendarId);
+            IList<CalendarEventViewModel> events = websiteService.FindEventsByCalendarId(calendarId)
+                                                                 .Select(e => new CalendarEventViewModel()
+                                                                    {
+                                                                        Id = e.Id,
+                                                                        CalendarId = e.CalendarId,
+                                                                        EventName = e.EventName,
+                                                                        EventUrl = e.EventUrl,
+                                                                        StartDate = e.StartDate.ToString("yyyy-MM-dd"),
+                                                                        EndDate = e.EndDate.ToString("yyyy-MM-dd")
+                                                                    })
+                                                                 .ToList();
+
             return Json(events);
         }
     }
