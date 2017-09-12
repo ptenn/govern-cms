@@ -32,7 +32,9 @@ namespace GovernCMS.Controllers
 
             if (filterContext.Exception is AuthenticationException)
             {
-                filterContext.Result = RedirectToAction("Login", "User");
+                string originalUrl = HttpContext.Request.RawUrl;
+
+                filterContext.Result = RedirectToAction("Login", "User", new {redirectUrl = originalUrl});
             }
             else
             {

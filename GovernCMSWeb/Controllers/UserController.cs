@@ -81,9 +81,13 @@ namespace GovernCMS.Controllers
         }
 
         // Get: User/LoginViewModel
-        public ActionResult Login()
+        public ActionResult Login(string redirectUrl)
         {
-            return View();
+            LoginViewModel loginViewModel = new LoginViewModel()
+            {
+                RedirectUrl = redirectUrl
+            };
+            return View(loginViewModel);
         }
 
         [HttpPost]
@@ -116,6 +120,11 @@ namespace GovernCMS.Controllers
                 RecordLoginAttempt(user, Request);
 
                 TempData["successMessage"] = $"User {user.FirstName} {user.LastName} successfully logged in";
+
+                if (!string.IsNullOrEmpty(loginViewModel.RedirectUrl))
+                {
+                    return new RedirectResult(loginViewModel.RedirectUrl);
+                }
 
                 return RedirectToAction("Index", "Home");
             }

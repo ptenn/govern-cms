@@ -6,5 +6,6 @@ namespace GovernCMS.ViewModels
     {
         public String EmailAddr { get; set; }
         public String Passwd { get; set; }
+        public String RedirectUrl { get; set; }
     }
 }
