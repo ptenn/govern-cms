@@ -1,5 +1,6 @@
 ﻿@using GovernCMS.Models
 @using GovernCMS.ViewModels
+@using GovernCMS.Web
 @model GovernCMS.ViewModels.CalendarViewModel
 
 @{
@@ -299,37 +300,5 @@
 
 </script>
 <script type="text/javascript">
-    $(function() {
-        $('#calendar').fullCalendar({
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month,basicWeek,basicDay'
-            },
-            editable: true,
-            eventLimit: true, // allow "more" link when too many events
-            events: [
-                @{ string delimiter = "";}
-                @foreach(CalendarEventViewModel calendarEvent in Model.SelectedCalendarEvents)
-                {
-                    @Html.Raw(delimiter)
-                    @Html.Raw("                {\n");
-                    @Html.Raw("                    title: '" + calendarEvent.EventName + "',\n");
-                    @Html.Raw("                    start: '" + calendarEvent.StartDate + "',\n");
-                    if (string.IsNullOrEmpty(calendarEvent.EventUrl))
-                    {
-                        @Html.Raw("                    end: '" + calendarEvent.EndDate + "'\n");
-                    }
-                    else
-                    {
-                        @Html.Raw("                    end: '" + calendarEvent.EndDate + "',\n");
-                        @Html.Raw("                    url: '" + calendarEvent.EventUrl + "'\n");
-                    }
-                    @Html.Raw("                }");
-                    delimiter = ",\n";
-                }
-
-            ]
-        });
-    });
+@Html.CalendarDisplay(Model.SelectedCalendarEvents, 4);
 </script>

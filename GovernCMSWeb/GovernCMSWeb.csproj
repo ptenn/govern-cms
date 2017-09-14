@@ -218,6 +218,7 @@
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
     <Compile Include="ViewModels\ManageWebsiteViewModel.cs" />
     <Compile Include="ViewModels\OrgSearchResultViewModel.cs" />
+    <Compile Include="Web\CalendarExtensions.cs" />
     <Compile Include="Web\CategoryExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
