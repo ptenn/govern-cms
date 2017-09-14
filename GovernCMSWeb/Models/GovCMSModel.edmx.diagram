@@ -22,7 +22,7 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Organization" />
         <AssociationConnector Association="GovernCMS.Models.FK_Artifact_Owner" />
         <AssociationConnector Association="GovernCMS.Models.UserGroup" />
-        <EntityTypeShape EntityType="GovernCMS.Models.Website" Width="1.5" PointX="9.375" PointY="2.625" />
+        <EntityTypeShape EntityType="GovernCMS.Models.Website" Width="1.5" PointX="9.375" PointY="2.375" />
         <AssociationConnector Association="GovernCMS.Models.FK_Website_User" />
         <AssociationConnector Association="GovernCMS.Models.FK_Website_Organization" />
         <EntityTypeShape EntityType="GovernCMS.Models.Category" Width="1.5" PointX="10.375" PointY="6.125" />
@@ -32,6 +32,10 @@
         <AssociationConnector Association="GovernCMS.Models.FK_Calendar_Website" />
         <EntityTypeShape EntityType="GovernCMS.Models.CalendarEvent" Width="1.5" PointX="13.875" PointY="3" />
         <AssociationConnector Association="GovernCMS.Models.FK_CalendarItem_Calendar" />
+        <EntityTypeShape EntityType="GovernCMS.Models.KeyValueCollection" Width="1.5" PointX="11.625" PointY="0.5" />
+        <EntityTypeShape EntityType="GovernCMS.Models.KeyValueEntry" Width="1.5" PointX="13.875" PointY="0.75" />
+        <AssociationConnector Association="GovernCMS.Models.FK_KeyValueCollection_Website" />
+        <AssociationConnector Association="GovernCMS.Models.FK_KeyValueEntry_Collection" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

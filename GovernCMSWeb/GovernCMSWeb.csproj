@@ -178,6 +178,12 @@
     <Compile Include="Models\Group.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\KeyValueCollection.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\KeyValueEntry.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\LoginAttempt.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>

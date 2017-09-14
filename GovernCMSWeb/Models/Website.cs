@@ -19,6 +19,7 @@ namespace GovernCMS.Models
         {
             this.Categories = new HashSet<Category>();
             this.Calendars = new HashSet<Calendar>();
+            this.KeyValueCollections = new HashSet<KeyValueCollection>();
         }
     
         public int Id { get; set; }
@@ -35,5 +36,7 @@ namespace GovernCMS.Models
         public virtual ICollection<Category> Categories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Calendar> Calendars { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<KeyValueCollection> KeyValueCollections { get; set; }
     }
 }

@@ -94,6 +94,24 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="OrganizationId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="KeyValueCollection">
+          <Key>
+            <PropertyRef Name="CollectionId" />
+          </Key>
+          <Property Name="CollectionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CollectionName" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="WebsiteId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="KeyValueEntry">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CollectionId" Type="int" Nullable="false" />
+          <Property Name="Key" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Value" Type="varchar" MaxLength="500" Nullable="false" />
+        </EntityType>
         <EntityType Name="LoginAttempt">
           <Key>
             <PropertyRef Name="LoginAttemptId" />
@@ -306,6 +324,30 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_KeyValueCollection_Website">
+          <End Role="Website" Type="Self.Website" Multiplicity="1" />
+          <End Role="KeyValueCollection" Type="Self.KeyValueCollection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Website">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="KeyValueCollection">
+              <PropertyRef Name="WebsiteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KeyValueEntry_Collection">
+          <End Role="KeyValueCollection" Type="Self.KeyValueCollection" Multiplicity="1" />
+          <End Role="KeyValueEntry" Type="Self.KeyValueEntry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KeyValueCollection">
+              <PropertyRef Name="CollectionId" />
+            </Principal>
+            <Dependent Role="KeyValueEntry">
+              <PropertyRef Name="CollectionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_LoginAttempt_User">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="LoginAttempt" Type="Self.LoginAttempt" Multiplicity="*" />
@@ -385,6 +427,8 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <EntitySet Name="Category" EntityType="Self.Category" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Content" EntityType="Self.Content" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Group" EntityType="Self.Group" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="KeyValueCollection" EntityType="Self.KeyValueCollection" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="KeyValueEntry" EntityType="Self.KeyValueEntry" Schema="cms" store:Type="Tables" />
           <EntitySet Name="LoginAttempt" EntityType="Self.LoginAttempt" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Organization" EntityType="Self.Organization" Schema="cms" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="cms" store:Type="Tables" />
@@ -458,6 +502,14 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <AssociationSet Name="FK_Group_Organization" Association="Self.FK_Group_Organization">
             <End Role="Organization" EntitySet="Organization" />
             <End Role="Group" EntitySet="Group" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KeyValueCollection_Website" Association="Self.FK_KeyValueCollection_Website">
+            <End Role="Website" EntitySet="Website" />
+            <End Role="KeyValueCollection" EntitySet="KeyValueCollection" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KeyValueEntry_Collection" Association="Self.FK_KeyValueEntry_Collection">
+            <End Role="KeyValueCollection" EntitySet="KeyValueCollection" />
+            <End Role="KeyValueEntry" EntitySet="KeyValueEntry" />
           </AssociationSet>
           <AssociationSet Name="FK_LoginAttempt_User" Association="Self.FK_LoginAttempt_User">
             <End Role="User" EntitySet="User" />
@@ -609,6 +661,16 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <AssociationSet Name="FK_CalendarItem_Calendar" Association="GovernCMS.Models.FK_CalendarItem_Calendar">
             <End Role="Calendar" EntitySet="Calendars" />
             <End Role="CalendarEvent" EntitySet="CalendarEvents" />
+          </AssociationSet>
+          <EntitySet Name="KeyValueCollections" EntityType="GovernCMS.Models.KeyValueCollection" />
+          <EntitySet Name="KeyValueEntries" EntityType="GovernCMS.Models.KeyValueEntry" />
+          <AssociationSet Name="FK_KeyValueCollection_Website" Association="GovernCMS.Models.FK_KeyValueCollection_Website">
+            <End Role="Website" EntitySet="Websites" />
+            <End Role="KeyValueCollection" EntitySet="KeyValueCollections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KeyValueEntry_Collection" Association="GovernCMS.Models.FK_KeyValueEntry_Collection">
+            <End Role="KeyValueCollection" EntitySet="KeyValueCollections" />
+            <End Role="KeyValueEntry" EntitySet="KeyValueEntries" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Group">
@@ -767,6 +829,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <NavigationProperty Name="Organization" Relationship="GovernCMS.Models.FK_Website_Organization" FromRole="Website" ToRole="Organization" />
           <NavigationProperty Name="Categories" Relationship="GovernCMS.Models.FK_Category_Website" FromRole="Website" ToRole="Category" />
           <NavigationProperty Name="Calendars" Relationship="GovernCMS.Models.FK_Calendar_Website" FromRole="Website" ToRole="Calendar" />
+          <NavigationProperty Name="KeyValueCollections" Relationship="GovernCMS.Models.FK_KeyValueCollection_Website" FromRole="Website" ToRole="KeyValueCollection" />
         </EntityType>
         <Association Name="FK_Website_User">
           <End Type="GovernCMS.Models.User" Role="User" Multiplicity="1" />
@@ -875,6 +938,51 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Principal>
             <Dependent Role="CalendarEvent">
               <PropertyRef Name="CalendarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="KeyValueCollection">
+          <Key>
+            <PropertyRef Name="CollectionId" />
+          </Key>
+          <Property Name="CollectionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CollectionName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="WebsiteId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Website" Relationship="GovernCMS.Models.FK_KeyValueCollection_Website" FromRole="KeyValueCollection" ToRole="Website" />
+          <NavigationProperty Name="KeyValueEntries" Relationship="GovernCMS.Models.FK_KeyValueEntry_Collection" FromRole="KeyValueCollection" ToRole="KeyValueEntry" />
+        </EntityType>
+        <EntityType Name="KeyValueEntry">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CollectionId" Type="Int32" Nullable="false" />
+          <Property Name="Key" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="KeyValueCollection" Relationship="GovernCMS.Models.FK_KeyValueEntry_Collection" FromRole="KeyValueEntry" ToRole="KeyValueCollection" />
+        </EntityType>
+        <Association Name="FK_KeyValueCollection_Website">
+          <End Type="GovernCMS.Models.Website" Role="Website" Multiplicity="1" />
+          <End Type="GovernCMS.Models.KeyValueCollection" Role="KeyValueCollection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Website">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="KeyValueCollection">
+              <PropertyRef Name="WebsiteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KeyValueEntry_Collection">
+          <End Type="GovernCMS.Models.KeyValueCollection" Role="KeyValueCollection" Multiplicity="1" />
+          <End Type="GovernCMS.Models.KeyValueEntry" Role="KeyValueEntry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KeyValueCollection">
+              <PropertyRef Name="CollectionId" />
+            </Principal>
+            <Dependent Role="KeyValueEntry">
+              <PropertyRef Name="CollectionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1029,6 +1137,26 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="CalendarId" ColumnName="CalendarId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="KeyValueCollections">
+            <EntityTypeMapping TypeName="GovernCMS.Models.KeyValueCollection">
+              <MappingFragment StoreEntitySet="KeyValueCollection">
+                <ScalarProperty Name="WebsiteId" ColumnName="WebsiteId" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="CollectionName" ColumnName="CollectionName" />
+                <ScalarProperty Name="CollectionId" ColumnName="CollectionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="KeyValueEntries">
+            <EntityTypeMapping TypeName="GovernCMS.Models.KeyValueEntry">
+              <MappingFragment StoreEntitySet="KeyValueEntry">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="CollectionId" ColumnName="CollectionId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

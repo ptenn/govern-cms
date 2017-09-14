@@ -35,5 +35,7 @@ namespace GovernCMS.Models
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Calendar> Calendars { get; set; }
         public virtual DbSet<CalendarEvent> CalendarEvents { get; set; }
+        public virtual DbSet<KeyValueCollection> KeyValueCollections { get; set; }
+        public virtual DbSet<KeyValueEntry> KeyValueEntries { get; set; }
     }
 }
