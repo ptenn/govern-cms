@@ -32,7 +32,7 @@
                         <span>In order to add Web Content, you will need to create a Website.  The Website is the container for all Web Content, Widgets, and Artifacts.</span>
                     </div>
                     <div class="card-body">
-                        @using (Html.BeginForm("Calendar", "Website", FormMethod.Post, new { id = "CalendarForm" }))
+                        @using (Html.BeginForm("Manage", "Calendar", FormMethod.Post, new { id = "CalendarForm" }))
                         {
                             @Html.AntiForgeryToken()
                             <div class="row">

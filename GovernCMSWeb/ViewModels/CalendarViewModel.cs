@@ -4,11 +4,8 @@ using GovernCMS.Models;
 
 namespace GovernCMS.ViewModels
 {
-    public class CalendarViewModel
+    public class CalendarViewModel : WebsiteComponentViewModel
     {
-        public int WebsiteId { get; set; }
-        public SelectList WebsiteSelectList { get; set; }
-
         public int CalendarId { get; set; }
         public IList<Calendar> Calendars { get; set; }
         public SelectList CalendarSelectList { get; set; }

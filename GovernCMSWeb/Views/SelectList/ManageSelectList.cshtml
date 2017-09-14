@@ -1,0 +1,330 @@
+﻿@model GovernCMS.ViewModels.SelectListViewModel
+
+@{
+    ViewBag.Title = "Website Calendars";
+}
+
+@if (TempData["successMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["successMessage"]
+    </div>
+
+}
+@if (TempData["errorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["errorMessage"]
+    </div>
+}
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-sm-11">
+                <div class="card">
+                    <div class="card-header">
+                        <h1>Website Drop-Down Select Lists</h1>
+                        <span>In order to add Web Content, you will need to create a Website.  The Website is the container for all Web Content, Widgets, and Artifacts.</span>
+                    </div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("SelectList", "Website", FormMethod.Post, new { id = "SelectListForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="row">
+                                <label class="col-md-2 control-label">Select Website</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, 
+                                        new {@class = "form-control", aria_label = "Selected Website", onchange="websiteChangeHandler(this)"})
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:20px">
+                                <label class="col-md-2 control-label">Select Calendar</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.CalendarId, Model.CalendarSelectList, new {@class = "form-control", aria_label = "Selected Calendar", onchange= "changeCalendarHandler(this, true)" })
+                                    <p style="margin-top:20px"/>
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addCalendar()"><span class="fa fa-calendar"></span> Add Calendar</button>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <button id="addEventButton" type="button" class="btn btn-sm btn-success" onclick="addEvent()" style="display:none"><span class="fa fa-calendar-plus-o"></span> Add Event</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="card">
+            <div class="card-header">
+                <span class="fa fa-calendar"></span> <span id="currentCalendarName">FullCalendar</span>
+            </div>
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.conainer-fluid -->
+<!-- Calendar Modal -->
+<div class="modal fade" id="calendarModal" role="dialog" aria-hidden="true">
+    <div id="categoryModalDiv" class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="categoryModalTitle" class="modal-title">Add <span id="addType">Calendar</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label id="newEntityLabel" for="newEntity">Name: </label>
+                <input type="text" class="form-control" name="newEntity" id="newEntity" aria-label="New Entity Name"/>
+                
+                <div id="newEventDiv" style="display:none">
+                    <label for="startDate">Start Date:</label>
+                    <div id="startDatePicker" class="input-group date" data-provide="datepicker">
+                        <input id="startDate" class="form-control" aria-label="Event Start Date"/>
+                        <div class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </div>
+                    </div>
+                    <label for="endDate">End Date:</label>
+                    <div id="endDatePicker" class="input-group date" data-provide="datepicker">
+                        <input id="endDate" class="form-control" aria-label="Event End Date" />
+                        <div class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </div>
+                    </div>
+                    <label for="eventUrl">URL (optional):</label>
+                    <input id="eventUrl" class="form-control" aria-label="Event URL" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="calendarModalSubmitButton" type="button" class="btn btn-primary" onclick="submitAddEntity();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.js"></script>
+
+<script type="text/javascript">
+    var mode = 'calendar';
+
+    var calendars = [];
+    $(document).ready(function() {
+        var calendarSelect = $("#CalendarId") != null && $("#CalendarId").length > 0 ? $("#CalendarId")[0] : null;
+        var calendarId = calendarSelect.options[calendarSelect.selectedIndex].value;
+
+        if (calendarSelect != null) {
+            changeCalendarHandler(calendarSelect, false);
+        }
+
+        @* Hide DatePicker once a Date is selected (this is NOT default behavior) *@
+        $('#startDatePicker').datepicker()
+            .on('changeDate', function(ev){
+                $('#startDatePicker').datepicker('hide');
+            });
+
+        @* Hide DatePicker once a Date is selected (this is NOT default behavior) *@
+        $('#endDatePicker').datepicker()
+            .on('changeDate', function(ev){
+                $('#endDatePicker').datepicker('hide');
+            });
+
+    });
+
+    function createCalendars() {
+        @if (Model.Calendars != null)
+        {
+            foreach (var calendar in Model.Calendars)
+            {
+                @Html.Raw("        var websiteId = " + calendar.CalendarId + ";\n")
+                @Html.Raw("        var calendar = new Object();\n")
+                @Html.Raw("            calendar.Id = " + calendar.CalendarId + ";\n")
+                @Html.Raw("            calendar.Name = " + calendar.CalendarName + ";\n")
+                @Html.Raw("        if (calendars[websiteId] == null) {\n")
+                @Html.Raw("            calendars[websiteId] = [];\n")
+                @Html.Raw("        }\n")
+                @Html.Raw("        calendars[websiteId].push(calendar);\n")
+            }
+        }
+    }
+
+    function websiteChangeHandler(websiteSelect) {
+        var websiteId = websiteSelect.options[websiteSelect.selectedIndex].value;
+
+        // Clear Calendars
+        var select = $("#CalendarId");
+        var length = select.options.length;
+        for (var i = 0; i < length; i++) {
+            select.options[i] = null;
+        }
+
+        var websiteCalendars = calendars[websiteId];
+        if (websiteCalendars != null && websiteCalendars.length > 0) {
+            for (var j = 0; j < websiteCalendars.length; j++) {
+                select.options.add(new Option(websiteCalendars[j].Name, websiteCalendars[j].Id));
+            }
+        }
+    }
+
+    function changeCalendarHandler(calendarSelect, loadEvents) {
+        var calendarId = calendarSelect.options[calendarSelect.selectedIndex].value;
+        var calendarName = calendarSelect.options[calendarSelect.selectedIndex].Text;
+
+        if (calendarId != null && calendarId > 0) {
+            $("#addEventButton").show();
+        }
+
+        $("currentCalendarName").val(calendarName);
+
+        if (loadEvents) {
+            $.post('/Website/FindEventsByCalendarId',
+                {
+                    calendarId: calendarId
+                },
+                function (data) {
+                    $('#calendar').fullCalendar('removeEvents');
+                    if (data != null && data.length > 0) {                        
+                        for (var i = 0; i < data.length; i++) {
+                            var event = new Object();
+                            event.title = data[i].EventName;
+                            event.start = data[i].StartDate;
+                            event.end = data[i].EndDate;
+                            event.url = data[i].EventUrl;
+
+                            $('#calendar').fullCalendar('renderEvent', event, true);
+                        }
+
+                    }
+                });
+        }
+    }
+
+    function addCalendar() {
+        mode = 'calendar';
+        $('#addType').text('Calendar');
+        $('#newCalendarLabel').show();
+        $('#newEntity').val('');
+        $('#newEventDiv').hide();
+        $('#calendarModal').modal('show');
+        $('#newEntity').focus();
+    }
+
+    function addEvent() {
+        mode = 'event';
+        var calendarSelect = $("#CalendarId") != null && $("#CalendarId").length > 0 ? $("#CalendarId")[0] : null;
+
+        var calendarId = null;
+
+        if (calendarSelect != null) {
+            calendarId = calendarSelect.options[calendarSelect.selectedIndex].value;
+        }
+        if (calendarId == null) {
+            alert("You must select a Calendar in order to create an Event");
+        }
+        $('#addType').text('Event');
+        $('#newCalendarLabel').hide();
+        $('#newEntity').val('');
+        $('#newEventDiv').show();
+        $('#calendarModal').modal('show');
+        $('#newEntity').focus();
+    }
+
+    function submitAddEntity() {
+        if (mode === 'calendar') {
+            submitAddCalendar();
+        }
+        else if (mode === 'event') {
+            submitAddEvent();
+        }
+    }
+
+    function submitAddCalendar() {
+        $.post("/Website/CalendarAdd",
+            {
+                "websiteId": $("#WebsiteId").val(),
+                "calendarName": $("#newEntity").val()
+            },
+            function (data) {
+                var select = $("#CalendarId");
+                var option = new Option(data.CalendarName, data.CalendarId);
+                select.append(option);
+                $('#calendarModal').modal('hide');
+            },
+            "json");
+    }
+
+    function submitAddEvent() {
+        $.post("/Website/CalendarEventAdd",
+            {
+                "calendarId": $("#CalendarId").val(),
+                "eventName": $("#newEntity").val(),
+                "startDate": $("#startDate").val(),
+                "endDate": $("#endDate").val(),
+                "eventUrl": $("#eventUrl").val()
+            },
+            function (data) {
+                var event = new Object();
+                event.title = data.EventName;
+                event.start = data.StartDate;
+                event.end = data.EndDate;
+                event.url = data.EventUrl;
+                $('#calendar').fullCalendar('renderEvent', event, true);
+                $('#calendarModal').modal('hide');
+            },
+            "json");        
+    }
+
+    document.querySelector('#newEntity').addEventListener('keypress', function (e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) { 
+            if (mode === 'calendar') {
+                submitAddCalendar();
+            }
+            else {
+                submitAddEvent();
+            }
+
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    $(function() {
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,basicWeek,basicDay'
+            },
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            events: [
+                @{ string delimiter = "";}
+                @foreach(CalendarEventViewModel calendarEvent in Model.SelectedCalendarEvents)
+                {
+                    @Html.Raw(delimiter)
+                    @Html.Raw("                {\n");
+                    @Html.Raw("                    title: '" + calendarEvent.EventName + "',\n");
+                    @Html.Raw("                    start: '" + calendarEvent.StartDate + "',\n");
+                    if (string.IsNullOrEmpty(calendarEvent.EventUrl))
+                    {
+                        @Html.Raw("                    end: '" + calendarEvent.EndDate + "'\n");
+                    }
+                    else
+                    {
+                        @Html.Raw("                    end: '" + calendarEvent.EndDate + "',\n");
+                        @Html.Raw("                    url: '" + calendarEvent.EventUrl + "'\n");
+                    }
+                    @Html.Raw("                }");
+                    delimiter = ",\n";
+                }
+
+        ]
+    });
+    });
+</script>

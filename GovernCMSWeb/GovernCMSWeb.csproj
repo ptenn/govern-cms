@@ -138,8 +138,10 @@
     <Compile Include="Azure\BlobUtils.cs" />
     <Compile Include="Azure\IdType.cs" />
     <Compile Include="Controllers\ArtifactController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\ErrorHandlingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SelectListController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\WebsiteController.cs" />
     <Compile Include="Global.asax.cs">
@@ -212,6 +214,8 @@
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
     <Compile Include="ViewModels\ManageWebsiteViewModel.cs" />
     <Compile Include="ViewModels\OrgSearchResultViewModel.cs" />
+    <Compile Include="ViewModels\SelectListViewModel.cs" />
+    <Compile Include="ViewModels\WebsiteComponentViewModel.cs" />
     <Compile Include="Web\CategoryExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -321,7 +325,10 @@
     <Content Include="Views\Website\Breadcrumb.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Website\Calendar.cshtml" />
+    <Content Include="Views\Calendar\ManageCalendar.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SelectList\ManageSelectList.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
