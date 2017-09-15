@@ -1,14 +1,8 @@
-﻿@using GovernCMS.Models
-@using GovernCMS.ViewModels
-@using GovernCMS.Web
-@model GovernCMS.ViewModels.CalendarViewModel
+﻿@model GovernCMS.ViewModels.SelectListViewModel
 
 @{
     ViewBag.Title = "Website Calendars";
 }
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.css"/>
-
 
 @if (TempData["successMessage"] != null)
 {
@@ -29,11 +23,11 @@
             <div class="col-sm-11">
                 <div class="card">
                     <div class="card-header">
-                        <h1>Website Calendar</h1>
+                        <h1>Website Drop-Down Select Lists</h1>
                         <span>In order to add Web Content, you will need to create a Website.  The Website is the container for all Web Content, Widgets, and Artifacts.</span>
                     </div>
                     <div class="card-body">
-                        @using (Html.BeginForm("Calendar", "Website", FormMethod.Post, new { id = "CalendarForm" }))
+                        @using (Html.BeginForm("SelectList", "Website", FormMethod.Post, new { id = "SelectListForm" }))
                         {
                             @Html.AntiForgeryToken()
                             <div class="row">
@@ -300,5 +294,37 @@
 
 </script>
 <script type="text/javascript">
-@Html.CalendarDisplay(Model.SelectedCalendarEvents, 4);
+    $(function() {
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,basicWeek,basicDay'
+            },
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            events: [
+                @{ string delimiter = "";}
+                @foreach(CalendarEventViewModel calendarEvent in Model.SelectedCalendarEvents)
+                {
+                    @Html.Raw(delimiter)
+                    @Html.Raw("                {\n");
+                    @Html.Raw("                    title: '" + calendarEvent.EventName + "',\n");
+                    @Html.Raw("                    start: '" + calendarEvent.StartDate + "',\n");
+                    if (string.IsNullOrEmpty(calendarEvent.EventUrl))
+                    {
+                        @Html.Raw("                    end: '" + calendarEvent.EndDate + "'\n");
+                    }
+                    else
+                    {
+                        @Html.Raw("                    end: '" + calendarEvent.EndDate + "',\n");
+                        @Html.Raw("                    url: '" + calendarEvent.EventUrl + "'\n");
+                    }
+                    @Html.Raw("                }");
+                    delimiter = ",\n";
+                }
+
+        ]
+    });
+    });
 </script>
