@@ -22,6 +22,13 @@ namespace GovernCMS.Services
         IList<Website> FindWebsitesByOrganizationId(int organizationId);
 
         /// <summary>
+        /// Find all Websites for an Organization, including Boards
+        /// </summary>
+        /// <param name="organizationId">The Organization ID for finding all Websites.</param>
+        /// <returns>List of all Websites for Organization, including Boards</returns>
+        IList<Website> FindWebsitesByOrganizationIdIncludeBoards(int organizationId);
+
+        /// <summary>
         /// Find Categories by Website, including Subcategories
         /// </summary>
         /// <param name="websiteId">The Website ID for finding all Categories</param>
@@ -41,5 +48,12 @@ namespace GovernCMS.Services
         /// <param name="calendarId">The Calendar ID</param>
         /// <returns>All Events for the Calendar</returns>
         IList<CalendarEvent> FindEventsByCalendarId(int calendarId);
+
+        /// <summary>
+        /// Finds all Boards by Website, including Board Cards
+        /// </summary>
+        /// <param name="websiteId">The Website ID for finding all Boards</param>
+        /// <returns>Boards, including Cards</returns>
+        IList<Board> FindBoardsByWebsiteId(int websiteId);
     }
 }

@@ -36,6 +36,10 @@
         <EntityTypeShape EntityType="GovernCMS.Models.KeyValueEntry" Width="1.5" PointX="13.875" PointY="0.75" />
         <AssociationConnector Association="GovernCMS.Models.FK_KeyValueCollection_Website" />
         <AssociationConnector Association="GovernCMS.Models.FK_KeyValueEntry_Collection" />
+        <EntityTypeShape EntityType="GovernCMS.Models.Board" Width="1.5" PointX="12.25" PointY="6" />
+        <EntityTypeShape EntityType="GovernCMS.Models.BoardCard" Width="1.5" PointX="14.5" PointY="6" />
+        <AssociationConnector Association="GovernCMS.Models.FK_Board_Website" />
+        <AssociationConnector Association="GovernCMS.Models.FK_BoardCard_Board" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

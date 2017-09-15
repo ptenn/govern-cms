@@ -33,6 +33,12 @@ namespace GovernCMS.Services.Impl
             return db.Websites.Where(w => w.OrganizationId == organizationId).ToList();
         }
 
+        public IList<Website> FindWebsitesByOrganizationIdIncludeBoards(int organizationId)
+        {
+            return db.Websites.Where(w => w.OrganizationId == organizationId).Include(w => w.Boards).ToList();
+        }
+
+
         public IList<Category> FindCategoriesByWebsiteId(int websiteId)
         {
             IList<Category> categories = db.Categories.Where(c => c.WebsiteId == websiteId)
@@ -58,6 +64,15 @@ namespace GovernCMS.Services.Impl
                                                            .ToList();
             return events;
         }
+
+        public IList<Board> FindBoardsByWebsiteId(int websiteId)
+        {
+            IList<Board> boards = db.Boards.Where(b => b.WebsiteId == websiteId)
+                                           .Include(b => b.BoardCards)
+                                           .ToList();
+            return boards;
+        }
+
 
     }
 }

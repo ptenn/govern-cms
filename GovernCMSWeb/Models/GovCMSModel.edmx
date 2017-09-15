@@ -38,6 +38,25 @@ warning 6002: The table/view 'munidb.cms.ArtifactUserEditor' does not have a pri
           <Property Name="ArtifactId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Board">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BoardName" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="WebsiteId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BoardCard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CardHeader" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="CardBody" Type="varchar" MaxLength="5000" Nullable="false" />
+          <Property Name="BoardId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="Calendar">
           <Key>
             <PropertyRef Name="CalendarId" />
@@ -240,6 +259,30 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Board_Website">
+          <End Role="Website" Type="Self.Website" Multiplicity="1" />
+          <End Role="Board" Type="Self.Board" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Website">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Board">
+              <PropertyRef Name="WebsiteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BoardCard_Board">
+          <End Role="Board" Type="Self.Board" Multiplicity="1" />
+          <End Role="BoardCard" Type="Self.BoardCard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Board">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BoardCard">
+              <PropertyRef Name="BoardId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Calendar_Website">
           <End Role="Website" Type="Self.Website" Multiplicity="1" />
           <End Role="Calendar" Type="Self.Calendar" Multiplicity="*" />
@@ -422,6 +465,8 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
         </Association>
         <EntityContainer Name="GovernCMSModelsStoreContainer">
           <EntitySet Name="Artifact" EntityType="Self.Artifact" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="Board" EntityType="Self.Board" Schema="cms" store:Type="Tables" />
+          <EntitySet Name="BoardCard" EntityType="Self.BoardCard" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Calendar" EntityType="Self.Calendar" Schema="cms" store:Type="Tables" />
           <EntitySet Name="CalendarEvent" EntityType="Self.CalendarEvent" Schema="cms" store:Type="Tables" />
           <EntitySet Name="Category" EntityType="Self.Category" Schema="cms" store:Type="Tables" />
@@ -474,6 +519,14 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <AssociationSet Name="FK_ArtifactUserEditor_User" Association="Self.FK_ArtifactUserEditor_User">
             <End Role="User" EntitySet="User" />
             <End Role="ArtifactUserEditor" EntitySet="ArtifactUserEditor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Board_Website" Association="Self.FK_Board_Website">
+            <End Role="Website" EntitySet="Website" />
+            <End Role="Board" EntitySet="Board" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BoardCard_Board" Association="Self.FK_BoardCard_Board">
+            <End Role="Board" EntitySet="Board" />
+            <End Role="BoardCard" EntitySet="BoardCard" />
           </AssociationSet>
           <AssociationSet Name="FK_Calendar_Website" Association="Self.FK_Calendar_Website">
             <End Role="Website" EntitySet="Website" />
@@ -672,6 +725,16 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             <End Role="KeyValueCollection" EntitySet="KeyValueCollections" />
             <End Role="KeyValueEntry" EntitySet="KeyValueEntries" />
           </AssociationSet>
+          <EntitySet Name="Boards" EntityType="GovernCMS.Models.Board" />
+          <EntitySet Name="BoardCards" EntityType="GovernCMS.Models.BoardCard" />
+          <AssociationSet Name="FK_Board_Website" Association="GovernCMS.Models.FK_Board_Website">
+            <End Role="Website" EntitySet="Websites" />
+            <End Role="Board" EntitySet="Boards" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BoardCard_Board" Association="GovernCMS.Models.FK_BoardCard_Board">
+            <End Role="Board" EntitySet="Boards" />
+            <End Role="BoardCard" EntitySet="BoardCards" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Group">
           <Key>
@@ -830,6 +893,7 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
           <NavigationProperty Name="Categories" Relationship="GovernCMS.Models.FK_Category_Website" FromRole="Website" ToRole="Category" />
           <NavigationProperty Name="Calendars" Relationship="GovernCMS.Models.FK_Calendar_Website" FromRole="Website" ToRole="Calendar" />
           <NavigationProperty Name="KeyValueCollections" Relationship="GovernCMS.Models.FK_KeyValueCollection_Website" FromRole="Website" ToRole="KeyValueCollection" />
+          <NavigationProperty Name="Boards" Relationship="GovernCMS.Models.FK_Board_Website" FromRole="Website" ToRole="Board" />
         </EntityType>
         <Association Name="FK_Website_User">
           <End Type="GovernCMS.Models.User" Role="User" Multiplicity="1" />
@@ -983,6 +1047,52 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
             </Principal>
             <Dependent Role="KeyValueEntry">
               <PropertyRef Name="CollectionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Board">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BoardName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="WebsiteId" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Website" Relationship="GovernCMS.Models.FK_Board_Website" FromRole="Board" ToRole="Website" />
+          <NavigationProperty Name="BoardCards" Relationship="GovernCMS.Models.FK_BoardCard_Board" FromRole="Board" ToRole="BoardCard" />
+        </EntityType>
+        <EntityType Name="BoardCard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CardHeader" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CardBody" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="BoardId" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Board" Relationship="GovernCMS.Models.FK_BoardCard_Board" FromRole="BoardCard" ToRole="Board" />
+        </EntityType>
+        <Association Name="FK_Board_Website">
+          <End Type="GovernCMS.Models.Website" Role="Website" Multiplicity="1" />
+          <End Type="GovernCMS.Models.Board" Role="Board" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Website">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Board">
+              <PropertyRef Name="WebsiteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BoardCard_Board">
+          <End Type="GovernCMS.Models.Board" Role="Board" Multiplicity="1" />
+          <End Type="GovernCMS.Models.BoardCard" Role="BoardCard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Board">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BoardCard">
+              <PropertyRef Name="BoardId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1157,6 +1267,27 @@ warning 6002: The table/view 'munidb.cms.UserGroup' does not have a primary key 
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Key" ColumnName="Key" />
                 <ScalarProperty Name="CollectionId" ColumnName="CollectionId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Boards">
+            <EntityTypeMapping TypeName="GovernCMS.Models.Board">
+              <MappingFragment StoreEntitySet="Board">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="WebsiteId" ColumnName="WebsiteId" />
+                <ScalarProperty Name="BoardName" ColumnName="BoardName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BoardCards">
+            <EntityTypeMapping TypeName="GovernCMS.Models.BoardCard">
+              <MappingFragment StoreEntitySet="BoardCard">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="BoardId" ColumnName="BoardId" />
+                <ScalarProperty Name="CardBody" ColumnName="CardBody" />
+                <ScalarProperty Name="CardHeader" ColumnName="CardHeader" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

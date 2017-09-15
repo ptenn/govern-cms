@@ -138,14 +138,23 @@
     <Compile Include="Azure\BlobUtils.cs" />
     <Compile Include="Azure\IdType.cs" />
     <Compile Include="Controllers\ArtifactController.cs" />
+    <Compile Include="Controllers\BoardController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\ErrorHandlingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SelectListController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\WebsiteController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Artifact.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Board.cs">
+      <DependentUpon>GovCMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BoardCard.cs">
       <DependentUpon>GovCMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Calendar.cs">
@@ -210,6 +219,7 @@
     <Compile Include="Utils\PasswordUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="ViewModels\ArtifactListViewModel.cs" />
+    <Compile Include="ViewModels\BoardViewModel.cs" />
     <Compile Include="ViewModels\BreadcrumbViewModel.cs" />
     <Compile Include="ViewModels\CalendarEventViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
@@ -218,6 +228,8 @@
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
     <Compile Include="ViewModels\ManageWebsiteViewModel.cs" />
     <Compile Include="ViewModels\OrgSearchResultViewModel.cs" />
+    <Compile Include="ViewModels\SelectListViewModel.cs" />
+    <Compile Include="ViewModels\WebsiteComponentViewModel.cs" />
     <Compile Include="Web\CalendarExtensions.cs" />
     <Compile Include="Web\CategoryExtensions.cs" />
   </ItemGroup>
@@ -263,6 +275,7 @@
     </Content>
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
+    <Content Include="Scripts\draggable-cards.js" />
     <Content Include="Scripts\dropzone.js" />
     <Content Include="Scripts\dropzone.min.js" />
     <Content Include="Scripts\editable-select.js" />
@@ -329,6 +342,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Website\Calendar.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Calendar\ManageCalendar.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SelectList\ManageSelectList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Board\ManageBoard.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
