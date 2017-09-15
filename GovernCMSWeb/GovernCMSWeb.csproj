@@ -139,6 +139,7 @@
     <Compile Include="Azure\IdType.cs" />
     <Compile Include="Controllers\ArtifactController.cs" />
     <Compile Include="Controllers\BoardController.cs" />
+    <Compile Include="Controllers\BreadcrumbController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\ErrorHandlingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -338,7 +339,7 @@
     <Content Include="Views\Website\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Website\Breadcrumb.cshtml" />
+    <Content Include="Views\Breadcrumb\ManageBreadcrumb.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Website\Calendar.cshtml" />
