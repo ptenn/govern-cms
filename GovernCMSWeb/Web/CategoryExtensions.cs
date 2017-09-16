@@ -18,9 +18,7 @@ namespace GovernCMS.Web
                 indentString += " ";
             }
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("<div class=\"dd\" name=\"category-nestable\" id=\"nestable\">\n");
             stringBuilder.Append(BuildList(categories, indentString));
-            stringBuilder.Append(indentString).Append("</div>");
             return new HtmlString(stringBuilder.ToString());
         }
 

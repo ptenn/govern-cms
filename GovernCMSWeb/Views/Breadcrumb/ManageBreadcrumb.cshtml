@@ -38,7 +38,7 @@
                                 @using (Html.BeginForm("Manage", "Breadcrumb", FormMethod.Post, new {id = "BreadcrumbForm"}))
                                 {
                                     @Html.AntiForgeryToken()
-                                    @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, new {@class = "form-control", aria_label = "Selected Website"})
+                                    @Html.DropDownListFor(model => model.WebsiteId, Model.WebsiteSelectList, new {@class = "form-control", aria_label = "Selected Website", onchange="websiteChangeHandler()"})
                                     @Html.HiddenFor(model => model.CategoriesJson)
                                 }
                             </div>
@@ -54,7 +54,9 @@
                                     <button type="button" class="btn btn-sm btn-danger"  data-toggle="modal" onclick="beginRemoveAllCategories()"><span class="fa fa-minus"></span> Remove All</button>&nbsp;&nbsp;&nbsp;
                                 </p>
                                 <!-- Begin embedded nestable-->
-                                @Html.CategoryDisplay(Model.Categories, 32)
+                                <div class="dd" name="category-nestable" id="nestable">
+                                    @Html.CategoryDisplay(Model.Categories, 32)
+                                </div>
                             </div>
                             <p/>
                             <button type="button" class="btn btn-sm btn-primary" onclick="saveCategories()"><span class="fa fa-dot-circle-o"></span> Save</button>
@@ -107,6 +109,10 @@
             });
     });   
 
+    function websiteChangeHandler() {
+        document.location.href = "/Breadcrumb/Manage/" + $("#WebsiteId").val();
+    }
+
     function processCategoryModal() {
         if (mode === 'add') {
             addCategory();
@@ -138,7 +144,7 @@
         var categoryName = $('#newCategory').val();
         var websiteId = $('#WebsiteId').val();
 
-        $.post("/Website/CategoryAdd",
+        $.post("/Breadcrumb/CategoryAdd",
             {
                 "websiteId": websiteId,
                 "categoryName": categoryName
@@ -170,7 +176,7 @@
 
     function removeCategory() {
         var removeCategoryId = $("#removeCategoryId").val();
-        $.post("/Website/CategoryDelete",
+        $.post("/Breadcrumb/CategoryDelete",
             {
                 "categoryId": removeCategoryId
             },
@@ -201,7 +207,7 @@
 
     function removeAllCategories() {
         var websiteId = $('#WebsiteId').val();
-        $.post("/Website/CategoryDeleteAll",
+        $.post("/Breadcrumb/CategoryDeleteAll",
             {
                 "websiteId": websiteId
             },
@@ -213,34 +219,23 @@
     }
 
     function saveCategories() {
-        // Build a Categories object
-        var categoriesRead = $('#nestable>ol>li');
-        var categories = buildCategories(categoriesRead);
-
-        var categoriesJson = JSON.stringify(categories, null, 2);
-        $("#CategoriesJson").val(categoriesJson);
-        $("#BreadcrumbForm").submit();
+        var nestableSections = $("#nestable>ol>li");
+        var categories = buildCategories(nestableSections);
+        var json = JSON.stringify(categories, null, 2);
+        alert(json);
     }
-
+    
     function buildCategories(categoriesRead) {
         var categories = [];
 
         categoriesRead.each(function() {
             var category = {};
             category.CategoryId = $(this).attr('data-id');
-            category.CategoryName = $(this).find(".dd-handle").first().text();
-            if (category.CategoryName !== null) {
-                category.CategoryName = category.CategoryName.trim();
-            }
+            category.CategoryName = $(this).find(".dd-handle").first().text().trim();
+            category.SubCategories = buildCategories($(this).find('.dd-list').find('.dd-item'));
             categories.push(category);
-
-            var subCategories = $(this).find('.dd-list').find('.dd-item');
-            category.SubCategories = buildCategories(subCategories);
-
-        });
-
+        });      
         return categories;
-
     }
 
     document.querySelector('#newCategory').addEventListener('keypress', function (e) {

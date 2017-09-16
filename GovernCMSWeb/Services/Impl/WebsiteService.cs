@@ -38,13 +38,13 @@ namespace GovernCMS.Services.Impl
             return db.Websites.Where(w => w.OrganizationId == organizationId).Include(w => w.Boards).ToList();
         }
 
-
         public IList<Category> FindCategoriesByWebsiteId(int websiteId)
         {
-            IList<Category> categories = db.Categories.Where(c => c.WebsiteId == websiteId)
-                                                      .Where(c => c.ParentCategoryId == null) // filter sub-categories
-                                                      .Include(c => c.SubCategories)
-                                                      .ToList();
+            var categories = db.Categories
+                .Where(c => c.WebsiteId == websiteId)
+                .Where(c => c.ParentCategoryId == null) // filter sub-categories
+                .Include(c => c.SubCategories)
+                .ToList();
             return categories;
         }
 

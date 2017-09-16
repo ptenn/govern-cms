@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Dynamic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using GovernCMS.Models;
 using GovernCMS.Services;
 using GovernCMS.Services.Impl;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
+using GovernCMS.Web;
 using log4net;
 using Newtonsoft.Json;
 
@@ -28,10 +29,10 @@ namespace GovernCMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult Manage(int? websiteId)
+        public ActionResult Manage(int? id)
         {
             UserCheck();
-            User currentUser = (User)Session[Constants.CURRENT_USER];
+            User currentUser = (User) Session[Constants.CURRENT_USER];
 
             IList<Website> websites = websiteService.FindWebsitesByOrganizationId(currentUser.OrganizationId);
             IList<SelectListItem> selectListItems = new List<SelectListItem>();
@@ -48,16 +49,16 @@ namespace GovernCMS.Controllers
 
             if (websites.Count > 0)
             {
-                if (websiteId == null)
+                if (id == null)
                 {
-                    websiteId = websites.First().Id;
+                    id = websites.First().Id;
                 }
             }
 
-            IList<Category> categories = websiteService.FindCategoriesByWebsiteId(websiteId.Value);
+            IList<Category> categories = websiteService.FindCategoriesByWebsiteId(id.Value);
             BreadcrumbViewModel breadcrumbViewModel = new BreadcrumbViewModel()
             {
-                WebsiteId = websiteId.Value,
+                WebsiteId = id.Value,
                 WebsiteSelectList = new SelectList(selectListItems, "Value", "Text"),
                 Categories = categories
             };
@@ -70,13 +71,14 @@ namespace GovernCMS.Controllers
         public ActionResult Manage(BreadcrumbViewModel breadcrumbViewModel)
         {
             // Now, create all new Sections and Items, providing the Agenda Id for Referential Integrity
-            IList<Category> categories = JsonConvert.DeserializeObject<IList<Category>>(breadcrumbViewModel.CategoriesJson);
+            IList<Category> categories =
+                JsonConvert.DeserializeObject<IList<Category>>(breadcrumbViewModel.CategoriesJson);
 
             ProcessCategories(breadcrumbViewModel.WebsiteId, categories);
 
             db.SaveChanges();
             TempData["successMessage"] = "Breadcrumb Categories Saved";
-            return RedirectToAction("Manage", new { websiteId = breadcrumbViewModel.WebsiteId });
+            return RedirectToAction("Manage", new {websiteId = breadcrumbViewModel.WebsiteId});
         }
 
         private void ProcessCategories(int websiteId, IList<Category> categories)
@@ -171,5 +173,6 @@ namespace GovernCMS.Controllers
             }
             db.SaveChanges();
         }
+
     }
 }

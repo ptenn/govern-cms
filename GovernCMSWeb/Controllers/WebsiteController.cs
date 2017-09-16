@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using GovernCMS.Models;
 using GovernCMS.Services;
 using GovernCMS.Services.Impl;
 using GovernCMS.Utils;
 using GovernCMS.ViewModels;
-using log4net;
-using Newtonsoft.Json;
 
 namespace GovernCMS.Controllers
 {
     public class WebsiteController : ErrorHandlingController
     {
-        private static ILog logger = LogManager.GetLogger(typeof(WebsiteController));
 
         private GovernCmsContext db = new GovernCmsContext();
 

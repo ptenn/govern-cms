@@ -224,6 +224,7 @@
     <Compile Include="ViewModels\BreadcrumbViewModel.cs" />
     <Compile Include="ViewModels\CalendarEventViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
+    <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\CreateUserViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageArtifactViewModel.cs" />
