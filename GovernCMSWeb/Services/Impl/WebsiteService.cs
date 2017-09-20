@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using GovernCMS.Models;
+using GovernCMS.Utils;
 
 namespace GovernCMS.Services.Impl
 {
     public class WebsiteService : IWebsiteService
     {
         private GovernCmsContext db = new GovernCmsContext();
+        private CategorySqlUtils categorySqlUtils = new CategorySqlUtils();
 
         public Website CreateWebsite(string name, string url, User creator)
         {
