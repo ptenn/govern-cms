@@ -95,7 +95,14 @@ namespace GovernCMS.Controllers
                 {
                     foreach (Category subCategory in category.SubCategories)
                     {
-                        subCategory.ParentCategoryId = category.CategoryId;
+                        if (category.CategoryId > 0)
+                        {
+                            subCategory.ParentCategoryId = category.CategoryId;
+                        }
+                        else
+                        {
+                            subCategory.ParentCategory = category;
+                        }
                     }
                 }
 

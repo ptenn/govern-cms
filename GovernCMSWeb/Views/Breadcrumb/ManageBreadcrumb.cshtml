@@ -222,7 +222,9 @@
         var nestableSections = $("#nestable>ol>li");
         var categories = buildCategories(nestableSections);
         var json = JSON.stringify(categories, null, 2);
-        console.log(json);
+        $("#CategoriesJson").val(json);
+        $("#BreadcrumbForm").submit();
+
     }
     
     function buildCategories(categoriesRead) {
@@ -232,7 +234,7 @@
             var category = {};
             category.CategoryId = $(this).attr('data-id');
             category.CategoryName = $(this).find(".dd-handle").first().text().trim();
-            category.SubCategories = buildCategories($(this).find('.dd-list').find('.dd-item'));
+            category.SubCategories = buildCategories($(this).children('.dd-list').children('.dd-item'));
             categories.push(category);
         });      
         return categories;
