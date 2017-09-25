@@ -106,6 +106,12 @@ namespace GovernCMS.Controllers
                     }
                 }
 
+                // Recursive Call
+                if (category.SubCategories != null && category.SubCategories.Count > 0)
+                {
+                    ProcessCategories(websiteId, category.SubCategories.ToList());
+                }
+
                 if (category.CategoryId > 0)
                 {
                     db.Categories.Attach(category);
@@ -114,10 +120,6 @@ namespace GovernCMS.Controllers
                 else
                 {
                     db.Categories.Add(category);
-                }
-                if (category.SubCategories != null && category.SubCategories.Count > 0)
-                {
-                    ProcessCategories(websiteId, category.SubCategories.ToList());
                 }
             }
         }
