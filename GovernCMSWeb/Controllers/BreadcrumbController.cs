@@ -95,8 +95,21 @@ namespace GovernCMS.Controllers
                 {
                     foreach (Category subCategory in category.SubCategories)
                     {
-                        subCategory.ParentCategoryId = category.CategoryId;
+                        if (category.CategoryId > 0)
+                        {
+                            subCategory.ParentCategoryId = category.CategoryId;
+                        }
+                        else
+                        {
+                            subCategory.ParentCategory = category;
+                        }
                     }
+                }
+
+                // Recursive Call
+                if (category.SubCategories != null && category.SubCategories.Count > 0)
+                {
+                    ProcessCategories(websiteId, category.SubCategories.ToList());
                 }
 
                 if (category.CategoryId > 0)
@@ -107,10 +120,6 @@ namespace GovernCMS.Controllers
                 else
                 {
                     db.Categories.Add(category);
-                }
-                if (category.SubCategories != null && category.SubCategories.Count > 0)
-                {
-                    ProcessCategories(websiteId, category.SubCategories.ToList());
                 }
             }
         }

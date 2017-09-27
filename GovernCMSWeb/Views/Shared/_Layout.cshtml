@@ -53,13 +53,11 @@
                     @if (Session[Constants.CURRENT_USER] == null)
                     {
                         @Html.Raw("Not Logged In")
-                        ;
                     }
                     else
                     {
                         User currentUser = (User) Session[Constants.CURRENT_USER];
                         @Html.Raw("Logged in as " + currentUser.FirstName + "&nbsp;" + currentUser.LastName)
-                        ;
                     }
                 </span>
             </li>
@@ -132,9 +130,8 @@
     </div>
 
 <footer class="app-footer">
-    <a href="https://genesisui.com">Clever</a> © 2017 creativeLabs.
-    <span class="float-right">Powered by <a href="https://genesisui.com">GenesisUI</a>
-    </span>
+    © 2017 <a href="https://municipalagenda.com">Municipal Agenda Software, Inc.</a>  All rights reserved.
+    <span class="float-right">Powered by: <a href="https://azure.microsoft.com/">Microsoft Azure</a> | Bootstrap Theme: <a href="http://bootstrapmaster.com/demo/clever/">cleverAdmin</a></span>
 </footer>
 
 <!-- Bootstrap and necessary plugins -->
@@ -159,7 +156,15 @@
 
 <!-- GenesisUI main scripts -->
 <script src="/Scripts/app.js"></script>
+<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-100196967-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments)};
+    gtag('js', new Date());
 
+    gtag('config', 'UA-100196967-2');
+</script>
 </body>
 
 </html>
